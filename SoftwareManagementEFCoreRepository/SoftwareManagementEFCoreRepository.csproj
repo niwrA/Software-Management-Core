@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="**\*.cs" />
+    <EmbeddedResource Include="**\*.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.0" />
+    <PackageReference Include="NETStandard.Library" Version="1.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SoftwareManagementCore\SoftwareManagementCore.csproj" />
+  </ItemGroup>
+  <Import Project="..\ProjectsShared\ProjectsShared.projitems" Label="Shared" />
+  <Import Project="..\ProductsShared\ProductsShared.projitems" Label="Shared" />
+</Project>
