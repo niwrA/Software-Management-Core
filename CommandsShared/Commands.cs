@@ -36,6 +36,12 @@ namespace CommandsShared
         IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp);
         bool Exists(Guid guid);
     }
+    public interface IEntityState
+    {
+        Guid Guid { get; set; }
+        string Name { get; set; }
+        DateTime Created { get; set; }
+    }
     // defines the contract for an Entity Repository implementation
     public interface IEntityRepository
     {

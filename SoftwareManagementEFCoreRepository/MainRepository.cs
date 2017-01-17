@@ -60,6 +60,11 @@ namespace SoftwareManagementEFCoreRepository
             return state;
         }
 
+        public IProductState GetProductState(Guid guid)
+        {
+            return _context.ProductStates.Find(guid);
+        }
+
         public void PersistChanges()
         {
             _context.SaveChanges();

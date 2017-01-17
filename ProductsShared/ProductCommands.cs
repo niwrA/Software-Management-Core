@@ -18,6 +18,14 @@ namespace ProductsShared
     {
         public string OriginalName { get; set; }
         public string Name { get; set; }
+        public override void Execute()
+        {
+            var products = new Products(this.EntityRepository as IProductStateRepository);
+            var product = products.GetProduct(this.EntityGuid);
+            product.Rename(this.Name);
+
+            base.Execute();
+        }
     }
 
 }

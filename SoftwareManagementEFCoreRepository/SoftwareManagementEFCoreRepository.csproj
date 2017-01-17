@@ -14,6 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\SoftwareManagementCore\SoftwareManagementCore.csproj" />
   </ItemGroup>
-  <Import Project="..\ProjectsShared\ProjectsShared.projitems" Label="Shared" />
-  <Import Project="..\ProductsShared\ProductsShared.projitems" Label="Shared" />
 </Project>
