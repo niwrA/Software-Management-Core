@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using ProductsShared;
 
 namespace CommandsShared
 {
@@ -57,7 +58,8 @@ namespace CommandsShared
         string ParametersJson { get; set; }
         DateTime? ExecutedOn { get; set; }
         ICommandRepository CommandRepository { get; set; }
-        IEntityRepository EntityRepository { get; set; }
+        ICommandProcessor CommandProcessor { get; set; }
+
         void Execute();
         void Post();
         void SetState(ICommandState state);
@@ -81,6 +83,10 @@ namespace CommandsShared
             if (_state == null)
             {
                 this._state = _repository.Create();
+                if(_state.Guid == null || _state.Guid == Guid.Empty)
+                {
+                    _state.Guid = Guid.NewGuid();
+                }
             }
             this._state.CommandTypeId = this.GetType().Name;
         }
@@ -176,17 +182,11 @@ namespace CommandsShared
                 OnPropertyChanged();
             }
         }
-        private IEntityRepository _entityRepository;
-        public virtual IEntityRepository EntityRepository
-        {
-            get { return _entityRepository; }
-            set
-            {
-                _entityRepository = value;
-
-            }
-        }
         public ICommandRepository CommandRepository { get { return _repository; } set { _repository = value; InitState(); } }
+
+        private ICommandProcessor _commandProcessor;
+        public ICommandProcessor CommandProcessor { get { return _commandProcessor; } set { _commandProcessor = value; } }
+
         public ICommand CreateCommand<T>(ICommandRepository commandRepository, ICommandableEntity entity) where T : ICommand, new()
         {
             var createdCommand = new T()

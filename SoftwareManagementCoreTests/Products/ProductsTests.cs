@@ -2,9 +2,27 @@ using ProductsShared;
 using System;
 using Xunit;
 using Moq;
+using CommandsShared;
 
 namespace SoftwareManagementCoreTests
 {
+    public class ProductStateMock : IProductState
+    {
+        public DateTime Created { get; set; }
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class CommandStateMock : ICommandState
+    {
+        public string CommandTypeId { get; set; }
+        public Guid EntityGuid { get; set; }
+        public long? ExecutedOn { get; set; }
+        public Guid Guid { get; set; }
+        public string ParametersJson { get; set; }
+        public long? ReceivedOn { get; set; }
+        public string UserName { get; set; }
+    }
     [Trait("Entity", "Product")]
     public class ProductsTests
     {
@@ -21,6 +39,28 @@ namespace SoftwareManagementCoreTests
             var sutResult = sut.CreateProduct(guid);
 
             Assert.Equal(stateFake.Object.Guid, sutResult.Guid);
+        }
+
+        [Fact(DisplayName = "CreateCommand")]
+        public void CanCreateProductWithCommand()
+        {
+            var commandRepoFake = new Moq.Mock<ICommandRepository>();
+            var repoFake = new Moq.Mock<IProductStateRepository>();
+            var productState = new ProductStateMock();
+            var commandState = new CommandStateMock();
+            var guid = Guid.NewGuid();
+            var commandProcessor = new CommandManager();
+            var commandConfig = new CommandConfig { Name = "Create", ProcessorName = "Project", Processor = new Products(repoFake.Object)};
+            commandProcessor.AddConfig(commandConfig);
+
+            productState.Guid = guid;
+
+            commandRepoFake.Setup(t => t.Create()).Returns(commandState);
+            repoFake.Setup(t => t.CreateProductState(It.IsAny<Guid>())).Returns(productState);
+
+            var sut = new CreateProductCommand { EntityGuid = guid };
+            commandProcessor.ProcessCommand(sut);
+
         }
 
         [Fact(DisplayName = "Get")]

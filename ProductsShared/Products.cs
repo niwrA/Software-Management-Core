@@ -31,7 +31,7 @@ namespace ProductsShared
 
         }
     }
-    public class Products
+    public class Products : IProducts
     {
         private IProductStateRepository _repo;
         public Products(IProductStateRepository repo)
@@ -48,7 +48,6 @@ namespace ProductsShared
             var state = _repo.GetProductState(guid);
             return new Product(state);
         }
-
     }
     public class ProductBuilder
     {
