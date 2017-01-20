@@ -1,4 +1,5 @@
 ﻿using CommandsShared;
+using DateTimeShared;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,24 +24,28 @@ namespace ProductsShared
 
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
-        public DateTime Created { get { return _state.Created; } }
+        public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
         public void Rename(string name)
         {
             _state.Name = name;
-
+            //_state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
         }
     }
-    public class Products : IProducts
+    public class ProductService : IProductService
     {
+        private IDateTimeProvider _dateTimeProvider;
         private IProductStateRepository _repo;
-        public Products(IProductStateRepository repo)
+        public ProductService(IProductStateRepository repo, IDateTimeProvider dateTimeProvider)
         {
             _repo = repo;
+            _dateTimeProvider = dateTimeProvider;
         }
         public Product CreateProduct(Guid guid)
         {
             var state = _repo.CreateProductState(guid);
+            state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
+            state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
             return new Product(state);
         }
         public Product GetProduct(Guid guid)
@@ -51,11 +56,11 @@ namespace ProductsShared
     }
     public class ProductBuilder
     {
-        private Products _products;
+        private ProductService _products;
         private Guid _guid;
         private string _name;
 
-        public ProductBuilder(Products products)
+        public ProductBuilder(ProductService products)
         {
             _products = products;
         }

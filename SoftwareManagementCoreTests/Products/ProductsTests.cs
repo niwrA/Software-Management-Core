@@ -2,86 +2,47 @@ using ProductsShared;
 using System;
 using Xunit;
 using Moq;
-using CommandsShared;
+using DateTimeShared;
 
 namespace SoftwareManagementCoreTests
 {
-    public class ProductStateMock : IProductState
-    {
-        public DateTime Created { get; set; }
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class CommandStateMock : ICommandState
-    {
-        public string CommandTypeId { get; set; }
-        public Guid EntityGuid { get; set; }
-        public long? ExecutedOn { get; set; }
-        public Guid Guid { get; set; }
-        public string ParametersJson { get; set; }
-        public long? ReceivedOn { get; set; }
-        public string UserName { get; set; }
-    }
     [Trait("Entity", "Product")]
     public class ProductsTests
     {
         [Fact(DisplayName = "Create")]
         public void CanCreateProduct()
         {
-            var repoFake = new Moq.Mock<IProductStateRepository>();
-            var sut = new Products(repoFake.Object);
-            var stateFake = new Mock<IProductState>();
+            var repoMock = new Moq.Mock<IProductStateRepository>();
+            var sut = new ProductService(repoMock.Object, new DateTimeProvider());
+            var stateMock = new Mock<IProductState>();
 
-            repoFake.Setup(t => t.CreateProductState(It.IsAny<Guid>())).Returns(stateFake.Object);
+            repoMock.Setup(t => t.CreateProductState(It.IsAny<Guid>())).Returns(stateMock.Object);
 
             var guid = Guid.NewGuid();
             var sutResult = sut.CreateProduct(guid);
 
-            Assert.Equal(stateFake.Object.Guid, sutResult.Guid);
-        }
-
-        [Fact(DisplayName = "CreateCommand")]
-        public void CanCreateProductWithCommand()
-        {
-            var commandRepoFake = new Moq.Mock<ICommandRepository>();
-            var repoFake = new Moq.Mock<IProductStateRepository>();
-            var productState = new ProductStateMock();
-            var commandState = new CommandStateMock();
-            var guid = Guid.NewGuid();
-            var commandProcessor = new CommandManager();
-            var commandConfig = new CommandConfig { Name = "Create", ProcessorName = "Project", Processor = new Products(repoFake.Object)};
-            commandProcessor.AddConfig(commandConfig);
-
-            productState.Guid = guid;
-
-            commandRepoFake.Setup(t => t.Create()).Returns(commandState);
-            repoFake.Setup(t => t.CreateProductState(It.IsAny<Guid>())).Returns(productState);
-
-            var sut = new CreateProductCommand { EntityGuid = guid };
-            commandProcessor.ProcessCommand(sut);
-
+            Assert.Equal(stateMock.Object.Guid, sutResult.Guid);
         }
 
         [Fact(DisplayName = "Get")]
         public void CanGetProduct()
         {
-            var repoFake = new Moq.Mock<IProductStateRepository>();
-            var sut = new Products(repoFake.Object);
-            var stateFake = new Mock<IProductState>();
-            var stateFakeAlt = new Mock<IProductState>();
+            var repoMock = new Moq.Mock<IProductStateRepository>();
+            var sut = new ProductService(repoMock.Object, new DateTimeProvider());
+            var stateMock = new Mock<IProductState>();
+            var stateMockAlt = new Mock<IProductState>();
 
-            stateFake.Object.Guid = Guid.NewGuid();
-            stateFakeAlt.Object.Guid = Guid.NewGuid();
+            stateMock.Object.Guid = Guid.NewGuid();
+            stateMockAlt.Object.Guid = Guid.NewGuid();
 
-            repoFake.Setup(t => t.GetProductState(stateFake.Object.Guid)).Returns(stateFake.Object);
-            repoFake.Setup(t => t.GetProductState(stateFakeAlt.Object.Guid)).Returns(stateFakeAlt.Object);
+            repoMock.Setup(t => t.GetProductState(stateMock.Object.Guid)).Returns(stateMock.Object);
+            repoMock.Setup(t => t.GetProductState(stateMockAlt.Object.Guid)).Returns(stateMockAlt.Object);
 
-            var sutResult = sut.GetProduct(stateFake.Object.Guid);
-            var sutResultAlt = sut.GetProduct(stateFakeAlt.Object.Guid);
+            var sutResult = sut.GetProduct(stateMock.Object.Guid);
+            var sutResultAlt = sut.GetProduct(stateMockAlt.Object.Guid);
 
-            Assert.Equal(stateFake.Object.Guid, sutResult.Guid);
-            Assert.Equal(stateFakeAlt.Object.Guid, sutResultAlt.Guid);
+            Assert.Equal(stateMock.Object.Guid, sutResult.Guid);
+            Assert.Equal(stateMockAlt.Object.Guid, sutResultAlt.Guid);
         }
     }
 }

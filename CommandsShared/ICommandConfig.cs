@@ -6,5 +6,7 @@
         string Name { get; set; }
         ICommandProcessor Processor { get; set; }
         string ProcessorName { get; set; }
+
+        ICommand GetCommand(string parametersJson);
     }
 }

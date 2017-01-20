@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommandsShared;
+using Microsoft.EntityFrameworkCore;
 using ProductsShared;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -17,32 +19,41 @@ namespace SoftwareManagementEFCoreRepository
         {
         }
         public DbSet<ProductState> ProductStates { get; set; }
+        public DbSet<CommandState> CommandStates { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MyDatabase;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(@"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;");
                 //               optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
             }
         }
     }
-
-    public class ProductState : IProductState
+    public abstract class NamedEntityState: IProductState
     {
-        public ProductState()
-        {
-
-        }
-        public ProductState(Guid guid)
-        {
-            Guid = guid;
-        }
-        public DateTime Created { get; set; }
         [Key]
         public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string Name { get; set; }
     }
-    public class MainRepository : IProductStateRepository
+    public class ProductState : NamedEntityState
+    {
+    }
+    public class CommandState : ICommandState
+    {
+        [Key]
+        public Guid Guid { get; set; }
+        public Guid EntityGuid { get; set; }
+        public string CommandTypeId { get; set; }
+        public DateTime? ExecutedOn { get; set; }
+        public string ParametersJson { get; set; }
+        public DateTime? ReceivedOn { get; set; }
+        public string UserName { get; set; }
+    }
+    public interface IMainRepository : IProductStateRepository, ICommandRepository { };
+    public class MainRepository : IMainRepository
     {
         private MainContext _context;
         public MainRepository(MainContext context)
@@ -53,16 +64,55 @@ namespace SoftwareManagementEFCoreRepository
             //    _context.Database.Migrate();
             //}
         }
+
+        public void Add(ICommandState state)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommandState Create()
+        {
+            var state = new CommandState()
+            {
+                Guid = Guid.NewGuid()
+            };
+            _context.CommandStates.Add(state);
+            return state;
+        }
+
         public IProductState CreateProductState(Guid guid)
         {
-            var state = new ProductState(guid);
+            var state = new ProductState()
+            {
+                Guid = guid
+            };
             _context.ProductStates.Add(state);
             return state;
+        }
+
+        public bool Exists(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ICommandState> GetAllNew()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ICommandState> GetAllProcessed()
+        {
+            throw new NotImplementedException();
         }
 
         public IProductState GetProductState(Guid guid)
         {
             return _context.ProductStates.Find(guid);
+        }
+
+        public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)
+        {
+            throw new NotImplementedException();
         }
 
         public void PersistChanges()
@@ -73,6 +123,12 @@ namespace SoftwareManagementEFCoreRepository
         public Task PersistChangesAsync()
         {
             return _context.SaveChangesAsync();
+        }
+
+        public void SetProcessed(ICommandState state)
+        {
+//            state.UserName = 
+            //throw new NotImplementedException();
         }
     }
 }

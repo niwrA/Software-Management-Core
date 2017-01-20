@@ -13,14 +13,31 @@ namespace CommandsShared
 {
 
     // define the interface for holding a command's state for instance for storage in a repository
+    public interface ICommand
+    {
+        Guid Guid { get; set; }
+        Guid EntityGuid { get; set; }
+        string CommandTypeId { get; set; }
+        string ParametersJson { get; set; }
+        DateTime? ExecutedOn { get; set; }
+        DateTime? ReceivedOn { get; set; }
+        DateTime CreatedOn { get; set; }
+        string UserName { get; set; }
+
+        ICommandRepository CommandRepository { get; set; }
+        ICommandProcessor CommandProcessor { get; set; }
+
+        void Execute();
+    }
+
     public interface ICommandState
     {
         Guid Guid { get; set; }
         Guid EntityGuid { get; set; }
         string CommandTypeId { get; set; }
         string ParametersJson { get; set; }
-        long? ExecutedOn { get; set; }
-        long? ReceivedOn { get; set; }
+        DateTime? ExecutedOn { get; set; }
+        DateTime? ReceivedOn { get; set; }
         string UserName { get; set; }
     }
     // defines the contract for a Command Repository implementation
@@ -41,28 +58,14 @@ namespace CommandsShared
     {
         Guid Guid { get; set; }
         string Name { get; set; }
-        DateTime Created { get; set; }
+        DateTime CreatedOn { get; set; }
+        DateTime UpdatedOn { get; set; }
     }
     // defines the contract for an Entity Repository implementation
     public interface IEntityRepository
     {
         void PersistChanges();
         Task PersistChangesAsync();
-    }
-    // defines the contract for actual commands that will be executed against an entity and a specified repository
-    public interface ICommand
-    {
-        Guid Guid { get; set; }
-        Guid EntityGuid { get; set; }
-        string CommandTypeId { get; set; }
-        string ParametersJson { get; set; }
-        DateTime? ExecutedOn { get; set; }
-        ICommandRepository CommandRepository { get; set; }
-        ICommandProcessor CommandProcessor { get; set; }
-
-        void Execute();
-        void Post();
-        void SetState(ICommandState state);
     }
     // defines the contract for entities compatible with commanding
     public interface ICommandableEntity
@@ -77,18 +80,24 @@ namespace CommandsShared
         public CommandBase()
         {
         }
+        public DateTime CreatedOn { get; set; }
+        public DateTime? ReceivedOn { get; set; }
+        public string UserName { get; set; }
 
         private void InitState()
         {
-            if (_state == null)
+            if (_state == null && _repository != null)
             {
                 this._state = _repository.Create();
-                if(_state.Guid == null || _state.Guid == Guid.Empty)
+                if (_state.Guid == null || _state.Guid == Guid.Empty)
                 {
                     _state.Guid = Guid.NewGuid();
                 }
             }
-            this._state.CommandTypeId = this.GetType().Name;
+            if (_state != null)
+            {
+                this._state.CommandTypeId = this.GetType().Name;
+            }
         }
 
         public CommandBase(ICommandRepository repo) : this()
@@ -102,6 +111,7 @@ namespace CommandsShared
             this._state = state;
         }
 
+        // PropertyChanged only useful for UI, so maybe remove? 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -109,14 +119,15 @@ namespace CommandsShared
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal static T Deserialize<T>(string json)
-        {
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-        internal static object DeserializeObject(string json, Type type)
-        {
-            return JsonConvert.DeserializeObject(json, type);
-        }
+        // todo: serialization can go from here, moved to CommandManager
+        //internal static T Deserialize<T>(string json)
+        //{
+        //    return JsonConvert.DeserializeObject<T>(json);
+        //}
+        //internal static object DeserializeObject(string json, Type type)
+        //{
+        //    return JsonConvert.DeserializeObject(json, type);
+        //}
         public string Serialize()
         {
             return JsonConvert.SerializeObject(this);
@@ -149,22 +160,13 @@ namespace CommandsShared
                 _state.EntityGuid = value; OnPropertyChanged();
             }
         }
-        public virtual void Execute() { _state.ExecutedOn = DateTime.UtcNow.Ticks; _repository.SetProcessed(_state); }
-        private DateTime? _executedOn { get; set; }
+        public virtual void Execute() { _repository.SetProcessed(_state); }
         public DateTime? ExecutedOn
         {
-            get { return _state.ExecutedOn.HasValue ? new DateTime(_state.ExecutedOn.Value) as DateTime? : null; }
+            get { return _state.ExecutedOn;  }
             set
             {
-                if (value == null)
-                {
-                    _state.ExecutedOn = null;
-                }
-                else
-                {
-                    _state.ExecutedOn = value.Value.Ticks;
-
-                }
+                _state.ExecutedOn = value;
                 OnPropertyChanged();
             }
         }
@@ -185,7 +187,7 @@ namespace CommandsShared
         public ICommandRepository CommandRepository { get { return _repository; } set { _repository = value; InitState(); } }
 
         private ICommandProcessor _commandProcessor;
-        public ICommandProcessor CommandProcessor { get { return _commandProcessor; } set { _commandProcessor = value; } }
+        public virtual ICommandProcessor CommandProcessor { get { return _commandProcessor; } set { _commandProcessor = value; } }
 
         public ICommand CreateCommand<T>(ICommandRepository commandRepository, ICommandableEntity entity) where T : ICommand, new()
         {
@@ -196,6 +198,11 @@ namespace CommandsShared
             return createdCommand;
         }
 
+        /// <summary>
+        /// Serialize the command and add it's state to the repository.
+        /// </summary>
+        /// todo: this must not happen when the state is already in the repository - we would never update commands?
+        /// also do we then still need to use DataContract to identify the proper members
         public void Post()
         {
             this.ParametersJson = this.Serialize();
@@ -225,7 +232,7 @@ namespace CommandsShared
         public ICommandRepository Repository { get { return _commandRepository; } }
         public void PostCommand(ICommand command)
         {
-            command.Post();
+            //command.Post();
             PostedCommands.Add(command);
         }
         //todo: get the commands from the repository and restore them properly using the CommandTypeId ... ?
@@ -245,7 +252,7 @@ namespace CommandsShared
             var list = new List<ICommand>();
             foreach (var state in _commandRepository.GetAllProcessed())
             {
-                list.Add(new CommandBase(_commandRepository, state));
+                //list.Add(new CommandBase(_commandRepository, state));
             }
             return list;
         }

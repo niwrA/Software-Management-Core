@@ -27,9 +27,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementEFCoreRep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementEFCoreRepositoryTests", "SoftwareManagementEFCoreRepositoryTests\SoftwareManagementEFCoreRepositoryTests.csproj", "{5B291450-0B7E-4D3B-8FE6-751856E5D1AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementCoreApi", "SoftwareManagementCoreApi\SoftwareManagementCoreApi.csproj", "{F57F1DFA-58C4-4A85-9C99-E396DD93994B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DateTimeShared", "DateTimeShared\DateTimeShared.shproj", "{93FF6F34-93FA-4B1E-8828-3D056F144800}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomDateTime", "CustomDateTime", "{D56C3A83-43AE-40C4-85C9-C3F525A54BFD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ProductsShared\ProductsShared.projitems*{51dadd10-16bc-435e-a8ff-79d03f757bb7}*SharedItemsImports = 13
+		DateTimeShared\DateTimeShared.projitems*{93ff6f34-93fa-4b1e-8828-3d056f144800}*SharedItemsImports = 13
 		TextFragmentsShared\TextFragmentsShared.projitems*{c70ef468-fbe9-4e66-8a24-3785140dd09b}*SharedItemsImports = 13
 		CommandsShared\CommandsShared.projitems*{e836653d-f62d-4262-89cd-622bf092f8e3}*SharedItemsImports = 13
 		ProjectsShared\ProjectsShared.projitems*{f36337f9-5492-4327-8301-b0be8708e8e0}*SharedItemsImports = 13
@@ -91,6 +98,18 @@ Global
 		{5B291450-0B7E-4D3B-8FE6-751856E5D1AF}.Release|x64.Build.0 = Release|x64
 		{5B291450-0B7E-4D3B-8FE6-751856E5D1AF}.Release|x86.ActiveCfg = Release|x86
 		{5B291450-0B7E-4D3B-8FE6-751856E5D1AF}.Release|x86.Build.0 = Release|x86
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Debug|x64.ActiveCfg = Debug|x64
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Debug|x64.Build.0 = Debug|x64
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Debug|x86.ActiveCfg = Debug|x86
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Debug|x86.Build.0 = Debug|x86
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Release|x64.ActiveCfg = Release|x64
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Release|x64.Build.0 = Release|x64
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Release|x86.ActiveCfg = Release|x86
+		{F57F1DFA-58C4-4A85-9C99-E396DD93994B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,5 +119,6 @@ Global
 		{F36337F9-5492-4327-8301-B0BE8708E8E0} = {88D02AA3-703C-4F37-835B-03F1965A7D88}
 		{51DADD10-16BC-435E-A8FF-79D03F757BB7} = {8980C1CA-C7D2-46A9-B200-6D17809AB0A4}
 		{C70EF468-FBE9-4E66-8A24-3785140DD09B} = {CE820E82-7CED-49CF-82F3-E7841914BEDB}
+		{93FF6F34-93FA-4B1E-8828-3D056F144800} = {D56C3A83-43AE-40C4-85C9-C3F525A54BFD}
 	EndGlobalSection
 EndGlobal
