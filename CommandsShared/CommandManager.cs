@@ -10,33 +10,62 @@ namespace CommandsShared
     {
         // void ProcessCommand(ICommand command);
     }
+    public class ProcessorConfig : IProcessorConfig
+    {
+        public ICommandProcessor Processor { get; set; }
+        public string Entity { get; set; }
+        public string NameSpace { get; set; }
+        public string Assembly { get; set; }
+        public ICommand GetCommand(string name, string entity, string parametersJson)
+        {
+            var commandConfig = new CommandConfig()
+            {
+                ProcessorName = entity,
+                Name = name,
+                NameSpace = this.NameSpace,
+                Assembly = this.Assembly,
+                Processor = this.Processor
+            };
+            return commandConfig.GetCommand(parametersJson);
+        }
+    }
     public class CommandConfig : ICommandConfig
     {
         public string Key { get { return Name + ProcessorName + "Command"; } }
         public string Name { get; set; }
         public string ProcessorName { get; set; }
+        public string NameSpace { get; set; }
+        public string Assembly { get; set; }
         public ICommandProcessor Processor { get; set; }
         public ICommand GetCommand(string json)
         {
             ICommand command;
             if (!string.IsNullOrWhiteSpace(json))
             {
-                var insert = @"'$type': 'ProductsShared." + Key + @", SoftwareManagementCore', ";
+                var insert = @"'$type': '" + NameSpace + "." + Key + @", " + Assembly + "', ";
                 json = json.Trim().Insert(1, insert);
                 command = JsonConvert.DeserializeObject<ICommand>(json, new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto
                 });
-
             }
             else
             {
-                Type type = Type.GetType("ProductsShared." + Key + ", SoftwareManagementCore");
-                command = Activator.CreateInstance(type) as ICommand;
+                Type type = Type.GetType(NameSpace + "." + Key + ", " + Assembly);
+                if(type!=null)
+                {
+                    command = Activator.CreateInstance(type) as ICommand;
+                }
+                else
+                {
+                    throw new TypeNotFoundException($"{Key} not found in {NameSpace} of {Assembly}");
+                }
             }
             return command;
         }
     }
+
+    // todo: move out CommandDto c.s. to separate project
     public class CommandDto
     {
         public Guid Guid { get; set; }
@@ -45,14 +74,14 @@ namespace CommandsShared
         public string Name { get; set; }
         public string ParametersJson { get; set; }
         public DateTime CreatedOn { get; set; }
-        // todo: add user created date
-        //public long? ExecutedOn { get; set; }
+        public DateTime? ExecutedOn { get; set; }
         //public long? ReceivedOn { get; set; }
         //public string UserName { get; set; }
     }
     public class CommandManager : ICommandManager
     {
-        private Dictionary<string, ICommandConfig> _configs = new Dictionary<string, ICommandConfig>();
+        private Dictionary<string, IProcessorConfig> _configs = new Dictionary<string, IProcessorConfig>();
+        private Dictionary<string, ICommandConfig> _commandConfigs = new Dictionary<string, ICommandConfig>();
         private ICommandRepository _repo;
         private IDateTimeProvider _dateTimeProvider;
         public CommandManager(ICommandRepository repo, IDateTimeProvider dateTimeProvider)
@@ -62,39 +91,50 @@ namespace CommandsShared
         }
         public void AddConfig(ICommandConfig config)
         {
-            _configs.Add(config.Key, config);
+            _commandConfigs.Add(config.Key, config);
         }
+        public void AddConfig(IProcessorConfig config)
+        {
+            _configs.Add(config.Entity, config);
+        }
+
         public ICommand ProcessCommand(CommandDto command, ICommandRepository commandRepository)
         {
             // todo: config to a centralized location or find a way to inject, or create new but inject repository only like now
 
-            ICommandConfig config;
-            if (_configs.TryGetValue(command.Name + command.Entity + "Command", out config))
+            ICommandConfig commandConfig;
+            if (_commandConfigs.TryGetValue(command.Name + command.Entity + "Command", out commandConfig))
             {
-                var typedCommand = config.GetCommand(command.ParametersJson);
+                var typedCommand = commandConfig.GetCommand(command.ParametersJson);
 
-                typedCommand.CommandRepository = commandRepository;
-                typedCommand.CreatedOn = command.CreatedOn;
-                typedCommand.ReceivedOn = _dateTimeProvider.GetSessionUtcDateTime();
-                typedCommand.EntityGuid = command.EntityGuid;
-                typedCommand.Guid = command.Guid;
-                typedCommand.ParametersJson = command.ParametersJson;
-                typedCommand.CommandProcessor = config.Processor;
-                typedCommand.Execute();
-                typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
+                CopyCommandDtoIntoCommand(command, commandRepository, commandConfig.Processor, typedCommand);
+
                 return typedCommand;
             }
-            return null; // todo: handle as command not found error
+            IProcessorConfig config;
+            if (_configs.TryGetValue(command.Entity, out config))
+            {
+                var typedCommand = config.GetCommand(command.Name, command.Entity, command.ParametersJson);
+
+                CopyCommandDtoIntoCommand(command, commandRepository, config.Processor, typedCommand);
+
+                return typedCommand;
+
+            }
+            throw new CommandNotConfiguredException($"The command named '{command.Name}' for entity '{command.Entity}' does not have a matching configuration.");
         }
 
-        public void ProcessCommand(ICommand command)
+        private void CopyCommandDtoIntoCommand(CommandDto command, ICommandRepository commandRepository, ICommandProcessor processor, ICommand typedCommand)
         {
-            ICommandConfig config;
-            if (_configs.TryGetValue(command.CommandTypeId, out config))
-            {
-                command.CommandProcessor = config.Processor;
-                command.Execute();
-            }
+            typedCommand.CommandRepository = commandRepository;
+            typedCommand.CreatedOn = command.CreatedOn;
+            typedCommand.ReceivedOn = _dateTimeProvider.GetSessionUtcDateTime();
+            typedCommand.EntityGuid = command.EntityGuid;
+            typedCommand.Guid = command.Guid;
+            typedCommand.ParametersJson = command.ParametersJson;
+            typedCommand.CommandProcessor = processor;
+            typedCommand.Execute();
+            typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
         }
     }
 }

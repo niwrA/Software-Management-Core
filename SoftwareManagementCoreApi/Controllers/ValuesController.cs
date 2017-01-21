@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {

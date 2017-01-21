@@ -32,6 +32,11 @@ namespace ProductsShared
             //_state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
         }
     }
+    public interface IProductService : ICommandProcessor
+    {
+        Product CreateProduct(Guid guid);
+        Product GetProduct(Guid guid);
+    }
     public class ProductService : IProductService
     {
         private IDateTimeProvider _dateTimeProvider;

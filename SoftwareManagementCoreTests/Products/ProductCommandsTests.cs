@@ -31,7 +31,8 @@ namespace SoftwareManagementCoreTests.Products
             repoMock.Setup(t => t.CreateProductState(It.IsAny<Guid>())).Returns(productState);
 
             var sut = new CreateProductCommand(commandRepoMock.Object) { EntityGuid = guid };
-            commandProcessor.ProcessCommand(sut);
+            sut.Execute();
+            //commandProcessor.ProcessCommand(sut);
 
         }
 
@@ -50,7 +51,8 @@ namespace SoftwareManagementCoreTests.Products
             commandRepoMock.Setup(t => t.Create()).Returns(commandState);
 
             var sut = new CreateProductCommand(commandRepoMock.Object);
-            commandProcessor.ProcessCommand(sut);
+            sut.Execute();
+            //commandProcessor.ProcessCommand(sut);
 
             productsMock.Verify(v => v.CreateProduct(It.IsAny<Guid>()), Times.Once);
         }

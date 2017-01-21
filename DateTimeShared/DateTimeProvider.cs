@@ -12,7 +12,7 @@ namespace DateTimeShared
 
     public class DateTimeProvider : IDateTimeProvider
     {
-        private DateTime _sessionDateTime;
+        private DateTime? _sessionDateTime;
         /// <summary>
         /// Will return the current UTC datetime
         /// </summary>
@@ -31,7 +31,7 @@ namespace DateTimeShared
             {
                 _sessionDateTime = GetUtcDateTime();
             }
-            return _sessionDateTime;
+            return _sessionDateTime.Value;
         }
     }
 }

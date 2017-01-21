@@ -5,7 +5,8 @@ namespace CommandsShared
     public interface ICommandManager
     {
         void AddConfig(ICommandConfig config);
-        void ProcessCommand(ICommand command);
+        void AddConfig(IProcessorConfig config);
+        //void ProcessCommand(ICommand command);
         ICommand ProcessCommand(CommandDto command, ICommandRepository commandRepository);
     }
 }

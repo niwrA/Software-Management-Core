@@ -8,9 +8,10 @@ using SoftwareManagementEFCoreRepository;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20170121135828_AddProjectState")]
+    partial class AddProjectState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -61,11 +62,7 @@ namespace SoftwareManagementEFCoreRepository.Migrations
 
                     b.Property<DateTime>("CreatedOn");
 
-                    b.Property<DateTime?>("EndDate");
-
                     b.Property<string>("Name");
-
-                    b.Property<DateTime?>("StartDate");
 
                     b.Property<DateTime>("UpdatedOn");
 

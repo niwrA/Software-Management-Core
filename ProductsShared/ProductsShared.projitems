@@ -9,7 +9,6 @@
     <Import_RootNamespace>ProductsShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)IProducts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProductCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Products.cs" />
   </ItemGroup>

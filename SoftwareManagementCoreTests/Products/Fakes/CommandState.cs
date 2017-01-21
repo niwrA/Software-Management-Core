@@ -11,6 +11,7 @@ namespace SoftwareManagementCoreTests.Fakes
         public Guid Guid { get; set; }
         public string ParametersJson { get; set; }
         public DateTime? ReceivedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
     }
 }

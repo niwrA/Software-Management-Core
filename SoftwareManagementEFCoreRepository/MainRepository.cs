@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using ProjectsShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -19,6 +20,7 @@ namespace SoftwareManagementEFCoreRepository
         {
         }
         public DbSet<ProductState> ProductStates { get; set; }
+        public DbSet<ProjectState> ProjectStates { get; set; }
         public DbSet<CommandState> CommandStates { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,7 +32,7 @@ namespace SoftwareManagementEFCoreRepository
             }
         }
     }
-    public abstract class NamedEntityState: IProductState
+    public abstract class NamedEntityState: IEntityState
     {
         [Key]
         public Guid Guid { get; set; }
@@ -38,9 +40,14 @@ namespace SoftwareManagementEFCoreRepository
         public DateTime UpdatedOn { get; set; }
         public string Name { get; set; }
     }
-    public class ProductState : NamedEntityState
+
+    public class ProductState : NamedEntityState, IProductState { }
+    public class ProjectState : NamedEntityState, IProjectState
     {
+        public DateTime? EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
     }
+
     public class CommandState : ICommandState
     {
         [Key]
@@ -50,9 +57,10 @@ namespace SoftwareManagementEFCoreRepository
         public DateTime? ExecutedOn { get; set; }
         public string ParametersJson { get; set; }
         public DateTime? ReceivedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
     }
-    public interface IMainRepository : IProductStateRepository, ICommandRepository { };
+    public interface IMainRepository : IProductStateRepository, IProjectStateRepository, ICommandRepository { };
     public class MainRepository : IMainRepository
     {
         private MainContext _context;
@@ -90,6 +98,16 @@ namespace SoftwareManagementEFCoreRepository
             return state;
         }
 
+        public IProjectState CreateProjectState(Guid guid)
+        {
+            var state = new ProjectState()
+            {
+                Guid = guid
+            };
+            _context.ProjectStates.Add(state);
+            return state;
+        }
+
         public bool Exists(Guid guid)
         {
             throw new NotImplementedException();
@@ -108,6 +126,11 @@ namespace SoftwareManagementEFCoreRepository
         public IProductState GetProductState(Guid guid)
         {
             return _context.ProductStates.Find(guid);
+        }
+
+        public IProjectState GetProjectState(Guid guid)
+        {
+            return _context.ProjectStates.Find(guid);
         }
 
         public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)

@@ -12,6 +12,8 @@ using CommandsShared;
 using SoftwareManagementEFCoreRepository;
 using Microsoft.EntityFrameworkCore;
 using DateTimeShared;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using ProjectsShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -33,7 +35,19 @@ namespace SoftwareManagementCoreApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            var corsBuilder = new CorsPolicyBuilder();
+            corsBuilder.AllowAnyHeader();
+            corsBuilder.AllowAnyMethod();
+            corsBuilder.AllowAnyOrigin(); // For anyone access.
+            //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
+            corsBuilder.AllowCredentials();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
+            });
             services.AddMvc();
+
             var connection = @"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;";
             services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
 
@@ -43,6 +57,9 @@ namespace SoftwareManagementCoreApi
             // modules (always repo first, then service etc.)
             services.AddTransient<IProductStateRepository, MainRepository>();
             services.AddTransient<IProductService, ProductService>();
+
+            services.AddTransient<IProjectStateRepository, MainRepository>();
+            services.AddTransient<IProjectService, ProjectService>();
 
             services.AddTransient<ICommandRepository, MainRepository>();
             services.AddTransient<ICommandManager, CommandManager>();
@@ -54,6 +71,8 @@ namespace SoftwareManagementCoreApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors("SiteCorsPolicy");
 
             app.UseMvc();
         }
