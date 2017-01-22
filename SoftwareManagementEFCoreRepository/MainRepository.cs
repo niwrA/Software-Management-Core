@@ -133,6 +133,12 @@ namespace SoftwareManagementEFCoreRepository
             return _context.ProjectStates.Find(guid);
         }
 
+        public IEnumerable<IProjectState> GetProjectStates()
+        {
+            // todo: make a separate readonly repo for the query part of CQRS
+            return _context.ProjectStates.AsNoTracking().ToList(); 
+        }
+
         public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)
         {
             throw new NotImplementedException();

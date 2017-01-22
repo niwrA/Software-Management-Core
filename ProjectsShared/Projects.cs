@@ -22,6 +22,7 @@ namespace ProjectsShared
     {
         IProjectState CreateProjectState(Guid guid);
         IProjectState GetProjectState(Guid guid);
+        IEnumerable<IProjectState> GetProjectStates();
     }
     public class Project
     {
