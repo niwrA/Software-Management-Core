@@ -41,28 +41,11 @@ namespace SoftwareManagementCoreApi.Controllers
         }
 
         // GET api/projects/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{guid}")]
+        public ProjectDto Get(Guid guid)
         {
-            return "value";
-        }
-
-        // POST api/projects
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/projects/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/projects/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var state = _projectStateRepository.GetProjectState(guid);
+            return new ProjectDto(state);
         }
     }
 }
