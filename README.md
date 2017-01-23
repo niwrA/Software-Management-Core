@@ -14,6 +14,7 @@ The CommandManager will determine which Command object matches that combination 
 
 ### Services
 Each service as well as the commands defines its repository and state interfaces, which have to be injected. This ensures that the services are as agnostic as possible about what kind of datastore backs them, which is an important goal for this project (being able to easily implement and experiment with different types of datastore, both as a learning exercise and as an important practical approach where different datastores can be mixed and matched purposefully). The services (and most helpers like IDateTimeProvider) are also written as Shared Projects, which don't have any dependency of their own and are therefore easily packaged in any platform (so could be used as .NET Framework 4.5 client dlls, Xamarin Forms, targeting different .NET Standard versions, etc.)
+For more information, read this blog: https://www.linkedin.com/pulse/i-repository-arwin-van-arum?trk=prof-post
 
 ### Api
 The AspNetCore (api) project uses the native dependency injection to inject the implementation of these state and repository interfaces, and currently one such implementation is included in the form of an EntityFrameworkCore implementation (that currently expects a Database on the localhost named SoftwareManagement that it can log into with TrustedAuthentication - the connectionstring will be configurable later). 
