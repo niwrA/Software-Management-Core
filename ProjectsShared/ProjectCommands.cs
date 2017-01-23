@@ -11,6 +11,16 @@ namespace ProjectsShared
         public ProjectCommand(ICommandRepository repo) : base(repo) { }
     }
 
+    public class DeleteProjectCommand: ProjectCommand
+    {
+        public override void Execute()
+        {
+            ((IProjectService)base.CommandProcessor).DeleteProject(this.EntityGuid);
+            base.Execute();
+        }
+
+    }
+
     public class CreateProjectCommand : ProjectCommand
     {
         public string Name { get; set; }

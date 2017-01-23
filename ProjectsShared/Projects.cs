@@ -10,6 +10,7 @@ namespace ProjectsShared
     {
         Project CreateProject(Guid guid, string name);
         Project GetProject(Guid guid);
+        void DeleteProject(Guid guid);
     }
 
     public interface IProjectState : IEntityState
@@ -23,6 +24,7 @@ namespace ProjectsShared
         IProjectState CreateProjectState(Guid guid);
         IProjectState GetProjectState(Guid guid);
         IEnumerable<IProjectState> GetProjectStates();
+        void DeleteProjectState(Guid guid);
     }
     public class Project
     {
@@ -72,6 +74,10 @@ namespace ProjectsShared
         {
             var state = _repo.GetProjectState(guid);
             return new Project(state);
+        }
+        public void DeleteProject(Guid guid)
+        {
+            _repo.DeleteProjectState(guid);
         }
     }
     public class ProjectBuilder

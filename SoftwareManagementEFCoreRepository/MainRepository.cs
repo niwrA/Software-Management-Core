@@ -88,6 +88,12 @@ namespace SoftwareManagementEFCoreRepository
             return state;
         }
 
+        public void DeleteProjectState(Guid guid)
+        {
+            var state = GetProjectState(guid) as ProjectState;
+            _context.ProjectStates.Remove(state);
+        }
+
         public IProductState CreateProductState(Guid guid)
         {
             var state = new ProductState()

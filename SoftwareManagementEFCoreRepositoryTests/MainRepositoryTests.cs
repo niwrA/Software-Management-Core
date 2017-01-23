@@ -61,11 +61,32 @@ namespace SoftwareManagementEFCoreRepositoryTests
                 Assert.Null(invalidState);
             }
         }
+        [Fact(DisplayName = "DeleteProjectState")]
+        public void CanDeleteProjectState()
+        {
+            var guid = Guid.NewGuid();
+            var name = "To be deleted.";
+            var options = new InMemoryDatabaseBuilder().WithProjectState(guid, name).Build("DeleteProjectState");
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                var sut = new MainRepository(context);
+                var state = context.ProjectStates.Find(guid);
+                Assert.Equal(EntityState.Unchanged, context.Entry(state).State);
+
+                sut.DeleteProjectState(guid);
+
+                Assert.Equal(EntityState.Deleted, context.Entry(state).State);
+            }
+        }
     }
+
+
 
     public class InMemoryDatabaseBuilder
     {
         private List<ProductState> _productStates = new List<ProductState>();
+        private List<ProjectState> _projectStates = new List<ProjectState>();
 
         public InMemoryDatabaseBuilder WithDefaultProductStates()
         {
@@ -94,13 +115,24 @@ namespace SoftwareManagementEFCoreRepositoryTests
             {
                 var sut = new MainRepository(context);
                 context.ProductStates.AddRange(_productStates);
+                context.ProjectStates.AddRange(_projectStates);
                 sut.PersistChanges();
             }
 
             return options;
         }
+
+        public InMemoryDatabaseBuilder WithProjectState(Guid guid, string name)
+        {
+            var state = new ProjectStateBuilder().WithGuid(guid).WithName(name).Build();
+            _projectStates.Add(state);
+            return this;
+        }
     }
 
+    public class ProjectStateBuilder : EntityStateBuilder<ProjectState>
+    {
+    }
     public class ProductStateBuilder : EntityStateBuilder<ProductState>
     {
     }
