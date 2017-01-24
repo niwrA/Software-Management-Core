@@ -14,7 +14,17 @@ namespace SoftwareManagementCoreApi.Test
             throw new NotImplementedException();
         }
 
+        public void DeleteProductState(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
         public IProductState GetProductState(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IProductState> GetProductStates()
         {
             throw new NotImplementedException();
         }
@@ -32,12 +42,12 @@ namespace SoftwareManagementCoreApi.Test
 
     public class CommandStateRepositoryFake : ICommandRepository
     {
-        public void Add(ICommandState state)
+        public void AddCommandState(ICommandState state)
         {
             throw new NotImplementedException();
         }
 
-        public ICommandState Create()
+        public ICommandState CreateCommandState()
         {
             throw new NotImplementedException();
         }

@@ -45,8 +45,8 @@ namespace CommandsShared
     public interface ICommandRepository
     {
         void PersistChanges();
-        ICommandState Create();
-        void Add(ICommandState state);
+        ICommandState CreateCommandState();
+        void AddCommandState(ICommandState state);
         void SetProcessed(ICommandState state);
         IEnumerable<ICommandState> GetAllProcessed();
         IEnumerable<ICommandState> GetAllNew();
@@ -89,7 +89,7 @@ namespace CommandsShared
         {
             if (_state == null && _repository != null)
             {
-                this._state = _repository.Create();
+                this._state = _repository.CreateCommandState();
                 if (_state.Guid == null || _state.Guid == Guid.Empty)
                 {
                     _state.Guid = Guid.NewGuid();
@@ -156,7 +156,7 @@ namespace CommandsShared
         public void Post()
         {
             this.ParametersJson = this.Serialize();
-            _repository.Add(this._state);
+            _repository.AddCommandState(this._state);
         }
 
         public void SetState(ICommandState state)

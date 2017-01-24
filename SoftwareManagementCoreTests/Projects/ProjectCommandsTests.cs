@@ -15,7 +15,7 @@ namespace SoftwareManagementCoreTests.Projects
         public void DeleteCommand()
         {
             var commandsRepoMock = new Mock<ICommandRepository>();
-            commandsRepoMock.Setup(s => s.Create()).Returns(new Fakes.CommandState());
+            commandsRepoMock.Setup(s => s.CreateCommandState()).Returns(new Fakes.CommandState());
 
             var projectsMock = new Mock<IProjectService>();
             var guid = Guid.NewGuid();

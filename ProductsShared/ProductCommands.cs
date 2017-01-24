@@ -25,14 +25,22 @@ namespace ProductsShared
 
     public class RenameProductCommand : ProductCommand
     {
-        public RenameProductCommand() : base() { }
-        public RenameProductCommand(ICommandRepository repo) : base(repo) { }
         public string OriginalName { get; set; }
         public string Name { get; set; }
         public override void Execute()
         {
             var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
             product.Rename(this.Name);
+            base.Execute();
+        }
+    }
+
+    public class DeleteProductCommand : ProductCommand
+    {
+        public string Name { get; set; }
+        public override void Execute()
+        {
+            ((IProductService)base.CommandProcessor).DeleteProduct(this.EntityGuid);
             base.Execute();
         }
     }

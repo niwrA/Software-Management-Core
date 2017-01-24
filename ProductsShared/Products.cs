@@ -13,6 +13,16 @@ namespace ProductsShared
     {
         IProductState CreateProductState(Guid guid);
         IProductState GetProductState(Guid guid);
+        IEnumerable<IProductState> GetProductStates();
+        void DeleteProductState(Guid guid);
+    }
+    public interface IProduct
+    {
+        DateTime CreatedOn { get; }
+        Guid Guid { get; }
+        string Name { get; }
+
+        void Rename(string name);
     }
     public class Product
     {
@@ -29,13 +39,13 @@ namespace ProductsShared
         public void Rename(string name)
         {
             _state.Name = name;
-            //_state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
         }
     }
     public interface IProductService : ICommandProcessor
     {
-        Product CreateProduct(Guid guid);
-        Product GetProduct(Guid guid);
+        IProduct CreateProduct(Guid guid);
+        IProduct GetProduct(Guid guid);
+        void DeleteProduct(Guid entityGuid);
     }
     public class ProductService : IProductService
     {
@@ -46,17 +56,21 @@ namespace ProductsShared
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
         }
-        public Product CreateProduct(Guid guid)
+        public IProduct CreateProduct(Guid guid)
         {
             var state = _repo.CreateProductState(guid);
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
-            return new Product(state);
+            return new Product(state) as IProduct;
         }
-        public Product GetProduct(Guid guid)
+        public IProduct GetProduct(Guid guid)
         {
             var state = _repo.GetProductState(guid);
-            return new Product(state);
+            return new Product(state) as IProduct;
+        }
+        public void DeleteProduct(Guid guid)
+        {
+            _repo.DeleteProductState(guid);
         }
     }
     public class ProductBuilder
@@ -70,7 +84,7 @@ namespace ProductsShared
             _products = products;
         }
 
-        public Product Build()
+        public IProduct Build()
         {
             EnsureGuid();
             var product = _products.CreateProduct(_guid);

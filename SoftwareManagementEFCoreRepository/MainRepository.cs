@@ -73,12 +73,12 @@ namespace SoftwareManagementEFCoreRepository
             //}
         }
 
-        public void Add(ICommandState state)
+        public void AddCommandState(ICommandState state)
         {
             throw new NotImplementedException();
         }
 
-        public ICommandState Create()
+        public ICommandState CreateCommandState()
         {
             var state = new CommandState()
             {
@@ -92,6 +92,12 @@ namespace SoftwareManagementEFCoreRepository
         {
             var state = GetProjectState(guid) as ProjectState;
             _context.ProjectStates.Remove(state);
+        }
+
+        public void DeleteProductState(Guid guid)
+        {
+            var state = GetProductState(guid) as ProductState;
+            _context.ProductStates.Remove(state);
         }
 
         public IProductState CreateProductState(Guid guid)
@@ -137,6 +143,12 @@ namespace SoftwareManagementEFCoreRepository
         public IProjectState GetProjectState(Guid guid)
         {
             return _context.ProjectStates.Find(guid);
+        }
+
+        public IEnumerable<IProductState> GetProductStates()
+        {
+            // todo: make a separate readonly repo for the query part of CQRS
+            return _context.ProductStates.AsNoTracking().ToList();
         }
 
         public IEnumerable<IProjectState> GetProjectStates()

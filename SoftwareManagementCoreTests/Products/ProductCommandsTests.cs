@@ -24,14 +24,14 @@ namespace SoftwareManagementCoreTests.Products
     [Trait("Entity", "Product")]
     public class ProductCommandsTests
     {
-        [Fact(DisplayName = "CreateCommand")]
+        [Fact(DisplayName = "CreateCommandToRepository")]
         [Trait("Type", "IntegrationTest")]
-        public void CanCreateProductWithCommand()
+        public void CanCreateProductWithCommand_CallsRepository()
         {
             var commandRepoMock = new Mock<ICommandRepository>();
             var productsMock = new Mock<IProductService>();
             var commandState = new Fakes.CommandState();
-            commandRepoMock.Setup(t => t.Create()).Returns(commandState);
+            commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);
 
             var guid = Guid.NewGuid();
 
@@ -47,14 +47,14 @@ namespace SoftwareManagementCoreTests.Products
             productsMock.Verify(v => v.CreateProduct(guid), Times.Once);
         }
 
-        [Fact(DisplayName = "CreateCommand_IProduct")]
+        [Fact(DisplayName = "CreateCommand")]
         public void CreateProductWithCommand_ImplementsIProduct()
         {
             var productsMock = new Mock<IProductService>();
             var commandRepoMock = new Mock<ICommandRepository>();
             var commandState = new Fakes.CommandState();
 
-            commandRepoMock.Setup(t => t.Create()).Returns(commandState);
+            commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);
 
             var guid = Guid.NewGuid();
             var sut = new CreateProductCommand(commandRepoMock.Object)
@@ -66,5 +66,49 @@ namespace SoftwareManagementCoreTests.Products
             productsMock.Verify(v => v.CreateProduct(It.IsAny<Guid>()), Times.Once);
         }
 
+        [Fact(DisplayName = "DeleteCommand")]
+        public void DeleteCommand()
+        {
+            var commandsRepoMock = new Mock<ICommandRepository>();
+            commandsRepoMock.Setup(s => s.CreateCommandState()).Returns(new Fakes.CommandState());
+
+            var productsMock = new Mock<IProductService>();
+            var guid = Guid.NewGuid();
+            var sut = new DeleteProductCommand
+            {
+                CommandRepository = commandsRepoMock.Object,
+                CommandProcessor = productsMock.Object,
+                EntityGuid = guid
+            };
+
+            sut.Execute();
+
+            productsMock.Verify(s => s.DeleteProduct(guid), Times.Once);
+        }
+
+        [Fact(DisplayName = "RenameCommand")]
+        public void RenameCommand()
+        {
+            var commandsRepoMock = new Mock<ICommandRepository>();
+            commandsRepoMock.Setup(s => s.CreateCommandState()).Returns(new Fakes.CommandState());
+
+            var productsMock = new Mock<IProductService>();
+            var productMock = new Mock<IProduct>();
+            var guid = Guid.NewGuid();
+            productsMock.Setup(s => s.GetProduct(guid)).Returns(productMock.Object);
+            var sut = new RenameProductCommand
+            {
+                CommandRepository = commandsRepoMock.Object,
+                CommandProcessor = productsMock.Object,
+                EntityGuid = guid,
+                OriginalName = "Old name",
+                Name = "New name"
+            };
+
+            sut.Execute();
+
+            productsMock.Verify(s => s.GetProduct(guid), Times.Once);
+            productMock.Verify(s => s.Rename(sut.Name), Times.Once);
+        }
     }
 }

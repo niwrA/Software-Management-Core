@@ -9,7 +9,7 @@ namespace SoftwareManagementCoreTests
     [Trait("Entity", "Product")]
     public class ProductsTests
     {
-        [Fact(DisplayName = "Create")]
+        [Fact(DisplayName = "Create implements IRepository")]
         public void CanCreateProduct()
         {
             var repoMock = new Moq.Mock<IProductStateRepository>();
@@ -19,30 +19,30 @@ namespace SoftwareManagementCoreTests
             repoMock.Setup(t => t.CreateProductState(It.IsAny<Guid>())).Returns(stateMock.Object);
 
             var guid = Guid.NewGuid();
-            var sutResult = sut.CreateProduct(guid);
+            sut.CreateProduct(guid);
 
-            Assert.Equal(stateMock.Object.Guid, sutResult.Guid);
+            repoMock.Verify(s => s.CreateProductState(guid), Times.Once);
         }
 
-        [Fact(DisplayName = "Get")]
+        [Fact(DisplayName = "Get Implements IRepository")]
         public void CanGetProduct()
         {
-            var repoMock = new Moq.Mock<IProductStateRepository>();
+            var repoMock = new Mock<IProductStateRepository>();
             var sut = new ProductService(repoMock.Object, new DateTimeProvider());
             var stateMock = new Mock<IProductState>();
             var stateMockAlt = new Mock<IProductState>();
 
-            stateMock.Object.Guid = Guid.NewGuid();
-            stateMockAlt.Object.Guid = Guid.NewGuid();
+            var stateGuid = Guid.NewGuid();
+            var altStateGuid = Guid.NewGuid();
 
-            repoMock.Setup(t => t.GetProductState(stateMock.Object.Guid)).Returns(stateMock.Object);
-            repoMock.Setup(t => t.GetProductState(stateMockAlt.Object.Guid)).Returns(stateMockAlt.Object);
+            repoMock.Setup(t => t.GetProductState(stateGuid)).Returns(stateMock.Object);
+            repoMock.Setup(t => t.GetProductState(altStateGuid)).Returns(stateMockAlt.Object);
 
-            var sutResult = sut.GetProduct(stateMock.Object.Guid);
-            var sutResultAlt = sut.GetProduct(stateMockAlt.Object.Guid);
+            sut.GetProduct(stateGuid);
+            sut.GetProduct(altStateGuid);
 
-            Assert.Equal(stateMock.Object.Guid, sutResult.Guid);
-            Assert.Equal(stateMockAlt.Object.Guid, sutResultAlt.Guid);
+            repoMock.Verify(t => t.GetProductState(stateGuid));
+            repoMock.Verify(t => t.GetProductState(altStateGuid));
         }
     }
 }
