@@ -8,6 +8,8 @@ namespace ProductsShared
 {
     public interface IProductState : IEntityState
     {
+        string Description { get; set; }
+        string BusinessCase { get; set; }
     }
     public interface IProductStateRepository : IEntityRepository
     {
@@ -23,6 +25,8 @@ namespace ProductsShared
         string Name { get; }
 
         void Rename(string name, string original);
+        void ChangeDescription(string description);
+        void ChangeBusinessCase(string businessCase);
     }
     public class Product : IProduct
     {
@@ -34,11 +38,13 @@ namespace ProductsShared
 
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
+        public string Description { get { return _state.Description; } }
+        public string BusinessCase { get { return _state.BusinessCase; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
         public void Rename(string name, string originalName)
         {
-            if(_state.Name == originalName)
+            if (_state.Name == originalName)
             {
                 _state.Name = name;
             }
@@ -47,8 +53,17 @@ namespace ProductsShared
                 // todo: concurrency policy implementation
             }
         }
-
+        // todo: rework to textfragment?
+        public void ChangeDescription(string description)
+        {
+            _state.Description = description;
+        }
+        public void ChangeBusinessCase(string businessCase)
+        {
+            _state.BusinessCase = businessCase;
+        }
     }
+
     public interface IProductService : ICommandProcessor
     {
         IProduct CreateProduct(Guid guid, string name);

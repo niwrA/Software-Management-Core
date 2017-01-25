@@ -41,7 +41,12 @@ namespace SoftwareManagementEFCoreRepository
         public string Name { get; set; }
     }
 
-    public class ProductState : NamedEntityState, IProductState { }
+    public class ProductState : NamedEntityState, IProductState
+    {
+        public string Description { get; set; }
+        public string BusinessCase { get; set; }
+    }
+
     public class ProjectState : NamedEntityState, IProjectState
     {
         public DateTime? EndDate { get; set; }

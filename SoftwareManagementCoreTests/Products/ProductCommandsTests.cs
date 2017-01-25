@@ -2,6 +2,7 @@
 using DateTimeShared;
 using Moq;
 using ProductsShared;
+using SoftwareManagementCoreTests.Commands;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -89,19 +90,39 @@ namespace SoftwareManagementCoreTests.Products
             productMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
         }
 
-        public class CommandBuilder<T> where T : ICommand, new()
+        [Fact(DisplayName = "ChangeDescriptionCommand")]
+        public void ChangeDescriptionCommand()
         {
-            public ICommand Build(ICommandProcessor processor)
-            {
-                var commandRepoMock = new Mock<ICommandRepository>();
-                var commandState = new Fakes.CommandState();
-                commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);
-                ICommand cmd = new T();
-                cmd.CommandRepository = commandRepoMock.Object;
-                cmd.EntityGuid = Guid.NewGuid();
-                cmd.CommandProcessor = processor;
-                return cmd;
-            }
+            var productsMock = new Mock<IProductService>();
+            var productMock = new Mock<IProduct>();
+            var guid = Guid.NewGuid();
+            productsMock.Setup(s => s.GetProduct(guid)).Returns(productMock.Object);
+
+            var sut = new CommandBuilder<ChangeDescriptionOfProductCommand>().Build(productsMock.Object) as ChangeDescriptionOfProductCommand;
+            sut.EntityGuid = guid;
+            sut.Description = "New description";
+
+            sut.Execute();
+
+            productMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
         }
+
+        [Fact(DisplayName = "ChangeBusinessCaseCommand")]
+        public void ChangeBusinessCaseCommand()
+        {
+            var productsMock = new Mock<IProductService>();
+            var productMock = new Mock<IProduct>();
+            var guid = Guid.NewGuid();
+            productsMock.Setup(s => s.GetProduct(guid)).Returns(productMock.Object);
+
+            var sut = new CommandBuilder<ChangeBusinessCaseOfProductCommand>().Build(productsMock.Object) as ChangeBusinessCaseOfProductCommand;
+            sut.EntityGuid = guid;
+            sut.BusinessCase = "New business case";
+
+            sut.Execute();
+
+            productMock.Verify(s => s.ChangeBusinessCase(sut.BusinessCase), Times.Once);
+        }
+
     }
 }

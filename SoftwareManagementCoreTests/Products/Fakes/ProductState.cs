@@ -9,5 +9,7 @@ namespace SoftwareManagementCoreTests.Fakes
         public DateTime UpdatedOn { get; set; }
         public Guid Guid { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public string BusinessCase { get; set; }
     }
 }

@@ -35,6 +35,28 @@ namespace ProductsShared
         }
     }
 
+    public class ChangeDescriptionOfProductCommand : ProductCommand
+    {
+        public string Description { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.ChangeDescription(this.Description);
+            base.Execute();
+        }
+    }
+
+    public class ChangeBusinessCaseOfProductCommand : ProductCommand
+    {
+        public string BusinessCase { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.ChangeBusinessCase(this.BusinessCase);
+            base.Execute();
+        }
+    }
+
     public class DeleteProductCommand : ProductCommand
     {
         public string Name { get; set; }

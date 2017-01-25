@@ -18,6 +18,8 @@ namespace SoftwareManagementCoreApi.Controllers
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
+        public string Description {  get { return _state.Description; } }
+        public string BusinessCase { get { return _state.BusinessCase; } }
     }
 
     [Route("api/[controller]")]
