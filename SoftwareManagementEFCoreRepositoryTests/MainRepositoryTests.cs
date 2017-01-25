@@ -24,7 +24,8 @@ namespace SoftwareManagementEFCoreRepositoryTests
             {
                 var sut = new MainRepository(context);
                 var guid = Guid.NewGuid();
-                var state = sut.CreateProductState(guid);
+                var name = "new";
+                var state = sut.CreateProductState(guid, name);
 
                 Assert.Equal(state, context.ProductStates.Local.First());
 

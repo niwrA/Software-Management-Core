@@ -6,12 +6,12 @@ using System.Text;
 
 namespace ProductsShared
 {
-    public interface IProductState: IEntityState
+    public interface IProductState : IEntityState
     {
     }
     public interface IProductStateRepository : IEntityRepository
     {
-        IProductState CreateProductState(Guid guid);
+        IProductState CreateProductState(Guid guid, string name);
         IProductState GetProductState(Guid guid);
         IEnumerable<IProductState> GetProductStates();
         void DeleteProductState(Guid guid);
@@ -22,9 +22,9 @@ namespace ProductsShared
         Guid Guid { get; }
         string Name { get; }
 
-        void Rename(string name);
+        void Rename(string name, string original);
     }
-    public class Product
+    public class Product : IProduct
     {
         private IProductState _state;
         public Product(IProductState state)
@@ -36,14 +36,22 @@ namespace ProductsShared
         public string Name { get { return _state.Name; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
-        public void Rename(string name)
+        public void Rename(string name, string originalName)
         {
-            _state.Name = name;
+            if(_state.Name == originalName)
+            {
+                _state.Name = name;
+            }
+            else
+            {
+                // todo: concurrency policy implementation
+            }
         }
+
     }
     public interface IProductService : ICommandProcessor
     {
-        IProduct CreateProduct(Guid guid);
+        IProduct CreateProduct(Guid guid, string name);
         IProduct GetProduct(Guid guid);
         void DeleteProduct(Guid entityGuid);
     }
@@ -56,9 +64,10 @@ namespace ProductsShared
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
         }
-        public IProduct CreateProduct(Guid guid)
+        public IProduct CreateProduct(Guid guid, string name)
         {
-            var state = _repo.CreateProductState(guid);
+            var state = _repo.CreateProductState(guid, name);
+            state.Name = name;
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
             return new Product(state) as IProduct;
@@ -87,7 +96,7 @@ namespace ProductsShared
         public IProduct Build()
         {
             EnsureGuid();
-            var product = _products.CreateProduct(_guid);
+            var product = _products.CreateProduct(_guid, _name);
             return product;
         }
 

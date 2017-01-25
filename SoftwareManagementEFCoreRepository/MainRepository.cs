@@ -32,7 +32,7 @@ namespace SoftwareManagementEFCoreRepository
             }
         }
     }
-    public abstract class NamedEntityState: IEntityState
+    public abstract class NamedEntityState : IEntityState
     {
         [Key]
         public Guid Guid { get; set; }
@@ -100,21 +100,23 @@ namespace SoftwareManagementEFCoreRepository
             _context.ProductStates.Remove(state);
         }
 
-        public IProductState CreateProductState(Guid guid)
+        public IProductState CreateProductState(Guid guid, string name)
         {
             var state = new ProductState()
             {
-                Guid = guid
+                Guid = guid,
+                Name = name
             };
             _context.ProductStates.Add(state);
             return state;
         }
 
-        public IProjectState CreateProjectState(Guid guid)
+        public IProjectState CreateProjectState(Guid guid, string name)
         {
             var state = new ProjectState()
             {
-                Guid = guid
+                Guid = guid,
+                Name = name
             };
             _context.ProjectStates.Add(state);
             return state;
@@ -154,7 +156,7 @@ namespace SoftwareManagementEFCoreRepository
         public IEnumerable<IProjectState> GetProjectStates()
         {
             // todo: make a separate readonly repo for the query part of CQRS
-            return _context.ProjectStates.AsNoTracking().ToList(); 
+            return _context.ProjectStates.AsNoTracking().ToList();
         }
 
         public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)
@@ -174,7 +176,7 @@ namespace SoftwareManagementEFCoreRepository
 
         public void SetProcessed(ICommandState state)
         {
-//            state.UserName = 
+            //            state.UserName = 
             //throw new NotImplementedException();
         }
     }

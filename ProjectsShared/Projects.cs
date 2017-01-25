@@ -8,8 +8,8 @@ namespace ProjectsShared
 {
     public interface IProjectService : ICommandProcessor
     {
-        Project CreateProject(Guid guid, string name);
-        Project GetProject(Guid guid);
+        IProject CreateProject(Guid guid, string name);
+        IProject GetProject(Guid guid);
         void DeleteProject(Guid guid);
     }
 
@@ -21,12 +21,21 @@ namespace ProjectsShared
 
     public interface IProjectStateRepository : IEntityRepository
     {
-        IProjectState CreateProjectState(Guid guid);
+        IProjectState CreateProjectState(Guid guid, string name);
         IProjectState GetProjectState(Guid guid);
         IEnumerable<IProjectState> GetProjectStates();
         void DeleteProjectState(Guid guid);
     }
-    public class Project
+    public interface IProject
+    {
+        Guid Guid { get; }
+        string Name { get; }
+        DateTime CreatedOn { get; }
+        void Rename(string name, string originalName);
+        void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate);
+        void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate);
+    }
+    public class Project : IProject
     {
         private IProjectState _state;
         public Project(IProjectState state)
@@ -38,19 +47,34 @@ namespace ProjectsShared
         public string Name { get { return _state.Name; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
-        public void Rename(string name)
+        public void Rename(string name, string originalName)
         {
-            _state.Name = name;
+            if (_state.Name == originalName)
+            {
+                _state.Name = name;
+            }
+            else
+            {
+                // todo: implement concurrency policy
+            }
         }
 
-        public void ChangeStartDate(DateTime? startDate)
+        // todo: implement concurrency policy
+        public void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate)
         {
-            _state.StartDate = startDate;
+            if(_state.StartDate == originalStartDate)
+            {
+                _state.StartDate = startDate;
+            }
         }
 
-        public void ChangeEndDate(DateTime? endDate)
+        // todo: implement concurrency policy
+        public void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate)
         {
-            _state.EndDate = endDate;
+            if (_state.EndDate == originalEndDate)
+            {
+                _state.EndDate = endDate;
+            }
         }
     }
     public class ProjectService : IProjectService
@@ -62,15 +86,15 @@ namespace ProjectsShared
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
         }
-        public Project CreateProject(Guid guid, string name)
+        public IProject CreateProject(Guid guid, string name)
         {
-            var state = _repo.CreateProjectState(guid);
+            var state = _repo.CreateProjectState(guid, name);
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
             state.Name = name;
             return new Project(state);
         }
-        public Project GetProject(Guid guid)
+        public IProject GetProject(Guid guid)
         {
             var state = _repo.GetProjectState(guid);
             return new Project(state);
@@ -91,7 +115,7 @@ namespace ProjectsShared
             _products = products;
         }
 
-        public Project Build(string name)
+        public IProject Build(string name)
         {
             EnsureGuid();
             var product = _products.CreateProject(_guid, name);

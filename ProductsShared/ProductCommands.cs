@@ -18,7 +18,7 @@ namespace ProductsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            ((IProductService)base.CommandProcessor).CreateProduct(this.EntityGuid);
+            ((IProductService)base.CommandProcessor).CreateProduct(this.EntityGuid, this.Name);
             base.Execute();
         }
     }
@@ -30,7 +30,7 @@ namespace ProductsShared
         public override void Execute()
         {
             var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-            product.Rename(this.Name);
+            product.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
     }

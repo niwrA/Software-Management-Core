@@ -38,7 +38,7 @@ namespace ProjectsShared
         public override void Execute()
         {
             var product = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            product.Rename(this.Name);
+            product.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
     }
@@ -50,7 +50,7 @@ namespace ProjectsShared
         public override void Execute()
         {
             var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            project.ChangeStartDate(this.StartDate);
+            project.ChangeStartDate(this.StartDate, this.OriginalStartDate);
             base.Execute();
         }
     }
@@ -62,7 +62,7 @@ namespace ProjectsShared
         public override void Execute()
         {
             var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            project.ChangeEndDate(this.EndDate);
+            project.ChangeEndDate(this.EndDate, this.OriginalEndDate);
             base.Execute();
         }
     }
