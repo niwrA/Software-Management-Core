@@ -21,13 +21,21 @@ namespace SoftwareManagementEFCoreRepository
         }
         public DbSet<ProductState> ProductStates { get; set; }
         public DbSet<ProjectState> ProjectStates { get; set; }
+        public DbSet<ProjectRoleState> ProjectRoleStates { get; set; }
         public DbSet<CommandState> CommandStates { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProjectState>()
+                .HasMany(h => (ICollection<ProjectRoleState>)h.ProjectRoleStates)
+                .WithOne()
+                .HasForeignKey(p=>p.ProjectGuid);
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=SoftwareManagement;Trusted_Connection=True;");
                 //               optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
             }
         }
@@ -47,10 +55,19 @@ namespace SoftwareManagementEFCoreRepository
         public string BusinessCase { get; set; }
     }
 
+    public class ProjectRoleState : NamedEntityState, IProjectRoleState {
+        public Guid ProjectGuid { get; set; }
+    }
+
     public class ProjectState : NamedEntityState, IProjectState
     {
+        public ProjectState()
+        {
+            ProjectRoleStates = new List<IProjectRoleState>() as ICollection<IProjectRoleState>;
+        }
         public DateTime? EndDate { get; set; }
         public DateTime? StartDate { get; set; }
+        public ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
     }
 
     public class CommandState : ICommandState
@@ -162,6 +179,24 @@ namespace SoftwareManagementEFCoreRepository
         {
             // todo: make a separate readonly repo for the query part of CQRS
             return _context.ProjectStates.AsNoTracking().ToList();
+        }
+
+        public IProjectRoleState CreateProjectRoleState(Guid projectGuid, Guid guid, string name)
+        {
+            var newState = new ProjectRoleState { ProjectGuid = projectGuid, Guid = guid, Name = name };
+            _context.ProjectRoleStates.Add(newState);
+            return newState;
+
+        }
+
+        public void AddRoleToProjectState(Guid projectGuid, Guid projectRoleGuid, string projectRoleName)
+        {
+            var projectState = GetProjectState(projectGuid);
+
+            if(!(projectState.ProjectRoleStates).Any(w=>w.Guid != projectRoleGuid))
+            {
+                CreateProjectRoleState(projectGuid, projectRoleGuid, projectRoleName);
+            }
         }
 
         public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)

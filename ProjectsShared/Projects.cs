@@ -17,7 +17,11 @@ namespace ProjectsShared
     {
         DateTime? StartDate { get; set; }
         DateTime? EndDate { get; set; }
+        ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
     }
+
+    public interface IProjectRoleState: IEntityState { };
+
 
     public interface IProjectStateRepository : IEntityRepository
     {
@@ -25,22 +29,33 @@ namespace ProjectsShared
         IProjectState GetProjectState(Guid guid);
         IEnumerable<IProjectState> GetProjectStates();
         void DeleteProjectState(Guid guid);
+        void AddRoleToProjectState(Guid projectGuid, Guid roleGuid, string name);
     }
-    public interface IProject
+    public interface IEntity
     {
         Guid Guid { get; }
         string Name { get; }
         DateTime CreatedOn { get; }
         void Rename(string name, string originalName);
+    }
+    public interface IProject: IEntity
+    {
         void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate);
         void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate);
+        void AddRoleToProject(Guid roleGuid, string name);
     }
     public class Project : IProject
     {
         private IProjectState _state;
+        private IProjectStateRepository _repo;
+
         public Project(IProjectState state)
         {
             _state = state;
+        }
+        public Project(IProjectState state, IProjectStateRepository repo) : this(state)
+        {
+            _repo = repo;
         }
 
         public Guid Guid { get { return _state.Guid; } }
@@ -75,6 +90,11 @@ namespace ProjectsShared
             {
                 _state.EndDate = endDate;
             }
+        }
+
+        public void AddRoleToProject(Guid roleGuid, string name)
+        {
+            _repo.AddRoleToProjectState(this.Guid, roleGuid, name);
         }
     }
     public class ProjectService : IProjectService

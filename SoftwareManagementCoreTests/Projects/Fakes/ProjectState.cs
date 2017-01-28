@@ -1,5 +1,6 @@
 ﻿using ProjectsShared;
 using System;
+using System.Collections.Generic;
 
 namespace SoftwareManagementCoreTests.Fakes
 {
@@ -11,5 +12,6 @@ namespace SoftwareManagementCoreTests.Fakes
         public string Name { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
     }
 }

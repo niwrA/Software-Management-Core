@@ -27,9 +27,12 @@ namespace SoftwareManagementCoreTests.Projects
         public void CanCreateProject()
         {
             var repoMock = new Mock<IProjectStateRepository>();
-            var sut = new ProjectService(repoMock.Object, new DateTimeProvider());
+            var stateMock = new Mock<IProjectState>();
             var guid = Guid.NewGuid();
             var name = "new";
+            repoMock.Setup(s => s.CreateProjectState(guid, name)).Returns(stateMock.Object);
+
+            var sut = new ProjectService(repoMock.Object, new DateTimeProvider());
 
             sut.CreateProject(guid, name);
 

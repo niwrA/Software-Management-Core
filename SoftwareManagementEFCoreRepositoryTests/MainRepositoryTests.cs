@@ -6,6 +6,7 @@ using SoftwareManagementEFCoreRepository;
 using CommandsShared;
 using System.Collections.Generic;
 using ProductsShared;
+using Microsoft.Data.Sqlite;
 
 namespace SoftwareManagementEFCoreRepositoryTests
 {
@@ -49,10 +50,12 @@ namespace SoftwareManagementEFCoreRepositoryTests
             var guid = Guid.NewGuid();
             var invalidGuid = Guid.NewGuid();
             const string name = "Cool Product";
-            var options = new InMemoryDatabaseBuilder().WithProductState(guid, name).Build("GetProductState");
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder.WithProductState(guid, name).Build("GetProductState");
             // Run the test against a clean instance of the context
             using (var context = new MainContext(options))
             {
+                inMemoryDatabaseBuilder.InitializeContext(context);
                 var sut = new MainRepository(context);
                 var state = sut.GetProductState(guid);
                 var invalidState = sut.GetProductState(invalidGuid);
@@ -62,15 +65,44 @@ namespace SoftwareManagementEFCoreRepositoryTests
                 Assert.Null(invalidState);
             }
         }
+
+        [Fact(DisplayName = "CanAddProjectRoleStateToProjectState")]
+        public void AddProjectRoleState_Succeeds_WithNewRole_AndCreatesRoleState()
+        {
+            var projectGuid = Guid.NewGuid();
+            const string projectName = "Cool Project";
+            var roleGuid = Guid.NewGuid();
+            const string roleName = "Tester";
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder
+                .WithProjectState(projectGuid, projectName)
+                .Build("GetProjectState", true);
+
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                inMemoryDatabaseBuilder.InitializeContext(context);
+                var sut = new MainRepository(context);
+                sut.AddRoleToProjectState(projectGuid, roleGuid, roleName);
+                var projectState = sut.GetProjectState(projectGuid);
+                var roleState = projectState.ProjectRoleStates.Single(w => w.Guid == roleGuid);
+
+                Assert.Equal(EntityState.Added, context.Entry(roleState).State);
+                Assert.Equal(roleName, roleState.Name);
+            }
+        }
+
         [Fact(DisplayName = "DeleteProjectState")]
         public void CanDeleteProjectState()
         {
             var guid = Guid.NewGuid();
             var name = "To be deleted.";
-            var options = new InMemoryDatabaseBuilder().WithProjectState(guid, name).Build("DeleteProjectState");
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder.WithProjectState(guid, name).Build("DeleteProjectState", true);
             // Run the test against a clean instance of the context
             using (var context = new MainContext(options))
             {
+                inMemoryDatabaseBuilder.InitializeContext(context);
                 var sut = new MainRepository(context);
                 var state = context.ProjectStates.Find(guid);
                 Assert.Equal(EntityState.Unchanged, context.Entry(state).State);
@@ -88,6 +120,7 @@ namespace SoftwareManagementEFCoreRepositoryTests
     {
         private List<ProductState> _productStates = new List<ProductState>();
         private List<ProjectState> _projectStates = new List<ProjectState>();
+        private List<ProjectRoleState> _productRoleStates = new List<ProjectRoleState>();
 
         public InMemoryDatabaseBuilder WithDefaultProductStates()
         {
@@ -106,21 +139,42 @@ namespace SoftwareManagementEFCoreRepositoryTests
             return this;
         }
 
-        public DbContextOptions<MainContext> Build(string databaseName)
+        public InMemoryDatabaseBuilder WithProductRoleState(Guid guid, string name)
         {
-            var options = new DbContextOptionsBuilder<MainContext>()
-    .UseInMemoryDatabase(databaseName: databaseName)
-    .Options;
+            var state = new ProjectRoleStateBuilder().WithGuid(guid).WithName(name).Build();
+            _productRoleStates.Add(state);
+            return this;
+        }
 
-            using (var context = new MainContext(options))
+        public DbContextOptions<MainContext> Build(string databaseName, bool? useSqlLite = false)
+        {
+            DbContextOptionsBuilder<MainContext> contextOptionsBuilder;
+            contextOptionsBuilder = new DbContextOptionsBuilder<MainContext>();
+            DbContextOptions<MainContext> options;
+
+            if (useSqlLite.HasValue && useSqlLite.Value)
             {
-                var sut = new MainRepository(context);
-                context.ProductStates.AddRange(_productStates);
-                context.ProjectStates.AddRange(_projectStates);
-                sut.PersistChanges();
+                var connection = new SqliteConnection("DataSource=:memory:");
+                connection.Open();
+                options = new DbContextOptionsBuilder<MainContext>()
+                    .UseSqlite(connection)
+                    .Options;
+            }
+            else
+            {
+                options = contextOptionsBuilder.UseInMemoryDatabase(databaseName: databaseName).Options;
             }
 
             return options;
+        }
+
+        public void InitializeContext(MainContext context)
+        {
+            context.Database.EnsureCreated();
+            var sut = new MainRepository(context);
+            context.ProductStates.AddRange(_productStates);
+            context.ProjectStates.AddRange(_projectStates);
+            sut.PersistChanges();
         }
 
         public InMemoryDatabaseBuilder WithProjectState(Guid guid, string name)
@@ -135,6 +189,9 @@ namespace SoftwareManagementEFCoreRepositoryTests
     {
     }
     public class ProductStateBuilder : EntityStateBuilder<ProductState>
+    {
+    }
+    public class ProjectRoleStateBuilder : EntityStateBuilder<ProjectRoleState>
     {
     }
     public class EntityStateBuilder<T> where T : IEntityState, new()

@@ -66,4 +66,16 @@ namespace ProjectsShared
             base.Execute();
         }
     }
+
+    public class AddRoleToProjectCommand : ProjectCommand
+    {
+        public string RoleName { get; set; }
+        public Guid RoleGuid { get; set; }
+        public override void Execute()
+        {
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            project.AddRoleToProject(this.RoleGuid, this.RoleName);
+            base.Execute();
+        }
+    }
 }

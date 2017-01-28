@@ -80,11 +80,39 @@ namespace SoftwareManagementCoreTests.Projects
             projectsMock.Setup(s => s.GetProject(sut.EntityGuid)).Returns(projectMock.Object);
 
             sut.OriginalEndDate = DateTime.Now;
-            sut.EndDate= DateTime.Now;
+            sut.EndDate = DateTime.Now;
             sut.Execute();
 
             projectMock.Verify(s => s.ChangeEndDate(sut.EndDate, sut.OriginalEndDate), Times.Once);
         }
 
+        [Fact(DisplayName = "RenameProjectCommand")]
+        public void AddRoleToProjectCommand()
+        {
+            var sutBuilder = new ProjectCommandBuilder<AddRoleToProjectCommand>();
+            var sut = sutBuilder.Build() as AddRoleToProjectCommand;
+
+            sut.RoleGuid = Guid.NewGuid();
+            sut.RoleName = "New Name";
+            sut.Execute();
+
+            sutBuilder.ProjectMock.Verify(s => s.AddRoleToProject(sut.RoleGuid, sut.RoleName), Times.Once);
+        }
+
+    }
+    class ProjectCommandBuilder<T> where T: ICommand, new()
+    {
+        public Mock<IProject> ProjectMock { get; set; }
+        public ICommand Build()
+        {
+            var projectsMock = new Mock<IProjectService>();
+            var projectMock = new Mock<IProject>();
+            this.ProjectMock = projectMock;
+            var sut = new CommandBuilder<T>().Build(projectsMock.Object);
+
+            projectsMock.Setup(s => s.GetProject(sut.EntityGuid)).Returns(projectMock.Object);
+
+            return sut;
+        }
     }
 }

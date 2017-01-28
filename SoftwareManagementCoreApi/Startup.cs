@@ -48,7 +48,7 @@ namespace SoftwareManagementCoreApi
             });
             services.AddMvc();
 
-            var connection = @"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;";
+            var connection = @"Server=localhost\sqlexpress;Database=SoftwareManagement;Trusted_Connection=True;";
             services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
 
             // helpers
