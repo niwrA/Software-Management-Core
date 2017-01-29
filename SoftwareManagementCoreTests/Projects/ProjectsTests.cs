@@ -30,14 +30,28 @@ namespace SoftwareManagementCoreTests.Projects
             var stateMock = new Mock<IProjectState>();
             var guid = Guid.NewGuid();
             var name = "new";
+
             repoMock.Setup(s => s.CreateProjectState(guid, name)).Returns(stateMock.Object);
 
             var sut = new ProjectService(repoMock.Object, new DateTimeProvider());
-
             sut.CreateProject(guid, name);
 
             repoMock.Verify(s => s.CreateProjectState(guid, name));
         }
 
+        [Fact(DisplayName = "CanAddRoleToProject")]
+        public void CanAddRoleToProject()
+        {
+            var repoMock = new Mock<IProjectStateRepository>();
+            var stateMock = new Fakes.ProjectState { Guid = Guid.NewGuid() };
+            var sut = new Project(stateMock, repoMock.Object);
+
+            var roleGuid = Guid.NewGuid();
+            var roleName = "Tester";
+
+            sut.AddRoleToProject(roleGuid, roleName);
+
+            repoMock.Verify(s => s.AddRoleToProjectState(stateMock.Guid, roleGuid, roleName), Times.Once);
+        }
     }
 }

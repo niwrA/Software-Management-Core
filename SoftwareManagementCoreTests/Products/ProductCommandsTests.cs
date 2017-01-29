@@ -10,21 +10,82 @@ using Xunit;
 
 namespace SoftwareManagementCoreTests.Products
 {
-    public enum CommandTypes
-    {
-        Create,
-        Rename
-    }
-    public static class TestGlobals
-    {
-        public static string Assembly = "SoftwareManagementCore";
-        public static string Namespace = "ProductsShared";
-        public static string Entity = "Product";
-    }
-
     [Trait("Entity", "Product")]
     public class ProductCommandsTests
     {
+        [Fact(DisplayName = "CreateCommand")]
+        public void CreateProductWithCommand()
+        {
+            var productsMock = new Mock<IProductService>();
+            var sut = new CommandBuilder<CreateProductCommand>().Build(productsMock.Object) as CreateProductCommand;
+
+            sut.Name = "New Product";
+            sut.Execute();
+
+            productsMock.Verify(v => v.CreateProduct(sut.EntityGuid, sut.Name), Times.Once);
+        }
+
+        [Fact(DisplayName = "DeleteCommand")]
+        public void DeleteCommand()
+        {
+            var productsMock = new Mock<IProductService>();
+            var sut = new CommandBuilder<DeleteProductCommand>().Build(productsMock.Object) as DeleteProductCommand;
+
+            sut.Execute();
+
+            productsMock.Verify(s => s.DeleteProduct(sut.EntityGuid), Times.Once);
+        }
+
+        [Fact(DisplayName = "RenameCommand")]
+        public void RenameCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<RenameProductCommand>();
+            var sut = sutBuilder.Build() as RenameProductCommand;
+
+            sut.OriginalName = "Old name";
+            sut.Name = "New name";
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
+        }
+
+        [Fact(DisplayName = "ChangeDescriptionCommand")]
+        public void ChangeDescriptionCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<ChangeDescriptionOfProductCommand>();
+            var sut = sutBuilder.Build() as ChangeDescriptionOfProductCommand;
+
+            sut.Description = "New description";
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
+        }
+
+        [Fact(DisplayName = "ChangeBusinessCaseCommand")]
+        public void ChangeBusinessCaseCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<ChangeBusinessCaseOfProductCommand>();
+            var sut = sutBuilder.Build() as ChangeBusinessCaseOfProductCommand;
+
+            sut.BusinessCase = "New business case";
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.ChangeBusinessCase(sut.BusinessCase), Times.Once);
+        }
+
+        // todo: move to another file, along with the gloabls?
+        public enum CommandTypes
+        {
+            Create,
+            Rename
+        }
+        public static class TestGlobals
+        {
+            public static string Assembly = "SoftwareManagementCore";
+            public static string Namespace = "ProductsShared";
+            public static string Entity = "Product";
+        }
+
         [Fact(DisplayName = "CreateCommandToRepository")]
         [Trait("Type", "IntegrationTest")]
         public void CanCreateProductWithCommand_CallsRepository()
@@ -43,86 +104,26 @@ namespace SoftwareManagementCoreTests.Products
             sut.AddConfig(commandConfig);
 
             var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Name = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
-
             var sutResult = sut.ProcessCommand(commandDto, commandRepoMock.Object);
 
             productsMock.Verify(v => v.CreateProduct(guid, name), Times.Once);
         }
 
-        [Fact(DisplayName = "CreateCommand")]
-        public void CreateProductWithCommand()
-        {
-            var productsMock = new Mock<IProductService>();
-
-            var sut = new CommandBuilder<CreateProductCommand>().Build(productsMock.Object) as CreateProductCommand;
-            sut.Name = "New Product";
-            sut.Execute();
-
-            productsMock.Verify(v => v.CreateProduct(sut.EntityGuid, sut.Name), Times.Once);
-        }
-
-        [Fact(DisplayName = "DeleteCommand")]
-        public void DeleteCommand()
-        {
-            var productsMock = new Mock<IProductService>();
-
-            var sut = new CommandBuilder<DeleteProductCommand>().Build(productsMock.Object) as DeleteProductCommand;
-            sut.Execute();
-
-            productsMock.Verify(s => s.DeleteProduct(sut.EntityGuid), Times.Once);
-        }
-
-        [Fact(DisplayName = "RenameCommand")]
-        public void RenameCommand()
+    }
+    class ProductCommandBuilder<T> where T : ICommand, new()
+    {
+        public Mock<IProduct> ProductMock { get; set; }
+        public ICommand Build()
         {
             var productsMock = new Mock<IProductService>();
             var productMock = new Mock<IProduct>();
-            var guid = Guid.NewGuid();
-            productsMock.Setup(s => s.GetProduct(guid)).Returns(productMock.Object);
+            this.ProductMock = productMock;
 
-            var sut = new CommandBuilder<RenameProductCommand>().Build(productsMock.Object) as RenameProductCommand;
-            sut.EntityGuid = guid;
-            sut.OriginalName = "Old name";
-            sut.Name = "New name";
+            var sut = new CommandBuilder<T>().Build(productsMock.Object);
 
-            sut.Execute();
+            productsMock.Setup(s => s.GetProduct(sut.EntityGuid)).Returns(productMock.Object);
 
-            productMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
+            return sut;
         }
-
-        [Fact(DisplayName = "ChangeDescriptionCommand")]
-        public void ChangeDescriptionCommand()
-        {
-            var productsMock = new Mock<IProductService>();
-            var productMock = new Mock<IProduct>();
-            var guid = Guid.NewGuid();
-            productsMock.Setup(s => s.GetProduct(guid)).Returns(productMock.Object);
-
-            var sut = new CommandBuilder<ChangeDescriptionOfProductCommand>().Build(productsMock.Object) as ChangeDescriptionOfProductCommand;
-            sut.EntityGuid = guid;
-            sut.Description = "New description";
-
-            sut.Execute();
-
-            productMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
-        }
-
-        [Fact(DisplayName = "ChangeBusinessCaseCommand")]
-        public void ChangeBusinessCaseCommand()
-        {
-            var productsMock = new Mock<IProductService>();
-            var productMock = new Mock<IProduct>();
-            var guid = Guid.NewGuid();
-            productsMock.Setup(s => s.GetProduct(guid)).Returns(productMock.Object);
-
-            var sut = new CommandBuilder<ChangeBusinessCaseOfProductCommand>().Build(productsMock.Object) as ChangeBusinessCaseOfProductCommand;
-            sut.EntityGuid = guid;
-            sut.BusinessCase = "New business case";
-
-            sut.Execute();
-
-            productMock.Verify(s => s.ChangeBusinessCase(sut.BusinessCase), Times.Once);
-        }
-
     }
 }

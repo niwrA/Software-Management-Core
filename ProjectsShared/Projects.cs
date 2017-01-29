@@ -117,7 +117,7 @@ namespace ProjectsShared
         public IProject GetProject(Guid guid)
         {
             var state = _repo.GetProjectState(guid);
-            return new Project(state);
+            return new Project(state, _repo);
         }
         public void DeleteProject(Guid guid)
         {
