@@ -29,7 +29,7 @@ namespace SoftwareManagementEFCoreRepository
             modelBuilder.Entity<ProjectState>()
                 .HasMany(h => (ICollection<ProjectRoleState>)h.ProjectRoleStates)
                 .WithOne()
-                .HasForeignKey(p=>p.ProjectGuid);
+                .HasForeignKey(p => p.ProjectGuid);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -55,7 +55,8 @@ namespace SoftwareManagementEFCoreRepository
         public string BusinessCase { get; set; }
     }
 
-    public class ProjectRoleState : NamedEntityState, IProjectRoleState {
+    public class ProjectRoleState : NamedEntityState, IProjectRoleState
+    {
         public Guid ProjectGuid { get; set; }
     }
 
@@ -166,8 +167,14 @@ namespace SoftwareManagementEFCoreRepository
 
         public IProjectState GetProjectState(Guid guid)
         {
-            return _context.ProjectStates.Find(guid);
+            return _context.ProjectStates.Include(s => s.ProjectRoleStates).SingleOrDefault(s => s.Guid == guid);
         }
+
+        public IProjectState GetProjectStateReadOnly(Guid guid)
+        {
+            return _context.ProjectStates.Include(s => s.ProjectRoleStates).AsNoTracking().SingleOrDefault(s => s.Guid == guid);
+        }
+
 
         public IEnumerable<IProductState> GetProductStates()
         {
@@ -178,7 +185,7 @@ namespace SoftwareManagementEFCoreRepository
         public IEnumerable<IProjectState> GetProjectStates()
         {
             // todo: make a separate readonly repo for the query part of CQRS
-            return _context.ProjectStates.AsNoTracking().ToList();
+            return _context.ProjectStates.Include(s => s.ProjectRoleStates).AsNoTracking().ToList();
         }
 
         public IProjectRoleState CreateProjectRoleState(Guid projectGuid, Guid guid, string name)
@@ -193,9 +200,20 @@ namespace SoftwareManagementEFCoreRepository
         {
             var projectState = GetProjectState(projectGuid);
 
-            if(!(projectState.ProjectRoleStates).Any(w=>w.Guid != projectRoleGuid))
+            if (projectState.ProjectRoleStates.All(w => w.Guid != projectRoleGuid))
             {
                 CreateProjectRoleState(projectGuid, projectRoleGuid, projectRoleName);
+            }
+        }
+
+        public void RemoveRoleFromProjectState(Guid projectGuid, Guid projectRoleGuid)
+        {
+            var projectState = GetProjectState(projectGuid);
+            var projectRoleState = projectState.ProjectRoleStates.SingleOrDefault(s=>s.Guid == projectRoleGuid);
+            if (projectRoleState != null)
+            {
+                projectState.ProjectRoleStates.Remove(projectRoleState);
+                _context.ProjectRoleStates.Remove((ProjectRoleState)projectRoleState);
             }
         }
 

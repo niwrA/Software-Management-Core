@@ -87,6 +87,18 @@ namespace SoftwareManagementCoreTests.Projects
             sutBuilder.ProjectMock.Verify(s => s.AddRoleToProject(sut.RoleGuid, sut.RoleName), Times.Once);
         }
 
+
+        [Fact(DisplayName = "RemoveRoleFromProjectCommand")]
+        public void RemoveRoleFromProjectCommand()
+        {
+            var sutBuilder = new ProjectCommandBuilder<RemoveRoleFromProjectCommand>();
+            var sut = sutBuilder.Build() as RemoveRoleFromProjectCommand;
+
+            sut.RoleGuid = Guid.NewGuid();
+            sut.Execute();
+
+            sutBuilder.ProjectMock.Verify(s => s.RemoveRoleFromProject(sut.RoleGuid), Times.Once);
+        }
     }
 
     class ProjectCommandBuilder<T> where T: ICommand, new()

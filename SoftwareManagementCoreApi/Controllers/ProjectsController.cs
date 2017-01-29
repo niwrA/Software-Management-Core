@@ -9,17 +9,30 @@ using ProjectsShared;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
-    public class ProjectDto
+    public class ProjectRoleDto
     {
-        private IProjectState _state;
-        public ProjectDto(IProjectState state)
+        private IProjectRoleState _state;
+        public ProjectRoleDto(IProjectRoleState state)
         {
             _state = state;
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
+    }
+    public class ProjectDto
+    {
+        private IProjectState _state;
+        private List<ProjectRoleDto> _projectRoleStates;
+        public ProjectDto(IProjectState state)
+        {
+            _state = state;
+            _projectRoleStates = _state.ProjectRoleStates.Select(s=>new ProjectRoleDto(s)).ToList();
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
         public DateTime? StartDate { get { return _state.StartDate; } }
         public DateTime? EndDate { get { return _state.EndDate; } }
+        public List<ProjectRoleDto> ProjectRoles { get { return _projectRoleStates; } }
     }
 
     [Route("api/[controller]")]

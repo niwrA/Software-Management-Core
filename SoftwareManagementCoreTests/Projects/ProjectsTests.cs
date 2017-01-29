@@ -53,5 +53,19 @@ namespace SoftwareManagementCoreTests.Projects
 
             repoMock.Verify(s => s.AddRoleToProjectState(stateMock.Guid, roleGuid, roleName), Times.Once);
         }
+
+        [Fact(DisplayName = "CanRemoveRoleFromProject")]
+        public void CanRemoveRoleFromProject()
+        {
+            var repoMock = new Mock<IProjectStateRepository>();
+            var stateMock = new Fakes.ProjectState { Guid = Guid.NewGuid() };
+            var sut = new Project(stateMock, repoMock.Object);
+
+            var roleGuid = Guid.NewGuid();
+
+            sut.RemoveRoleFromProject(roleGuid);
+
+            repoMock.Verify(s => s.RemoveRoleFromProjectState(stateMock.Guid, roleGuid), Times.Once);
+        }
     }
 }

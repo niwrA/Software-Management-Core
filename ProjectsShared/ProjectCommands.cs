@@ -78,4 +78,14 @@ namespace ProjectsShared
             base.Execute();
         }
     }
+    public class RemoveRoleFromProjectCommand : ProjectCommand
+    {
+        public Guid RoleGuid { get; set; }
+        public override void Execute()
+        {
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            project.RemoveRoleFromProject(this.RoleGuid);
+            base.Execute();
+        }
+    }
 }

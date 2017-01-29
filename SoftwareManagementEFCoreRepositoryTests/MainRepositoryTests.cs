@@ -92,6 +92,34 @@ namespace SoftwareManagementEFCoreRepositoryTests
             }
         }
 
+        // todo: has issue
+        [Fact(DisplayName = "CanRemoveProjectRoleStateToProjectState")]
+        public void RemoveProjectRoleState_Succeeds()
+        {
+            var projectGuid = Guid.NewGuid();
+            const string projectName = "Cool Project";
+            var roleGuid = Guid.NewGuid();
+            const string roleName = "Tester";
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder
+                .WithProjectState(projectGuid, projectName)
+                .WithProjectRoleState(roleGuid, roleName, projectGuid)
+                .Build("GetProjectState", true);
+
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                inMemoryDatabaseBuilder.InitializeContext(context);
+                var sut = new MainRepository(context);
+                sut.RemoveRoleFromProjectState(projectGuid, roleGuid);
+                var projectState = sut.GetProjectState(projectGuid);
+                var roleState = projectState.ProjectRoleStates.SingleOrDefault(w => w.Guid == roleGuid);
+
+                Assert.Equal(EntityState.Deleted, context.Entry(roleState).State);
+                Assert.Equal(roleName, roleState.Name);
+            }
+        }
+
         [Fact(DisplayName = "DeleteProjectState")]
         public void CanDeleteProjectState()
         {
@@ -120,7 +148,7 @@ namespace SoftwareManagementEFCoreRepositoryTests
     {
         private List<ProductState> _productStates = new List<ProductState>();
         private List<ProjectState> _projectStates = new List<ProjectState>();
-        private List<ProjectRoleState> _productRoleStates = new List<ProjectRoleState>();
+        private List<ProjectRoleState> _projectRoleStates = new List<ProjectRoleState>();
 
         public InMemoryDatabaseBuilder WithDefaultProductStates()
         {
@@ -139,10 +167,15 @@ namespace SoftwareManagementEFCoreRepositoryTests
             return this;
         }
 
-        public InMemoryDatabaseBuilder WithProductRoleState(Guid guid, string name)
+        public InMemoryDatabaseBuilder WithProjectRoleState(Guid guid, string name, Guid projectGuid)
         {
-            var state = new ProjectRoleStateBuilder().WithGuid(guid).WithName(name).Build();
-            _productRoleStates.Add(state);
+            var state = new ProjectRoleStateBuilder()
+                .WithGuid(guid)
+                .WithName(name)
+                //.WithProjectGuid(projectGuid) <- reported as a bug to microsoft
+                .Build();
+            state.ProjectGuid = projectGuid; // <- workaround
+            _projectRoleStates.Add(state);
             return this;
         }
 
@@ -174,6 +207,7 @@ namespace SoftwareManagementEFCoreRepositoryTests
             var sut = new MainRepository(context);
             context.ProductStates.AddRange(_productStates);
             context.ProjectStates.AddRange(_projectStates);
+            context.ProjectRoleStates.AddRange(_projectRoleStates);
             sut.PersistChanges();
         }
 
@@ -191,14 +225,28 @@ namespace SoftwareManagementEFCoreRepositoryTests
     public class ProductStateBuilder : EntityStateBuilder<ProductState>
     {
     }
-    public class ProjectRoleStateBuilder : EntityStateBuilder<ProjectRoleState>
+    public class ProjectRoleStateBuilder : EntityStateBuilder<ProjectRoleState> 
     {
+        private Guid _projectGuid;
+        public ProjectRoleStateBuilder WithProjectGuid(Guid projectGuid)
+        {
+            _projectGuid = projectGuid;
+            return this;
+        }
+        public override ProjectRoleState Build()
+        {
+            var state = base.Build();
+            state.ProjectGuid = _projectGuid;
+            return state;
+        }
     }
+
     public class EntityStateBuilder<T> where T : IEntityState, new()
     {
         private Guid _guid;
         private string _name;
-
+        public Guid Guid { get { return _guid; } }
+        public string Name { get { return _name; } }
         public EntityStateBuilder<T> WithGuid(Guid guid)
         {
             _guid = guid;
@@ -211,7 +259,7 @@ namespace SoftwareManagementEFCoreRepositoryTests
             return this;
         }
 
-        public T Build()
+        public virtual T Build()
         {
             EnsureGuid();
             var state = new T();
@@ -220,7 +268,7 @@ namespace SoftwareManagementEFCoreRepositoryTests
             return state;
         }
 
-        private void EnsureGuid()
+        public void EnsureGuid()
         {
             if (_guid == null || _guid == Guid.Empty)
             {

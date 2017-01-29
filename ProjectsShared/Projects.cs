@@ -30,6 +30,7 @@ namespace ProjectsShared
         IEnumerable<IProjectState> GetProjectStates();
         void DeleteProjectState(Guid guid);
         void AddRoleToProjectState(Guid projectGuid, Guid roleGuid, string name);
+        void RemoveRoleFromProjectState(Guid guid, Guid roleGuid);
     }
     public interface IEntity
     {
@@ -43,6 +44,7 @@ namespace ProjectsShared
         void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate);
         void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate);
         void AddRoleToProject(Guid roleGuid, string name);
+        void RemoveRoleFromProject(Guid roleGuid);
     }
     public class Project : IProject
     {
@@ -95,6 +97,11 @@ namespace ProjectsShared
         public void AddRoleToProject(Guid roleGuid, string name)
         {
             _repo.AddRoleToProjectState(this.Guid, roleGuid, name);
+        }
+
+        public void RemoveRoleFromProject(Guid roleGuid)
+        {
+            _repo.RemoveRoleFromProjectState(this.Guid, roleGuid);
         }
     }
     public class ProjectService : IProjectService
