@@ -45,9 +45,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{221A9CE4-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{9857AAB0-7048-4E2D-B857-694007D99A80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contacts", "Contacts", "{B5651D26-EA7D-49B0-9CC5-123543198ED5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ContactsShared", "ContactsShared\ContactsShared.shproj", "{806E9EDF-CB33-4509-A666-B13B1244058B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ProductsShared\ProductsShared.projitems*{51dadd10-16bc-435e-a8ff-79d03f757bb7}*SharedItemsImports = 13
+		ContactsShared\ContactsShared.projitems*{806e9edf-cb33-4509-a666-b13b1244058b}*SharedItemsImports = 13
 		DateTimeShared\DateTimeShared.projitems*{93ff6f34-93fa-4b1e-8828-3d056f144800}*SharedItemsImports = 13
 		TextFragmentsShared\TextFragmentsShared.projitems*{c70ef468-fbe9-4e66-8a24-3785140dd09b}*SharedItemsImports = 13
 		CommandsShared\CommandsShared.projitems*{e836653d-f62d-4262-89cd-622bf092f8e3}*SharedItemsImports = 13
@@ -156,5 +161,7 @@ Global
 		{D56C3A83-43AE-40C4-85C9-C3F525A54BFD} = {9857AAB0-7048-4E2D-B857-694007D99A80}
 		{2AFB7A91-47C7-424C-A178-EC2FFD78256F} = {45541C41-D239-41E6-84CD-A066898DBDE5}
 		{9857AAB0-7048-4E2D-B857-694007D99A80} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{B5651D26-EA7D-49B0-9CC5-123543198ED5} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{806E9EDF-CB33-4509-A666-B13B1244058B} = {B5651D26-EA7D-49B0-9CC5-123543198ED5}
 	EndGlobalSection
 EndGlobal

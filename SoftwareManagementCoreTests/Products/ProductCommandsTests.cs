@@ -90,7 +90,7 @@ namespace SoftwareManagementCoreTests.Products
         [Trait("Type", "IntegrationTest")]
         public void CanCreateProductWithCommand_CallsRepository()
         {
-            var commandRepoMock = new Mock<ICommandRepository>();
+            var commandRepoMock = new Mock<ICommandStateRepository>();
             var productsMock = new Mock<IProductService>();
             var commandState = new Fakes.CommandState();
             commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);
@@ -104,7 +104,7 @@ namespace SoftwareManagementCoreTests.Products
             sut.AddConfig(commandConfig);
 
             var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Name = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
-            var sutResult = sut.ProcessCommand(commandDto, commandRepoMock.Object);
+            var sutResult = sut.ProcessCommand(commandDto);
 
             productsMock.Verify(v => v.CreateProduct(guid, name), Times.Once);
         }

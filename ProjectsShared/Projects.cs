@@ -11,6 +11,7 @@ namespace ProjectsShared
         IProject CreateProject(Guid guid, string name);
         IProject GetProject(Guid guid);
         void DeleteProject(Guid guid);
+        void PersistChanges();
     }
 
     public interface IProjectState : IEntityState
@@ -129,6 +130,11 @@ namespace ProjectsShared
         public void DeleteProject(Guid guid)
         {
             _repo.DeleteProjectState(guid);
+        }
+
+        public void PersistChanges()
+        {
+            _repo.PersistChanges();
         }
     }
     public class ProjectBuilder

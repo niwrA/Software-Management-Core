@@ -10,7 +10,7 @@ namespace SoftwareManagementCoreTests.Commands
     {
         public ICommand Build(ICommandProcessor processor)
         {
-            var commandRepoMock = new Mock<ICommandRepository>();
+            var commandRepoMock = new Mock<ICommandStateRepository>();
             var commandState = new Fakes.CommandState();
 
             commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);

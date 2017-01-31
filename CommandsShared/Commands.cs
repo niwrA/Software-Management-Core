@@ -24,7 +24,7 @@ namespace CommandsShared
         DateTime CreatedOn { get; set; }
         string UserName { get; set; }
 
-        ICommandRepository CommandRepository { get; set; }
+        ICommandStateRepository CommandRepository { get; set; }
         ICommandProcessor CommandProcessor { get; set; }
 
         void Execute();
@@ -42,7 +42,7 @@ namespace CommandsShared
         string UserName { get; set; }
     }
     // defines the contract for a Command Repository implementation
-    public interface ICommandRepository
+    public interface ICommandStateRepository
     {
         void PersistChanges();
         ICommandState CreateCommandState();
@@ -77,9 +77,19 @@ namespace CommandsShared
     public class CommandBase : ICommand
     {
         private ICommandState _state;
-        private ICommandRepository _repository;
+        private ICommandStateRepository _repository;
         public CommandBase()
         {
+        }
+        public CommandBase(ICommandStateRepository repo) : this()
+        {
+            _repository = repo;
+            InitState();
+        }
+
+        public CommandBase(ICommandStateRepository repo, ICommandState state) : this(repo)
+        {
+            this._state = state;
         }
         public DateTime CreatedOn { get { return _state.CreatedOn; } set { _state.CreatedOn = value; } }
         public DateTime? ReceivedOn { get { return _state.ReceivedOn; } set { _state.ReceivedOn = value; } }
@@ -101,16 +111,6 @@ namespace CommandsShared
             }
         }
 
-        public CommandBase(ICommandRepository repo) : this()
-        {
-            _repository = repo;
-            InitState();
-        }
-
-        public CommandBase(ICommandRepository repo, ICommandState state) : this(repo)
-        {
-            this._state = state;
-        }
 
         public string Serialize()
         {
@@ -134,12 +134,12 @@ namespace CommandsShared
         public DateTime? ExecutedOn { get { return _state.ExecutedOn; } set { _state.ExecutedOn = value; } }
 
         public string CommandTypeId { get { return _state.CommandTypeId; } set { _state.CommandTypeId = value; } }
-        public ICommandRepository CommandRepository { get { return _repository; } set { _repository = value; InitState(); } }
+        public ICommandStateRepository CommandRepository { get { return _repository; } set { _repository = value; InitState(); } }
 
         private ICommandProcessor _commandProcessor;
         public virtual ICommandProcessor CommandProcessor { get { return _commandProcessor; } set { _commandProcessor = value; } }
 
-        public ICommand CreateCommand<T>(ICommandRepository commandRepository, ICommandableEntity entity) where T : ICommand, new()
+        public ICommand CreateCommand<T>(ICommandStateRepository commandRepository, ICommandableEntity entity) where T : ICommand, new()
         {
             var createdCommand = new T()
             {
@@ -170,17 +170,17 @@ namespace CommandsShared
     {
         public class Injections
         {
-            public ICommandRepository CommandRepository { get; set; }
+            public ICommandStateRepository CommandRepository { get; set; }
         }
 
-        private ICommandRepository _commandRepository;
+        private ICommandStateRepository _commandRepository;
         public ObservableCollection<ICommand> PostedCommands { get; set; }
-        public Commands(ICommandRepository commandRepository)
+        public Commands(ICommandStateRepository commandRepository)
         {
             _commandRepository = commandRepository;
             PostedCommands = new ObservableCollection<ICommand>();
         }
-        public ICommandRepository Repository { get { return _commandRepository; } }
+        public ICommandStateRepository Repository { get { return _commandRepository; } }
         public void PostCommand(ICommand command)
         {
             //command.Post();

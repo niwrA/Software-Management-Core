@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using ProjectsShared;
+using ContactsShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -23,6 +24,7 @@ namespace SoftwareManagementEFCoreRepository
         public DbSet<ProjectState> ProjectStates { get; set; }
         public DbSet<ProjectRoleState> ProjectRoleStates { get; set; }
         public DbSet<CommandState> CommandStates { get; set; }
+        public DbSet<ContactState> ContactStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,7 +37,7 @@ namespace SoftwareManagementEFCoreRepository
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=SoftwareManagement;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(@"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;");
                 //               optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
             }
         }
@@ -58,6 +60,12 @@ namespace SoftwareManagementEFCoreRepository
     public class ProjectRoleState : NamedEntityState, IProjectRoleState
     {
         public Guid ProjectGuid { get; set; }
+    }
+
+    public class ContactState: NamedEntityState, IContactState
+    {
+        public DateTime? BirthDate { get; set; }
+        public string Email { get; set; }
     }
 
     public class ProjectState : NamedEntityState, IProjectState
@@ -83,7 +91,8 @@ namespace SoftwareManagementEFCoreRepository
         public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
     }
-    public interface IMainRepository : IProductStateRepository, IProjectStateRepository, ICommandRepository { };
+    public interface IMainRepository : IProductStateRepository, IContactStateRepository,
+        IProjectStateRepository, ICommandStateRepository { };
     public class MainRepository : IMainRepository
     {
         private MainContext _context;
@@ -236,6 +245,30 @@ namespace SoftwareManagementEFCoreRepository
         {
             //            state.UserName = 
             //throw new NotImplementedException();
+        }
+
+        public IContactState CreateContactState(Guid guid, string name)
+        {
+            var state = new ContactState { Guid = guid, Name = name };
+            _context.ContactStates.Add(state);
+            return state;
+        }
+
+        public IContactState GetContactState(Guid guid)
+        {
+            var state = _context.ContactStates.Find(guid);
+            return state;
+        }
+
+        public IEnumerable<IContactState> GetContactStates()
+        {
+            return _context.ContactStates.AsNoTracking().ToList();
+        }
+
+        public void DeleteContactState(Guid guid)
+        {
+            var state = _context.ContactStates.Find(guid);
+            _context.ContactStates.Remove(state);
         }
     }
 }

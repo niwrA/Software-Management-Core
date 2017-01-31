@@ -19,7 +19,7 @@ namespace SoftwareManagementCoreTests
             repoMock.Setup(t => t.CreateProductState(It.IsAny<Guid>(), It.IsAny<string>())).Returns(stateMock.Object);
 
             var guid = Guid.NewGuid();
-            var name = "New Project";
+            var name = "New Product";
             sut.CreateProduct(guid, name);
 
             repoMock.Verify(s => s.CreateProductState(guid, name), Times.Once);

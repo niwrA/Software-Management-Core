@@ -18,11 +18,11 @@ namespace SoftwareManagementCoreApiTests
     /// <typeparam name="TStartup">Target project's startup type</typeparam>
     public class TestFixture<TStartup> : IDisposable
     {
-        private const string SolutionName = "SoftwareManagementCoreWeb.sln";
+        private const string SolutionName = "SoftwareManagement.sln";
         private readonly TestServer _server;
 
         public TestFixture()
-            : this(Path.Combine("src"))
+//            : this(Path.Combine("src"))
         {
         }
 
@@ -81,6 +81,8 @@ namespace SoftwareManagementCoreApiTests
 
             // Get currently executing test project path
             var applicationBasePath = PlatformServices.Default.Application.ApplicationBasePath;
+            applicationBasePath = applicationBasePath.Substring(0,applicationBasePath.IndexOf(@"\bin"));
+            applicationBasePath = applicationBasePath.Substring(0, applicationBasePath.LastIndexOf(@"\"));
 
             // Find the folder which contains the solution file. We then use this information to find the target
             // project which we want to test.

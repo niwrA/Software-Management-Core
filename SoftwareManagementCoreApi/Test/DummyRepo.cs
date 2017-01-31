@@ -41,7 +41,7 @@ namespace SoftwareManagementCoreApi.Test
         }
     }
 
-    public class CommandStateRepositoryFake : ICommandRepository
+    public class CommandStateRepositoryFake : ICommandStateRepository
     {
         public void AddCommandState(ICommandState state)
         {

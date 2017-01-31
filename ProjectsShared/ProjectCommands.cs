@@ -8,7 +8,7 @@ namespace ProjectsShared
     public abstract class ProjectCommand : CommandBase
     {
         public ProjectCommand() : base() { }
-        public ProjectCommand(ICommandRepository repo) : base(repo) { }
+        public ProjectCommand(ICommandStateRepository repo) : base(repo) { }
     }
 
     public class DeleteProjectCommand: ProjectCommand

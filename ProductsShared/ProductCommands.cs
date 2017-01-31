@@ -8,13 +8,13 @@ namespace ProductsShared
     public abstract class ProductCommand : CommandBase
     {
         public ProductCommand() : base() { }
-        public ProductCommand(ICommandRepository repo) : base(repo) { }
+        public ProductCommand(ICommandStateRepository repo) : base(repo) { }
     }
 
     public class CreateProductCommand : ProductCommand
     {
         public CreateProductCommand() : base() { }
-        public CreateProductCommand(ICommandRepository repo) : base(repo) { }
+        public CreateProductCommand(ICommandStateRepository repo) : base(repo) { }
         public string Name { get; set; }
         public override void Execute()
         {

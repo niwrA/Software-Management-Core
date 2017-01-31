@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using static CommandsShared.CommandManager;
 using Microsoft.AspNetCore.Cors;
 using ProjectsShared;
+using ContactsShared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,21 +21,17 @@ namespace SoftwareManagementCoreWeb.Controllers
     public class CommandsController : Controller
     {
         private IProductService _productService;
-        private IProductStateRepository _productStateRepository;
         private IProjectService _projectService;
-        private IProjectStateRepository _projectStateRepository;
-        private ICommandRepository _commandRepository;
+        private IContactService _contactService;
         private ICommandManager _commandManager;
 
-        public CommandsController(ICommandRepository commandRepository, ICommandManager commandManager, IProductService productService, IProductStateRepository productStateRepository, IProjectStateRepository projectStateRepository, IProjectService projectService)
+        public CommandsController(ICommandManager commandManager, IProductService productService, IProjectService projectService, IContactService contactService)
         {
-            _commandRepository = commandRepository;
             _commandManager = commandManager;
 
             _productService = productService;
-            _productStateRepository = productStateRepository;
             _projectService = projectService;
-            _projectStateRepository = projectStateRepository;
+            _contactService = contactService;
 
             // todo: move to configuration
             ConfigureCommandManager();
@@ -44,9 +41,11 @@ namespace SoftwareManagementCoreWeb.Controllers
         {
             var projectsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService };
             var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
+            var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
 
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
+            _commandManager.AddConfig(contactsConfig);
         }
 
         // GET: api/commands
@@ -55,7 +54,6 @@ namespace SoftwareManagementCoreWeb.Controllers
         {
             return new List<ICommandState>();
         }
-
 
         // POST api/commands/batch
         [HttpPost]
@@ -66,14 +64,15 @@ namespace SoftwareManagementCoreWeb.Controllers
 
             foreach (var command in commands)
             {
-                var typedCommand = _commandManager.ProcessCommand(command, _commandRepository);
+                var typedCommand = _commandManager.ProcessCommand(command);
                 command.ExecutedOn = typedCommand.ExecutedOn;
             }
 
             // these can be all the same contexts, but may also be different
-            _productStateRepository.PersistChanges();   
-            _projectStateRepository.PersistChanges();
-            _commandRepository.PersistChanges();
+            _productService.PersistChanges();   
+            _projectService.PersistChanges();
+            _contactService.PersistChanges();
+            _commandManager.PersistChanges();
             // todo command dtos should be updated from commands
             return commands;
         }

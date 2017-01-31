@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using DateTimeShared;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using ProjectsShared;
+using ContactsShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -48,7 +49,7 @@ namespace SoftwareManagementCoreApi
             });
             services.AddMvc();
 
-            var connection = @"Server=localhost\sqlexpress;Database=SoftwareManagement;Trusted_Connection=True;";
+            var connection = @"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;";
             services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
 
             // helpers
@@ -61,7 +62,10 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IProjectStateRepository, MainRepository>();
             services.AddTransient<IProjectService, ProjectService>();
 
-            services.AddTransient<ICommandRepository, MainRepository>();
+            services.AddTransient<IContactStateRepository, MainRepository>();
+            services.AddTransient<IContactService, ContactService>();
+
+            services.AddTransient<ICommandStateRepository, MainRepository>();
             services.AddTransient<ICommandManager, CommandManager>();
 
         }

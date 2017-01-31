@@ -52,7 +52,7 @@ namespace CommandsShared
             else
             {
                 Type type = Type.GetType(NameSpace + "." + Key + ", " + Assembly);
-                if(type!=null)
+                if (type != null)
                 {
                     command = Activator.CreateInstance(type) as ICommand;
                 }
@@ -82,9 +82,9 @@ namespace CommandsShared
     {
         private Dictionary<string, IProcessorConfig> _configs = new Dictionary<string, IProcessorConfig>();
         private Dictionary<string, ICommandConfig> _commandConfigs = new Dictionary<string, ICommandConfig>();
-        private ICommandRepository _repo;
+        private ICommandStateRepository _repo;
         private IDateTimeProvider _dateTimeProvider;
-        public CommandManager(ICommandRepository repo, IDateTimeProvider dateTimeProvider)
+        public CommandManager(ICommandStateRepository repo, IDateTimeProvider dateTimeProvider)
         {
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
@@ -98,33 +98,43 @@ namespace CommandsShared
             _configs.Add(config.Entity, config);
         }
 
-        public ICommand ProcessCommand(CommandDto command, ICommandRepository commandRepository)
+        public void PersistChanges()
+        {
+            _repo.PersistChanges();
+        }
+
+        public ICommand ProcessCommand(CommandDto command)
         {
             // todo: config to a centralized location or find a way to inject, or create new but inject repository only like now
 
             ICommandConfig commandConfig;
+            IProcessorConfig config;
+            ICommand typedCommand = null;
+            ICommandProcessor processor = null;
             if (_commandConfigs.TryGetValue(command.Name + command.Entity + "Command", out commandConfig))
             {
-                var typedCommand = commandConfig.GetCommand(command.ParametersJson);
-
-                CopyCommandDtoIntoCommand(command, commandRepository, commandConfig.Processor, typedCommand);
-
-                return typedCommand;
+                typedCommand = commandConfig.GetCommand(command.ParametersJson);
+                processor = commandConfig.Processor;
             }
-            IProcessorConfig config;
-            if (_configs.TryGetValue(command.Entity, out config))
+            else if (_configs.TryGetValue(command.Entity, out config))
             {
-                var typedCommand = config.GetCommand(command.Name, command.Entity, command.ParametersJson);
+                typedCommand = config.GetCommand(command.Name, command.Entity, command.ParametersJson);
+                processor = config.Processor;
+            }
+            if (typedCommand != null)
+            {
+                CopyCommandDtoIntoCommand(command, _repo, processor, typedCommand);
 
-                CopyCommandDtoIntoCommand(command, commandRepository, config.Processor, typedCommand);
+                typedCommand.Execute();
+                typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
 
                 return typedCommand;
-
             }
+
             throw new CommandNotConfiguredException($"The command named '{command.Name}' for entity '{command.Entity}' does not have a matching configuration.");
         }
 
-        private void CopyCommandDtoIntoCommand(CommandDto command, ICommandRepository commandRepository, ICommandProcessor processor, ICommand typedCommand)
+        private void CopyCommandDtoIntoCommand(CommandDto command, ICommandStateRepository commandRepository, ICommandProcessor processor, ICommand typedCommand)
         {
             typedCommand.CommandRepository = commandRepository;
             typedCommand.CreatedOn = command.CreatedOn;
@@ -133,8 +143,6 @@ namespace CommandsShared
             typedCommand.Guid = command.Guid;
             typedCommand.ParametersJson = command.ParametersJson;
             typedCommand.CommandProcessor = processor;
-            typedCommand.Execute();
-            typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
         }
     }
 }

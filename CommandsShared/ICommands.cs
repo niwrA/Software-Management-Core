@@ -6,7 +6,7 @@ namespace CommandsShared
     public interface ICommands
     {
         ObservableCollection<ICommand> PostedCommands { get; set; }
-        ICommandRepository Repository { get; }
+        ICommandStateRepository Repository { get; }
 
         IEnumerable<ICommand> GetProcessedCommands();
         void PostCommand(ICommand command);

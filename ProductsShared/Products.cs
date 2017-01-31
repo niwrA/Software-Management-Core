@@ -69,6 +69,7 @@ namespace ProductsShared
         IProduct CreateProduct(Guid guid, string name);
         IProduct GetProduct(Guid guid);
         void DeleteProduct(Guid entityGuid);
+        void PersistChanges();
     }
     public class ProductService : IProductService
     {
@@ -95,6 +96,11 @@ namespace ProductsShared
         public void DeleteProduct(Guid guid)
         {
             _repo.DeleteProductState(guid);
+        }
+
+        public void PersistChanges()
+        {
+            _repo.PersistChanges();
         }
     }
     public class ProductBuilder

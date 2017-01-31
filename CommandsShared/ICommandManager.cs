@@ -7,6 +7,7 @@ namespace CommandsShared
         void AddConfig(ICommandConfig config);
         void AddConfig(IProcessorConfig config);
         //void ProcessCommand(ICommand command);
-        ICommand ProcessCommand(CommandDto command, ICommandRepository commandRepository);
+        ICommand ProcessCommand(CommandDto command);
+        void PersistChanges();
     }
 }
