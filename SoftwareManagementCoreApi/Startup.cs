@@ -15,6 +15,7 @@ using DateTimeShared;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using ProjectsShared;
 using ContactsShared;
+using CompaniesShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -64,6 +65,9 @@ namespace SoftwareManagementCoreApi
 
             services.AddTransient<IContactStateRepository, MainRepository>();
             services.AddTransient<IContactService, ContactService>();
+
+            services.AddTransient<ICompanyStateRepository, MainRepository>();
+            services.AddTransient<ICompanyService, CompanyService>();
 
             services.AddTransient<ICommandStateRepository, MainRepository>();
             services.AddTransient<ICommandManager, CommandManager>();

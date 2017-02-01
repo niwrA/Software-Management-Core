@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SoftwareManagementEFCoreRepository;
+using SoftwareManagementEFCoreRepositoryTests.Companies;
 using SoftwareManagementEFCoreRepositoryTests.Contacts;
 using SoftwareManagementEFCoreRepositoryTests.Products;
 using SoftwareManagementEFCoreRepositoryTests.Projects;
@@ -19,6 +20,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         private List<ProjectState> _projectStates = new List<ProjectState>();
         private List<ProjectRoleState> _projectRoleStates = new List<ProjectRoleState>();
         private List<ContactState> _contactStates = new List<ContactState>();
+        private List<CompanyState> _companyStates = new List<CompanyState>();
 
         public InMemoryDatabaseBuilder WithDefaultProductStates()
         {
@@ -41,6 +43,13 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         {
             var state = new ContactStateBuilder().WithGuid(guid).WithName(name).Build();
             _contactStates.Add(state);
+            return this;
+        }
+
+        public InMemoryDatabaseBuilder WithCompanyState(Guid guid, string name)
+        {
+            var state = new CompanyStateBuilder().WithGuid(guid).WithName(name).Build();
+            _companyStates.Add(state);
             return this;
         }
 
@@ -86,6 +95,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             context.ProjectStates.AddRange(_projectStates);
             context.ProjectRoleStates.AddRange(_projectRoleStates);
             context.ContactStates.AddRange(_contactStates);
+            context.CompanyStates.AddRange(_companyStates);
             sut.PersistChanges();
         }
 

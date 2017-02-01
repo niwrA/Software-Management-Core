@@ -10,7 +10,7 @@ using Xunit;
 namespace SoftwareManagementCoreTests.Contacts
 {
     [Trait("Entity", "Contact")]
-    public class ContactCommandsTests
+    public class CompanyCommandsTests
     {
         [Fact(DisplayName = "CreateContactCommand")]
         public void CreateCommand()

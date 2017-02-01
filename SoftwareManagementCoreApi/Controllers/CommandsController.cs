@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using CommandsShared;
 using ProductsShared;
 using Microsoft.AspNetCore.Authorization;
-using static CommandsShared.CommandManager;
 using Microsoft.AspNetCore.Cors;
 using ProjectsShared;
 using ContactsShared;
+using CompaniesShared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,15 +23,17 @@ namespace SoftwareManagementCoreWeb.Controllers
         private IProductService _productService;
         private IProjectService _projectService;
         private IContactService _contactService;
+        private ICompanyService _companyService;
         private ICommandManager _commandManager;
 
-        public CommandsController(ICommandManager commandManager, IProductService productService, IProjectService projectService, IContactService contactService)
+        public CommandsController(ICommandManager commandManager, IProductService productService, IProjectService projectService, IContactService contactService, ICompanyService companyService)
         {
             _commandManager = commandManager;
 
             _productService = productService;
             _projectService = projectService;
             _contactService = contactService;
+            _companyService = companyService;
 
             // todo: move to configuration
             ConfigureCommandManager();
@@ -42,10 +44,12 @@ namespace SoftwareManagementCoreWeb.Controllers
             var projectsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService };
             var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
             var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
+            var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
 
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
             _commandManager.AddConfig(contactsConfig);
+            _commandManager.AddConfig(companiesConfig);
         }
 
         // GET: api/commands
@@ -72,6 +76,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _productService.PersistChanges();   
             _projectService.PersistChanges();
             _contactService.PersistChanges();
+            _companyService.PersistChanges();
             _commandManager.PersistChanges();
             // todo command dtos should be updated from commands
             return commands;

@@ -16,4 +16,5 @@
   <Import Project="..\TextFragmentsShared\TextFragmentsShared.projitems" Label="Shared" />
   <Import Project="..\DateTimeShared\DateTimeShared.projitems" Label="Shared" />
   <Import Project="..\ContactsShared\ContactsShared.projitems" Label="Shared" />
+  <Import Project="..\CompaniesShared\CompaniesShared.projitems" Label="Shared" />
 </Project>

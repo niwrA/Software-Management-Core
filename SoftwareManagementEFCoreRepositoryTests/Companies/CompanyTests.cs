@@ -7,16 +7,16 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace SoftwareManagementEFCoreRepositoryTests.Contacts
+namespace SoftwareManagementEFCoreRepositoryTests.Companies
 {
     [Trait("Entity", "MainRepository")]
     public class CompanyTests
     {
-        [Fact(DisplayName = "CreateContactState")]
-        public void CreateContactState_Succeeds()
+        [Fact(DisplayName = "CreateCompanyState")]
+        public void CreateCompanyState_Succeeds()
         {
             var options = new DbContextOptionsBuilder<MainContext>()
-                .UseInMemoryDatabase(databaseName: "CreateContactState_adds_to_context")
+                .UseInMemoryDatabase(databaseName: "CreateCompanyState_adds_to_context")
                 .Options;
 
             // Run the test against one instance of the context
@@ -25,67 +25,67 @@ namespace SoftwareManagementEFCoreRepositoryTests.Contacts
                 var sut = new MainRepository(context);
                 var guid = Guid.NewGuid();
                 var name = "new";
-                var state = sut.CreateContactState(guid, name);
+                var state = sut.CreateCompanyState(guid, name);
 
-                Assert.Equal(state, context.ContactStates.Local.First());
+                Assert.Equal(state, context.CompanyStates.Local.First());
 
                 sut.PersistChanges();
 
-                Assert.Equal(state, context.ContactStates.First());
-                Assert.Equal(1, context.ContactStates.Count());
-                Assert.Equal(guid, context.ContactStates.First().Guid);
+                Assert.Equal(state, context.CompanyStates.First());
+                Assert.Equal(1, context.CompanyStates.Count());
+                Assert.Equal(guid, context.CompanyStates.First().Guid);
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
             using (var context = new MainContext(options))
             {
-                Assert.Equal(1, context.ContactStates.Count());
+                Assert.Equal(1, context.CompanyStates.Count());
             }
         }
 
-        [Fact(DisplayName = "GetContactState")]
-        public void GetContactState_Succeeds_OnlyWhenGuidMatchesExisting()
+        [Fact(DisplayName = "GetCompanyState")]
+        public void GetCompanyState_Succeeds_OnlyWhenGuidMatchesExisting()
         {
             var guid = Guid.NewGuid();
             var invalidGuid = Guid.NewGuid();
-            const string name = "Cool Contact";
+            const string name = "Cool Company";
             var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
-            var options = inMemoryDatabaseBuilder.WithContactState(guid, name).Build("GetContactState");
+            var options = inMemoryDatabaseBuilder.WithCompanyState(guid, name).Build("GetCompanyState");
             // Run the test against a clean instance of the context
             using (var context = new MainContext(options))
             {
                 inMemoryDatabaseBuilder.InitializeContext(context);
                 var sut = new MainRepository(context);
-                var state = sut.GetContactState(guid);
-                var invalidState = sut.GetContactState(invalidGuid);
+                var state = sut.GetCompanyState(guid);
+                var invalidState = sut.GetCompanyState(invalidGuid);
 
                 Assert.Equal(name, state.Name);
 
                 Assert.Null(invalidState);
             }
         }
-        [Fact(DisplayName = "DeleteContactState")]
-        public void CanDeleteContactState()
+        [Fact(DisplayName = "DeleteCompanyState")]
+        public void CanDeleteCompanyState()
         {
             var guid = Guid.NewGuid();
             var name = "To be deleted.";
             var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
-            var options = inMemoryDatabaseBuilder.WithContactState(guid, name).Build("DeleteContactState", true);
+            var options = inMemoryDatabaseBuilder.WithCompanyState(guid, name).Build("DeleteCompanyState", true);
             // Run the test against a clean instance of the context
             using (var context = new MainContext(options))
             {
                 inMemoryDatabaseBuilder.InitializeContext(context);
                 var sut = new MainRepository(context);
-                var state = context.ContactStates.Find(guid);
+                var state = context.CompanyStates.Find(guid);
                 Assert.Equal(EntityState.Unchanged, context.Entry(state).State);
 
-                sut.DeleteContactState(guid);
+                sut.DeleteCompanyState(guid);
 
                 Assert.Equal(EntityState.Deleted, context.Entry(state).State);
             }
         }
     }
-    public class ContactStateBuilder : EntityStateBuilder<ContactState>
+    public class CompanyStateBuilder : EntityStateBuilder<CompanyState>
     {
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using ProjectsShared;
 using ContactsShared;
+using CompaniesShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -25,6 +26,7 @@ namespace SoftwareManagementEFCoreRepository
         public DbSet<ProjectRoleState> ProjectRoleStates { get; set; }
         public DbSet<CommandState> CommandStates { get; set; }
         public DbSet<ContactState> ContactStates { get; set; }
+        public DbSet<CompanyState> CompanyStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +70,8 @@ namespace SoftwareManagementEFCoreRepository
         public string Email { get; set; }
     }
 
+    public class CompanyState : NamedEntityState, ICompanyState { }
+
     public class ProjectState : NamedEntityState, IProjectState
     {
         public ProjectState()
@@ -92,7 +96,8 @@ namespace SoftwareManagementEFCoreRepository
         public string UserName { get; set; }
     }
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
-        IProjectStateRepository, ICommandStateRepository { };
+        IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository
+    { };
     public class MainRepository : IMainRepository
     {
         private MainContext _context;
@@ -269,6 +274,30 @@ namespace SoftwareManagementEFCoreRepository
         {
             var state = _context.ContactStates.Find(guid);
             _context.ContactStates.Remove(state);
+        }
+
+        public ICompanyState CreateCompanyState(Guid guid, string name)
+        {
+            var state = new CompanyState { Guid = guid, Name = name };
+            _context.CompanyStates.Add(state);
+            return state;
+        }
+
+        public ICompanyState GetCompanyState(Guid guid)
+        {
+            var state = _context.CompanyStates.Find(guid);
+            return state;
+        }
+
+        public IEnumerable<ICompanyState> GetCompanyStates()
+        {
+            return _context.CompanyStates.AsNoTracking().ToList();
+        }
+
+        public void DeleteCompanyState(Guid guid)
+        {
+            var state = _context.CompanyStates.Find(guid);
+            _context.CompanyStates.Remove(state);
         }
     }
 }

@@ -1,0 +1,75 @@
+﻿using CompaniesShared;
+using System;
+using Xunit;
+using Moq;
+using DateTimeShared;
+
+namespace SoftwareManagementCoreTests
+{
+    [Trait("Entity", "Company")]
+    public class CompaniesTests
+    {
+        [Fact(DisplayName = "Create")]
+        public void CreateCompany_ImplementsIRepository()
+        {
+            var repoMock = new Moq.Mock<ICompanyStateRepository>();
+            var sut = new CompanyService(repoMock.Object, new DateTimeProvider());
+            var stateMock = new Mock<ICompanyState>();
+
+            repoMock.Setup(t => t.CreateCompanyState(It.IsAny<Guid>(), It.IsAny<string>())).Returns(stateMock.Object);
+
+            var guid = Guid.NewGuid();
+            var name = "New Company";
+            sut.CreateCompany(guid, name);
+
+            repoMock.Verify(s => s.CreateCompanyState(guid, name), Times.Once);
+        }
+
+        [Fact(DisplayName = "Delete")]
+        public void CanDeleteCompany()
+        {
+            var repoMock = new Mock<ICompanyStateRepository>();
+            var sut = new CompanyService(repoMock.Object, new DateTimeProvider());
+            var guid = Guid.NewGuid();
+
+            sut.DeleteCompany(guid);
+
+            repoMock.Verify(s => s.DeleteCompanyState(guid));
+        }
+
+        [Fact(DisplayName = "Get")]
+        public void CanGetCompany()
+        {
+            var repoMock = new Mock<ICompanyStateRepository>();
+            var sut = new CompanyService(repoMock.Object, new DateTimeProvider());
+            var stateMock = new Mock<ICompanyState>();
+            var stateMockAlt = new Mock<ICompanyState>();
+
+            var stateGuid = Guid.NewGuid();
+            var altStateGuid = Guid.NewGuid();
+
+            repoMock.Setup(t => t.GetCompanyState(stateGuid)).Returns(stateMock.Object);
+            repoMock.Setup(t => t.GetCompanyState(altStateGuid)).Returns(stateMockAlt.Object);
+
+            sut.GetCompany(stateGuid);
+            repoMock.Verify(t => t.GetCompanyState(stateGuid));
+
+            sut.GetCompany(altStateGuid);
+            repoMock.Verify(t => t.GetCompanyState(altStateGuid));
+        }
+
+        [Fact(DisplayName = "Rename")]
+        public void CanRenameCompany()
+        {
+            var stateMock = new Mock<ICompanyState>();
+            var sut = new Company(stateMock.Object);
+
+            stateMock.Setup(s => s.Name).Returns("old");
+
+            sut.Rename("new", "old");
+
+            stateMock.VerifySet(t => t.Name = "new");
+        }
+
+    }
+}

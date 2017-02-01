@@ -13,6 +13,7 @@ using ProductsShared;
 using System.Collections.Generic;
 using System.Linq;
 using ContactsShared;
+using CompaniesShared;
 
 namespace SoftwareManagementCoreApiTests
 {
@@ -28,6 +29,7 @@ namespace SoftwareManagementCoreApiTests
             var projectsService = new Mock<IProjectService>();
             var productsService = new Mock<IProductService>();
             var contactsService = new Mock<IContactService>();
+            var companiesService = new Mock<ICompanyService>();
 
             var projectCommandDto = new Fakes.RenameProjectCommandDto();
             var productCommandDto = new Fakes.RenameProductCommandDto();
@@ -40,7 +42,7 @@ namespace SoftwareManagementCoreApiTests
             commandManager.Setup(s => s.ProcessCommand(projectCommandDto)).Returns(projectCommand);
             commandManager.Setup(s => s.ProcessCommand(productCommandDto)).Returns(productCommand);
 
-            var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object);
+            var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object, companiesService.Object);
             var sutResult = sut.Post(new List<CommandDto> { projectCommandDto, productCommandDto });
 
             Assert.Equal(2, sutResult.Count());
