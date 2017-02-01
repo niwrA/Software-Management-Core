@@ -26,12 +26,12 @@ namespace SoftwareManagementCoreApi.Controllers
         public ProjectDto(IProjectState state)
         {
             _state = state;
-            _projectRoleStates = _state.ProjectRoleStates.Select(s=>new ProjectRoleDto(s)).ToList();
+            _projectRoleStates = _state.ProjectRoleStates.Select(s => new ProjectRoleDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
-        public DateTime? StartDate { get { return _state.StartDate; } }
-        public DateTime? EndDate { get { return _state.EndDate; } }
+        public string StartDate { get { return _state.StartDate.HasValue ? _state.StartDate.Value.ToString("yyyy-MM-dd") : ""; } }
+        public string EndDate { get { return _state.EndDate.HasValue ? _state.EndDate.Value.ToString("yyyy-MM-dd") : ""; } }
         public List<ProjectRoleDto> ProjectRoles { get { return _projectRoleStates; } }
     }
 

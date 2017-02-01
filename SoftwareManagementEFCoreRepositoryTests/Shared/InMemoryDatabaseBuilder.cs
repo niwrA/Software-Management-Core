@@ -21,6 +21,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         private List<ProjectRoleState> _projectRoleStates = new List<ProjectRoleState>();
         private List<ContactState> _contactStates = new List<ContactState>();
         private List<CompanyState> _companyStates = new List<CompanyState>();
+        private List<CompanyRoleState> _companyRoleStates = new List<CompanyRoleState>();
 
         public InMemoryDatabaseBuilder WithDefaultProductStates()
         {
@@ -29,6 +30,49 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
                 new ProductStateBuilder().WithName("Cool Suite").Build(),
                 new ProductStateBuilder().WithName("Expensive Suite").Build()
             });
+            return this;
+        }
+
+        public DbContextOptions<MainContext> Build(string databaseName, bool? useSqlLite = false)
+        {
+            DbContextOptionsBuilder<MainContext> contextOptionsBuilder;
+            contextOptionsBuilder = new DbContextOptionsBuilder<MainContext>();
+            DbContextOptions<MainContext> options;
+
+            if (useSqlLite.HasValue && useSqlLite.Value)
+            {
+                var connection = new SqliteConnection("DataSource=:memory:");
+                connection.Open();
+                options = new DbContextOptionsBuilder<MainContext>()
+                    .UseSqlite(connection)
+                    .Options;
+            }
+            else
+            {
+                options = contextOptionsBuilder.UseInMemoryDatabase(databaseName: databaseName).Options;
+            }
+
+            return options;
+        }
+
+        public void InitializeContext(MainContext context)
+        {
+            context.Database.EnsureCreated();
+            var sut = new MainRepository(context);
+            context.ProductStates.AddRange(_productStates);
+            context.ProjectStates.AddRange(_projectStates);
+            context.ProjectRoleStates.AddRange(_projectRoleStates);
+            context.ContactStates.AddRange(_contactStates);
+            context.CompanyStates.AddRange(_companyStates);
+            context.CompanyRoleStates.AddRange(_companyRoleStates);
+
+            sut.PersistChanges();
+        }
+
+        public InMemoryDatabaseBuilder WithProjectState(Guid guid, string name)
+        {
+            var state = new ProjectStateBuilder().WithGuid(guid).WithName(name).Build();
+            _projectStates.Add(state);
             return this;
         }
 
@@ -65,45 +109,17 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             return this;
         }
 
-        public DbContextOptions<MainContext> Build(string databaseName, bool? useSqlLite = false)
+        public InMemoryDatabaseBuilder WithCompanyRoleState(Guid guid, string name, Guid companyGuid)
         {
-            DbContextOptionsBuilder<MainContext> contextOptionsBuilder;
-            contextOptionsBuilder = new DbContextOptionsBuilder<MainContext>();
-            DbContextOptions<MainContext> options;
-
-            if (useSqlLite.HasValue && useSqlLite.Value)
-            {
-                var connection = new SqliteConnection("DataSource=:memory:");
-                connection.Open();
-                options = new DbContextOptionsBuilder<MainContext>()
-                    .UseSqlite(connection)
-                    .Options;
-            }
-            else
-            {
-                options = contextOptionsBuilder.UseInMemoryDatabase(databaseName: databaseName).Options;
-            }
-
-            return options;
-        }
-
-        public void InitializeContext(MainContext context)
-        {
-            context.Database.EnsureCreated();
-            var sut = new MainRepository(context);
-            context.ProductStates.AddRange(_productStates);
-            context.ProjectStates.AddRange(_projectStates);
-            context.ProjectRoleStates.AddRange(_projectRoleStates);
-            context.ContactStates.AddRange(_contactStates);
-            context.CompanyStates.AddRange(_companyStates);
-            sut.PersistChanges();
-        }
-
-        public InMemoryDatabaseBuilder WithProjectState(Guid guid, string name)
-        {
-            var state = new ProjectStateBuilder().WithGuid(guid).WithName(name).Build();
-            _projectStates.Add(state);
+            var state = new CompanyRoleStateBuilder()
+                .WithGuid(guid)
+                .WithName(name)
+                //.WithCompanyGuid(companyGuid) <- reported as a bug to microsoft
+                .Build();
+            state.CompanyGuid = companyGuid; // <- workaround
+            _companyRoleStates.Add(state);
             return this;
+
         }
     }
     public class EntityStateBuilder<T> where T : IEntityState, new()

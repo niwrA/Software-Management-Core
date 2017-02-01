@@ -84,8 +84,79 @@ namespace SoftwareManagementEFCoreRepositoryTests.Companies
                 Assert.Equal(EntityState.Deleted, context.Entry(state).State);
             }
         }
+        [Fact(DisplayName = "CanAddCompanyRoleStateToCompanyState")]
+        public void AddCompanyRoleState_Succeeds_WithNewRole_AndCreatesRoleState()
+        {
+            var companyGuid = Guid.NewGuid();
+            const string companyName = "Cool Company";
+            var roleGuid = Guid.NewGuid();
+            const string roleName = "Tester";
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder
+                .WithCompanyState(companyGuid, companyName)
+                .Build("GetCompanyState", true);
+
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                inMemoryDatabaseBuilder.InitializeContext(context);
+                var sut = new MainRepository(context);
+                sut.AddRoleToCompanyState(companyGuid, roleGuid, roleName);
+                var companyState = sut.GetCompanyState(companyGuid);
+                var roleState = companyState.CompanyRoleStates.Single(w => w.Guid == roleGuid);
+
+                Assert.Equal(EntityState.Added, context.Entry(roleState).State);
+                Assert.Equal(roleName, roleState.Name);
+            }
+        }
+
+        [Fact(DisplayName = "CanRemoveCompanyRoleStateToCompanyState")]
+        public void RemoveCompanyRoleState_Succeeds()
+        {
+            var companyGuid = Guid.NewGuid();
+            const string companyName = "Cool Company";
+            var roleGuid = Guid.NewGuid();
+            const string roleName = "Software Developer 2";
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder
+                .WithCompanyState(companyGuid, companyName)
+                .WithCompanyRoleState(roleGuid, roleName, companyGuid)
+                .Build("GetCompanyState", true);
+
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                inMemoryDatabaseBuilder.InitializeContext(context);
+                var sut = new MainRepository(context);
+                sut.RemoveRoleFromCompanyState(companyGuid, roleGuid);
+                var companyState = sut.GetCompanyState(companyGuid);
+                var roleState = companyState.CompanyRoleStates.SingleOrDefault(w => w.Guid == roleGuid);
+                Assert.Null(roleState);
+                roleState = context.CompanyRoleStates.Find(roleGuid);
+                Assert.Equal(EntityState.Deleted, context.Entry(roleState).State);
+                Assert.Equal(roleName, roleState.Name);
+            }
+        }
+
+
     }
     public class CompanyStateBuilder : EntityStateBuilder<CompanyState>
     {
     }
+    public class CompanyRoleStateBuilder : EntityStateBuilder<CompanyRoleState>
+    {
+        private Guid _companyGuid;
+        public CompanyRoleStateBuilder WithCompanyGuid(Guid companyGuid)
+        {
+            _companyGuid = companyGuid;
+            return this;
+        }
+        public override CompanyRoleState Build()
+        {
+            var state = base.Build();
+            state.CompanyGuid = _companyGuid;
+            return state;
+        }
+    }
+
 }

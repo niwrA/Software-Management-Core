@@ -41,5 +41,27 @@ namespace CompaniesShared
             product.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
-    }    
+    }
+    public class AddRoleToCompanyCommand : CompanyCommand
+    {
+        public string RoleName { get; set; }
+        public Guid RoleGuid { get; set; }
+        public override void Execute()
+        {
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+            company.AddRoleToCompany(this.RoleGuid, this.RoleName);
+            base.Execute();
+        }
+    }
+    public class RemoveRoleFromCompanyCommand : CompanyCommand
+    {
+        public Guid RoleGuid { get; set; }
+        public override void Execute()
+        {
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+            company.RemoveRoleFromCompany(this.RoleGuid);
+            base.Execute();
+        }
+    }
+
 }

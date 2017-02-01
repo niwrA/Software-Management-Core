@@ -8,7 +8,6 @@ namespace CommandsShared
 {
     public interface ICommandProcessor
     {
-        // void ProcessCommand(ICommand command);
     }
     public class ProcessorConfig : IProcessorConfig
     {
@@ -105,18 +104,14 @@ namespace CommandsShared
 
         public ICommand ProcessCommand(CommandDto command)
         {
-            // todo: config to a centralized location or find a way to inject, or create new but inject repository only like now
-
-            ICommandConfig commandConfig;
-            IProcessorConfig config;
             ICommand typedCommand = null;
             ICommandProcessor processor = null;
-            if (_commandConfigs.TryGetValue(command.Name + command.Entity + "Command", out commandConfig))
+            if (_commandConfigs.TryGetValue(command.Name + command.Entity + "Command", out ICommandConfig commandConfig))
             {
                 typedCommand = commandConfig.GetCommand(command.ParametersJson);
                 processor = commandConfig.Processor;
             }
-            else if (_configs.TryGetValue(command.Entity, out config))
+            else if (_configs.TryGetValue(command.Entity, out IProcessorConfig config))
             {
                 typedCommand = config.GetCommand(command.Name, command.Entity, command.ParametersJson);
                 processor = config.Processor;

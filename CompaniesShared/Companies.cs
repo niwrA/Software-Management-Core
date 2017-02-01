@@ -16,14 +16,20 @@ namespace CompaniesShared
 
     public interface ICompanyState : IEntityState
     {
+        ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
     }
-
+    public interface ICompanyRoleState : IEntityState
+    {
+    }
     public interface ICompanyStateRepository : IEntityRepository
     {
         ICompanyState CreateCompanyState(Guid guid, string name);
         ICompanyState GetCompanyState(Guid guid);
         IEnumerable<ICompanyState> GetCompanyStates();
         void DeleteCompanyState(Guid guid);
+        void AddRoleToCompanyState(Guid projectGuid, Guid roleGuid, string name);
+        void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid);
+
     }
     public interface IEntity
     {
@@ -34,6 +40,8 @@ namespace CompaniesShared
     }
     public interface ICompany : IEntity
     {
+        void AddRoleToCompany(Guid roleGuid, string roleName);
+        void RemoveRoleFromCompany(Guid roleGuid);
     }
     public class Company : ICompany
     {
@@ -64,6 +72,16 @@ namespace CompaniesShared
                 // todo: implement concurrency policy
             }
         }
+        public void AddRoleToCompany(Guid roleGuid, string name)
+        {
+            _repo.AddRoleToCompanyState(this.Guid, roleGuid, name);
+        }
+
+        public void RemoveRoleFromCompany(Guid roleGuid)
+        {
+            _repo.RemoveRoleFromCompanyState(this.Guid, roleGuid);
+        }
+
     }
     public class CompanyService : ICompanyService
     {

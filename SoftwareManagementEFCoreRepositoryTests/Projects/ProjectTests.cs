@@ -59,7 +59,8 @@ namespace SoftwareManagementEFCoreRepositoryTests.Projects
                 sut.RemoveRoleFromProjectState(projectGuid, roleGuid);
                 var projectState = sut.GetProjectState(projectGuid);
                 var roleState = projectState.ProjectRoleStates.SingleOrDefault(w => w.Guid == roleGuid);
-
+                //Assert.Null(roleState); inconsistent testbehavior vs CompanyRole
+                roleState = context.ProjectRoleStates.Find(roleGuid);
                 Assert.Equal(EntityState.Deleted, context.Entry(roleState).State);
                 Assert.Equal(roleName, roleState.Name);
             }

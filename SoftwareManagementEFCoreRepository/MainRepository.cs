@@ -27,6 +27,7 @@ namespace SoftwareManagementEFCoreRepository
         public DbSet<CommandState> CommandStates { get; set; }
         public DbSet<ContactState> ContactStates { get; set; }
         public DbSet<CompanyState> CompanyStates { get; set; }
+        public DbSet<CompanyRoleState> CompanyRoleStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,12 @@ namespace SoftwareManagementEFCoreRepository
                 .HasMany(h => (ICollection<ProjectRoleState>)h.ProjectRoleStates)
                 .WithOne()
                 .HasForeignKey(p => p.ProjectGuid);
+
+            modelBuilder.Entity<CompanyState>()
+                .HasMany(h => (ICollection<CompanyRoleState>)h.CompanyRoleStates)
+                .WithOne()
+                .HasForeignKey(p => p.CompanyGuid);
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -64,13 +71,25 @@ namespace SoftwareManagementEFCoreRepository
         public Guid ProjectGuid { get; set; }
     }
 
-    public class ContactState: NamedEntityState, IContactState
+    public class ContactState : NamedEntityState, IContactState
     {
         public DateTime? BirthDate { get; set; }
         public string Email { get; set; }
     }
 
-    public class CompanyState : NamedEntityState, ICompanyState { }
+    public class CompanyState : NamedEntityState, ICompanyState
+    {
+        public CompanyState()
+        {
+            CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
+        }
+        public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
+    }
+
+    public class CompanyRoleState : NamedEntityState, ICompanyRoleState
+    {
+        public Guid CompanyGuid { get; set; }
+    }
 
     public class ProjectState : NamedEntityState, IProjectState
     {
@@ -223,11 +242,40 @@ namespace SoftwareManagementEFCoreRepository
         public void RemoveRoleFromProjectState(Guid projectGuid, Guid projectRoleGuid)
         {
             var projectState = GetProjectState(projectGuid);
-            var projectRoleState = projectState.ProjectRoleStates.SingleOrDefault(s=>s.Guid == projectRoleGuid);
+            var projectRoleState = projectState.ProjectRoleStates.SingleOrDefault(s => s.Guid == projectRoleGuid);
             if (projectRoleState != null)
             {
                 projectState.ProjectRoleStates.Remove(projectRoleState);
                 _context.ProjectRoleStates.Remove((ProjectRoleState)projectRoleState);
+            }
+        }
+
+        public ICompanyRoleState CreateCompanyRoleState(Guid companyGuid, Guid guid, string name)
+        {
+            var newState = new CompanyRoleState { CompanyGuid = companyGuid, Guid = guid, Name = name };
+            _context.CompanyRoleStates.Add(newState);
+            return newState;
+
+        }
+
+        public void AddRoleToCompanyState(Guid companyGuid, Guid companyRoleGuid, string companyRoleName)
+        {
+            var companyState = GetCompanyState(companyGuid);
+
+            if (companyState.CompanyRoleStates.All(w => w.Guid != companyRoleGuid))
+            {
+                CreateCompanyRoleState(companyGuid, companyRoleGuid, companyRoleName);
+            }
+        }
+
+        public void RemoveRoleFromCompanyState(Guid companyGuid, Guid companyRoleGuid)
+        {
+            var companyState = GetCompanyState(companyGuid);
+            var companyRoleState = companyState.CompanyRoleStates.SingleOrDefault(s => s.Guid == companyRoleGuid);
+            if (companyRoleState != null)
+            {
+                companyState.CompanyRoleStates.Remove(companyRoleState);
+                _context.CompanyRoleStates.Remove((CompanyRoleState)companyRoleState);
             }
         }
 

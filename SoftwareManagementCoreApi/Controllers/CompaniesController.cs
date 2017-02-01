@@ -9,12 +9,26 @@ using CompaniesShared;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
+    public class CompanyRoleDto
+    {
+        private ICompanyRoleState _state;
+        public CompanyRoleDto(ICompanyRoleState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+    }
+
     public class CompanyDto
     {
         private ICompanyState _state;
+        private List<CompanyRoleDto> _companyRoleStates;
+
         public CompanyDto(ICompanyState state)
         {
             _state = state;
+            _companyRoleStates = _state.CompanyRoleStates.Select(s => new CompanyRoleDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
