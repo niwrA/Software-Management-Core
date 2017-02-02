@@ -32,22 +32,24 @@ namespace SoftwareManagementCoreApi.Controllers
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
+        public List<CompanyRoleDto> CompanyRoles { get { return _companyRoleStates; } }
+
     }
 
     [Route("api/[controller]")]
     public class CompaniesController : Controller
     {
-        private ICompanyStateRepository _productStateRepository;
+        private ICompanyStateRepository _companyStateRepository;
 
-        public CompaniesController(ICompanyStateRepository productStateRepository)
+        public CompaniesController(ICompanyStateRepository companyStateRepository)
         {
-            _productStateRepository = productStateRepository;
+            _companyStateRepository = companyStateRepository;
         }
         // GET: api/products
         [HttpGet]
         public IEnumerable<CompanyDto> Get()
         {
-            var states = _productStateRepository.GetCompanyStates();
+            var states = _companyStateRepository.GetCompanyStates();
             var dtos = states.Select(s => new CompanyDto(s)).ToList();
             return dtos;
         }
@@ -56,7 +58,7 @@ namespace SoftwareManagementCoreApi.Controllers
         [HttpGet("{guid}")]
         public CompanyDto Get(Guid guid)
         {
-            var state = _productStateRepository.GetCompanyState(guid);
+            var state = _companyStateRepository.GetCompanyState(guid);
             return new CompanyDto(state);
         }
     }

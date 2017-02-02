@@ -333,13 +333,13 @@ namespace SoftwareManagementEFCoreRepository
 
         public ICompanyState GetCompanyState(Guid guid)
         {
-            var state = _context.CompanyStates.Find(guid);
+            var state = _context.CompanyStates.Include(i=>i.CompanyRoleStates).SingleOrDefault(s=>s.Guid == guid);
             return state;
         }
 
         public IEnumerable<ICompanyState> GetCompanyStates()
         {
-            return _context.CompanyStates.AsNoTracking().ToList();
+            return _context.CompanyStates.Include(i=>i.CompanyRoleStates).AsNoTracking().ToList();
         }
 
         public void DeleteCompanyState(Guid guid)
