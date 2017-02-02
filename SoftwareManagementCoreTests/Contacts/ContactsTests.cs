@@ -70,6 +70,5 @@ namespace SoftwareManagementCoreTests
 
             stateMock.VerifySet(t => t.Name = "new");
         }
-
     }
 }

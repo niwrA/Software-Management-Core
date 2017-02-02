@@ -70,6 +70,34 @@ namespace SoftwareManagementCoreTests
 
             stateMock.VerifySet(t => t.Name = "new");
         }
+        [Fact(DisplayName = "CanAddRoleToCompany")]
+        public void CanAddRoleToCompany()
+        {
+            var repoMock = new Mock<ICompanyStateRepository>();
+            var stateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
+            var sut = new Company(stateMock, repoMock.Object);
+
+            var roleGuid = Guid.NewGuid();
+            var roleName = "Tester";
+
+            sut.AddRoleToCompany(roleGuid, roleName);
+
+            repoMock.Verify(s => s.AddRoleToCompanyState(stateMock.Guid, roleGuid, roleName), Times.Once);
+        }
+
+        [Fact(DisplayName = "CanRemoveRoleFromCompany")]
+        public void CanRemoveRoleFromCompany()
+        {
+            var repoMock = new Mock<ICompanyStateRepository>();
+            var stateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
+            var sut = new Company(stateMock, repoMock.Object);
+
+            var roleGuid = Guid.NewGuid();
+
+            sut.RemoveRoleFromCompany(roleGuid);
+
+            repoMock.Verify(s => s.RemoveRoleFromCompanyState(stateMock.Guid, roleGuid), Times.Once);
+        }
 
     }
 }

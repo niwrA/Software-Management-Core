@@ -25,17 +25,17 @@ namespace SoftwareManagementCoreApi.Controllers
     [Route("api/[controller]")]
     public class ContactsController : Controller
     {
-        private IContactStateRepository _productStateRepository;
+        private IContactStateRepository _contactStateRepository;
 
         public ContactsController(IContactStateRepository productStateRepository)
         {
-            _productStateRepository = productStateRepository;
+            _contactStateRepository = productStateRepository;
         }
         // GET: api/products
         [HttpGet]
         public IEnumerable<ContactDto> Get()
         {
-            var states = _productStateRepository.GetContactStates();
+            var states = _contactStateRepository.GetContactStates();
             var dtos = states.Select(s => new ContactDto(s)).ToList();
             return dtos;
         }
@@ -44,7 +44,7 @@ namespace SoftwareManagementCoreApi.Controllers
         [HttpGet("{guid}")]
         public ContactDto Get(Guid guid)
         {
-            var state = _productStateRepository.GetContactState(guid);
+            var state = _contactStateRepository.GetContactState(guid);
             return new ContactDto(state);
         }
     }
