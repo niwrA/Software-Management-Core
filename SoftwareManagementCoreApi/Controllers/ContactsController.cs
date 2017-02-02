@@ -19,7 +19,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
         public string Email { get { return _state.Email; } }
-        public DateTime? BirthDate { get { return _state.BirthDate; } }
+        public string BirthDate { get { return _state.BirthDate.HasValue ? _state.BirthDate.Value.ToString("yyyy-MM-dd") : ""; } }
     }
 
     [Route("api/[controller]")]

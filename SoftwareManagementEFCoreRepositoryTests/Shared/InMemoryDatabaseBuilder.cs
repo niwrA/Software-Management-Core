@@ -143,9 +143,11 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         public virtual T Build()
         {
             EnsureGuid();
-            var state = new T();
-            state.Guid = _guid;
-            state.Name = _name;
+            var state = new T()
+            {
+                Guid = _guid,
+                Name = _name
+            };
             return state;
         }
 

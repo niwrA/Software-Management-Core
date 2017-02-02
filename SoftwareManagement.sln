@@ -53,8 +53,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Companies", "Companies", "{
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CompaniesShared", "CompaniesShared\CompaniesShared.shproj", "{61341421-BCC5-44EE-9FFF-656E1E78E0E9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Employment", "Employment", "{9C0B4DC0-4D71-48B2-A589-1D9EFD0C8DE0}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmploymentsShared", "EmploymentShared\EmploymentsShared.shproj", "{3EF38306-DDC8-42F9-923B-3DC288DF5BF5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		EmploymentShared\EmploymentShared.projitems*{3ef38306-ddc8-42f9-923b-3dc288df5bf5}*SharedItemsImports = 13
 		ProductsShared\ProductsShared.projitems*{51dadd10-16bc-435e-a8ff-79d03f757bb7}*SharedItemsImports = 13
 		CompaniesShared\CompaniesShared.projitems*{61341421-bcc5-44ee-9fff-656e1e78e0e9}*SharedItemsImports = 13
 		ContactsShared\ContactsShared.projitems*{806e9edf-cb33-4509-a666-b13b1244058b}*SharedItemsImports = 13
@@ -170,5 +175,7 @@ Global
 		{806E9EDF-CB33-4509-A666-B13B1244058B} = {B5651D26-EA7D-49B0-9CC5-123543198ED5}
 		{6F16ADFD-CC02-4CAC-95D9-575BF437E8E8} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{61341421-BCC5-44EE-9FFF-656E1E78E0E9} = {6F16ADFD-CC02-4CAC-95D9-575BF437E8E8}
+		{9C0B4DC0-4D71-48B2-A589-1D9EFD0C8DE0} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{3EF38306-DDC8-42F9-923B-3DC288DF5BF5} = {9C0B4DC0-4D71-48B2-A589-1D9EFD0C8DE0}
 	EndGlobalSection
 EndGlobal

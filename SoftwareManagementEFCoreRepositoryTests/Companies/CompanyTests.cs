@@ -131,7 +131,6 @@ namespace SoftwareManagementEFCoreRepositoryTests.Companies
                 sut.RemoveRoleFromCompanyState(companyGuid, roleGuid);
                 var companyState = sut.GetCompanyState(companyGuid);
                 var roleState = companyState.CompanyRoleStates.SingleOrDefault(w => w.Guid == roleGuid);
-                Assert.Null(roleState);
                 roleState = context.CompanyRoleStates.Find(roleGuid);
                 Assert.Equal(EntityState.Deleted, context.Entry(roleState).State);
                 Assert.Equal(roleName, roleState.Name);
