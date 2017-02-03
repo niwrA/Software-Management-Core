@@ -14,10 +14,15 @@ namespace SoftwareManagementCoreTests.Fakes
             CompanyRoleGuid = Guid.NewGuid();
             StartDate = DateTime.Now.Date;
             EndDate = DateTime.Now.Date.AddYears(1);
+            CreatedOn = DateTime.Now;
+            UpdatedOn = DateTime.Now;
+
         }
         public Guid Guid { get; set; }
         public Guid ContactGuid { get; set; }
         public Guid CompanyRoleGuid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }
