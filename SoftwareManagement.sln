@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomDateTime", "CustomDat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementCoreApiTests", "SoftwareManagementCoreApiTests\SoftwareManagementCoreApiTests.csproj", "{2AFB7A91-47C7-424C-A178-EC2FFD78256F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domains", "Domains", "{C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DomainsShared", "DomainsShared", "{C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repositories", "Repositories", "{E80390EA-362A-430D-B82A-48C5992AE209}"
 EndProject

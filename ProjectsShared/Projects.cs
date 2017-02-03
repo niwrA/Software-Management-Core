@@ -14,14 +14,14 @@ namespace ProjectsShared
         void PersistChanges();
     }
 
-    public interface IProjectState : IEntityState
+    public interface IProjectState : INamedEntityState
     {
         DateTime? StartDate { get; set; }
         DateTime? EndDate { get; set; }
         ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
     }
 
-    public interface IProjectRoleState: IEntityState { };
+    public interface IProjectRoleState: INamedEntityState { };
 
 
     public interface IProjectStateRepository : IEntityRepository

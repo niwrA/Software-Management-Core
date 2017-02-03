@@ -58,9 +58,13 @@ namespace CommandsShared
     public interface IEntityState
     {
         Guid Guid { get; set; }
-        string Name { get; set; }
         DateTime CreatedOn { get; set; }
         DateTime UpdatedOn { get; set; }
+    }
+
+    public interface INamedEntityState: IEntityState
+    {
+        string Name { get; set; }
     }
     // defines the contract for an Entity Repository implementation
     public interface IEntityRepository

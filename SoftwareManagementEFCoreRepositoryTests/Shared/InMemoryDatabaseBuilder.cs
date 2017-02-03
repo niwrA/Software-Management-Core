@@ -22,7 +22,9 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         private List<ContactState> _contactStates = new List<ContactState>();
         private List<CompanyState> _companyStates = new List<CompanyState>();
         private List<CompanyRoleState> _companyRoleStates = new List<CompanyRoleState>();
+        private List<EmploymentState> _employmentStates = new List<EmploymentState>();
 
+        // todo: move to domain specific version
         public InMemoryDatabaseBuilder WithDefaultProductStates()
         {
             _productStates.AddRange(new List<ProductState> {
@@ -53,6 +55,13 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             }
 
             return options;
+        }
+
+        internal InMemoryDatabaseBuilder WithEmploymentState(Guid guid, Guid contactGuid, Guid companyRoleGuid)
+        {
+            var state = new EmploymentState { Guid = guid, ContactGuid = contactGuid, CompanyRoleGuid = companyRoleGuid };
+            _employmentStates.Add(state);
+            return this;
         }
 
         public void InitializeContext(MainContext context)
@@ -145,9 +154,12 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             EnsureGuid();
             var state = new T()
             {
-                Guid = _guid,
-                Name = _name
+                Guid = _guid
             };
+            if(state is INamedEntityState)
+            {
+                ((INamedEntityState)state).Name = _name;
+            }
             return state;
         }
 

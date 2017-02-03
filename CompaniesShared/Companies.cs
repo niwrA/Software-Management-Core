@@ -14,11 +14,11 @@ namespace CompaniesShared
         void PersistChanges();
     }
 
-    public interface ICompanyState : IEntityState
+    public interface ICompanyState : INamedEntityState
     {
         ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
     }
-    public interface ICompanyRoleState : IEntityState
+    public interface ICompanyRoleState : INamedEntityState
     {
     }
     public interface ICompanyStateRepository : IEntityRepository

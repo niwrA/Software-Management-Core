@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ProductsShared
 {
-    public interface IProductState : IEntityState
+    public interface IProductState : INamedEntityState
     {
         string Description { get; set; }
         string BusinessCase { get; set; }

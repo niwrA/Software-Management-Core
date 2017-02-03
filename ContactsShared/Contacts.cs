@@ -14,7 +14,7 @@ namespace ContactsShared
         void PersistChanges();
     }
 
-    public interface IContactState : IEntityState
+    public interface IContactState : INamedEntityState
     {
         DateTime? BirthDate { get; set; }
         string Email { get; set; }

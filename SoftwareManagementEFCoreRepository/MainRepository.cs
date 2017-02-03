@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using ProjectsShared;
 using ContactsShared;
 using CompaniesShared;
+using EmploymentsShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -28,6 +29,7 @@ namespace SoftwareManagementEFCoreRepository
         public DbSet<ContactState> ContactStates { get; set; }
         public DbSet<CompanyState> CompanyStates { get; set; }
         public DbSet<CompanyRoleState> CompanyRoleStates { get; set; }
+        public DbSet<EmploymentState> EmploymentStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,7 +53,7 @@ namespace SoftwareManagementEFCoreRepository
             }
         }
     }
-    public abstract class NamedEntityState : IEntityState
+    public abstract class NamedEntityState : INamedEntityState
     {
         [Key]
         public Guid Guid { get; set; }
@@ -102,6 +104,18 @@ namespace SoftwareManagementEFCoreRepository
         public ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
     }
 
+    public class EmploymentState : IEmploymentState
+    {
+        [Key]
+        public Guid Guid { get; set; }
+        public Guid ContactGuid { get; set; }
+        public Guid CompanyRoleGuid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
+
     public class CommandState : ICommandState
     {
         [Key]
@@ -115,7 +129,7 @@ namespace SoftwareManagementEFCoreRepository
         public string UserName { get; set; }
     }
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
-        IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository
+        IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository
     { };
     public class MainRepository : IMainRepository
     {
@@ -333,19 +347,60 @@ namespace SoftwareManagementEFCoreRepository
 
         public ICompanyState GetCompanyState(Guid guid)
         {
-            var state = _context.CompanyStates.Include(i=>i.CompanyRoleStates).SingleOrDefault(s=>s.Guid == guid);
+            var state = _context.CompanyStates.Include(i => i.CompanyRoleStates).SingleOrDefault(s => s.Guid == guid);
             return state;
         }
 
         public IEnumerable<ICompanyState> GetCompanyStates()
         {
-            return _context.CompanyStates.Include(i=>i.CompanyRoleStates).AsNoTracking().ToList();
+            return _context.CompanyStates.Include(i => i.CompanyRoleStates).AsNoTracking().ToList();
         }
 
         public void DeleteCompanyState(Guid guid)
         {
             var state = _context.CompanyStates.Find(guid);
             _context.CompanyStates.Remove(state);
+        }
+
+        public IEmploymentState CreateEmploymentState(Guid guid, Guid contactGuid, Guid companyRoleGuid)
+        {
+            var state = new EmploymentState()
+            {
+                Guid = guid,
+                ContactGuid = contactGuid,
+                CompanyRoleGuid = companyRoleGuid
+            };
+            _context.EmploymentStates.Add(state);
+            return state;
+        }
+
+        public IEmploymentState GetEmploymentState(Guid guid)
+        {
+            return _context.EmploymentStates.Find(guid);
+        }
+
+        public void DeleteEmploymentState(Guid entityGuid)
+        {
+            var state = GetEmploymentState(entityGuid) as EmploymentState;
+            _context.EmploymentStates.Remove(state);
+        }
+
+        public ICollection<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
+        {
+            var states = _context.EmploymentStates.AsNoTracking().Where(w => w.CompanyRoleGuid == companyRoleGuid).ToList();
+            return states as ICollection<IEmploymentState>;
+        }
+
+        public ICollection<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
+        {
+            var states = _context.EmploymentStates.AsNoTracking().Where(w => w.ContactGuid == contactGuid).ToList();
+            return states as ICollection<IEmploymentState>;
+        }
+
+        public ICollection<IEmploymentState> GetEmploymentStates()
+        {
+            var states = _context.EmploymentStates.AsNoTracking().ToList();
+            return states as ICollection<IEmploymentState>;
         }
     }
 }

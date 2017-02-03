@@ -9,6 +9,7 @@
     <Import_RootNamespace>EmploymentShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)EmploymentCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Employments.cs" />
   </ItemGroup>
 </Project>

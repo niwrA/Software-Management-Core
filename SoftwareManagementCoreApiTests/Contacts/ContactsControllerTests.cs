@@ -46,7 +46,7 @@ namespace SoftwareManagementCoreApiTests
         {
             _client = fixture.Client;
         }
-        [Fact(DisplayName = "GetContacts_IntegrationTest", Skip = "Setup not yet complete (needs Development Environment setup with InMemory db)")]
+        [Fact(Skip = "Setup not yet complete (needs Development Environment setup with InMemory db)")]
         public void GetContacts_Succeeds()
         {
             // Arrange

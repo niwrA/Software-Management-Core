@@ -5,44 +5,62 @@ using System.Text;
 
 namespace EmploymentsShared
 {
-    public interface IEmploymentState
+    public interface IEmploymentState: IEntityState
     {
-        Guid Guid { get; set; }
         Guid ContactGuid { get; set; }
         Guid CompanyRoleGuid { get; set; }
-        DateTime StartDate { get; set; }
+        DateTime? StartDate { get; set; }
         DateTime? EndDate { get; set; }
     }
     public interface IEmployment
     {
+        Guid Guid { get; }
+        Guid ContactGuid { get; }
+        Guid CompanyRoleGuid { get; }
+        DateTime? StartDate { get; }
+        DateTime? EndDate { get; }
+
         void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate);
         void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate);
         void Terminate(DateTime endDate);
     }
-    public interface IEmploymentRepository
+    public interface IEmploymentStateRepository
     {
         IEmploymentState CreateEmploymentState(Guid guid, Guid contactGuid, Guid companyRoleGuid);
         IEmploymentState GetEmploymentState(Guid guid);
-        ICollection<Guid> GetContactGuidsByCompanyRole(Guid companyRoleGuid);
-        ICollection<Guid> GetCompanyRoleGuidsByContact(Guid contactGuid);
+        ICollection<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid);
+        ICollection<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid);
+        void DeleteEmploymentState(Guid entityGuid);
+        ICollection<IEmploymentState> GetEmploymentStates();
     }
-    public class Employment: IEmployment
+    public class Employment : IEmployment
     {
         IEmploymentState _state;
-        IEmploymentRepository _repo;
-        public Employment(IEmploymentState state, IEmploymentRepository repo)
+        IEmploymentStateRepository _repo;
+
+        public Guid Guid { get { return _state.Guid; } }
+        public Guid ContactGuid { get { return _state.ContactGuid; } }
+        public Guid CompanyRoleGuid { get { return _state.CompanyRoleGuid; } }
+        public DateTime? StartDate { get { return _state.StartDate; } }
+        public DateTime? EndDate { get { return _state.EndDate; } }
+
+        public Employment(IEmploymentState state)
         {
             _state = state;
+        }
+        public Employment(IEmploymentState state, IEmploymentStateRepository repo) : this(state)
+        {
             _repo = repo;
         }
 
         public void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate)
         {
-            if(_state.EndDate == originalStartDate)
+            if (_state.EndDate == originalStartDate)
             {
                 _state.EndDate = startDate;
             }
         }
+
         public void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate)
         {
             if (_state.EndDate == originalEndDate)
@@ -55,27 +73,35 @@ namespace EmploymentsShared
         {
             _state.EndDate = endDate;
         }
-
     }
-    public interface IEmployments : ICommandProcessor
+
+    public interface IEmploymentService : ICommandProcessor
     {
-        IEmployment CreateEmployment(Guid guid, Guid contactGuid, Guid companyGuid, DateTime startDate, DateTime? endDate);
+        IEmployment CreateEmployment(Guid guid, Guid contactGuid, Guid companyGuid, DateTime? startDate, DateTime? endDate);
+        void DeleteEmployment(Guid entityGuid);
         IEmployment GetEmployment(Guid guid);
     }
-    public class Employments: IEmployments
+
+    public class EmploymentService : IEmploymentService
     {
-        private IEmploymentRepository _repo;
-        public Employments(IEmploymentRepository repo)
+        private IEmploymentStateRepository _repo;
+        public EmploymentService(IEmploymentStateRepository repo)
         {
             _repo = repo;
         }
-        public IEmployment CreateEmployment(Guid guid, Guid contactGuid, Guid companyRoleGuid, DateTime startDate, DateTime? endDate)
+        public IEmployment CreateEmployment(Guid guid, Guid contactGuid, Guid companyRoleGuid, DateTime? startDate, DateTime? endDate)
         {
             var state = _repo.CreateEmploymentState(guid, contactGuid, companyRoleGuid);
             state.StartDate = startDate;
             state.EndDate = endDate;
-            return new Employment(state,_repo);
+            return new Employment(state, _repo);
         }
+
+        public void DeleteEmployment(Guid entityGuid)
+        {
+            _repo.DeleteEmploymentState(entityGuid);
+        }
+
         public IEmployment GetEmployment(Guid guid)
         {
             var state = _repo.GetEmploymentState(guid);
