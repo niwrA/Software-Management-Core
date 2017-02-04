@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using ProjectsShared;
 using ContactsShared;
 using CompaniesShared;
+using EmploymentsShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -69,9 +70,11 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<ICompanyStateRepository, MainRepository>();
             services.AddTransient<ICompanyService, CompanyService>();
 
+            services.AddTransient<IEmploymentStateRepository, MainRepository>();
+            services.AddTransient<IEmploymentService, EmploymentService>();
+
             services.AddTransient<ICommandStateRepository, MainRepository>();
             services.AddTransient<ICommandManager, CommandManager>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

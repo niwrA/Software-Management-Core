@@ -42,7 +42,7 @@ namespace SoftwareManagementCoreApi.Controllers
         }
 
         // GET: api/employments/getbycompanyroleid/5
-        [HttpGet]
+        [HttpGet("/getbycompanyroleid/{guid}")]
         public IEnumerable<EmploymentDto> GetByCompanyRoleId(Guid guid)
         {
             var states = _employmentStateRepository.GetEmploymentsByCompanyRoleGuid(guid);
@@ -51,7 +51,7 @@ namespace SoftwareManagementCoreApi.Controllers
         }
 
         // GET: api/employments/getbycontactid/5
-        [HttpGet]
+        [HttpGet("/getbycontactid/{guid}")]
         public IEnumerable<EmploymentDto> GetByContactId(Guid guid)
         {
             var states = _employmentStateRepository.GetEmploymentsByContactGuid(guid);
