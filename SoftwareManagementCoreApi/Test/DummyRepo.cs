@@ -68,6 +68,11 @@ namespace SoftwareManagementCoreApi.Test
             throw new NotImplementedException();
         }
 
+        public IEnumerable<ICommandState> GetCommandStates(Guid entityGuid)
+        {
+            throw new NotImplementedException();
+        }
+
         public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)
         {
             throw new NotImplementedException();

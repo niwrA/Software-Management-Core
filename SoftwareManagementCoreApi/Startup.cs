@@ -26,7 +26,7 @@ namespace SoftwareManagementCoreApi
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -50,8 +50,8 @@ namespace SoftwareManagementCoreApi
                 options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
             });
             services.AddMvc();
-
-            var connection = @"Server=localhost;Database=SoftwareManagement;Trusted_Connection=True;";
+            
+            var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
             services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
 
             // helpers

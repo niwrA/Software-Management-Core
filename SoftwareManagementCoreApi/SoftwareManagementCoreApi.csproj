@@ -28,5 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SoftwareManagementCore\SoftwareManagementCore.csproj" />
     <ProjectReference Include="..\SoftwareManagementEFCoreRepository\SoftwareManagementEFCoreRepository.csproj" />
+    <ProjectReference Include="..\SoftwareManagementEventSourcedRepository\SoftwareManagementEventSourcedRepository.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace CommandsShared
 {
@@ -101,24 +101,44 @@ namespace CommandsShared
         {
             _repo.PersistChanges();
         }
-
+        public void MergeCommands(IEnumerable<CommandDto> commands)
+        {
+            foreach (var command in commands)
+            {
+                // cheap solution. Should find a way to wrap the state here as well.
+                var states = _repo.GetCommandStates(command.EntityGuid);//.Select(s => new CommandDto { Guid = s.Guid, Entity = command.Entity, EntityGuid = s.EntityGuid, Name = s.CommandTypeId.Replace(command.Entity + "Command", ""), ParametersJson = s.ParametersJson, CreatedOn = s.CreatedOn });
+                foreach (var state in states)
+                {
+                    // these will always be the same Entity
+                    ProcessCommand(command, state);
+                }
+                ProcessCommand(command);
+            }
+        }
         public ICommand ProcessCommand(CommandDto command)
+        {
+            return ProcessCommand(command, null);
+        }
+        private ICommand ProcessCommand(CommandDto command, ICommandState state)
         {
             ICommand typedCommand = null;
             ICommandProcessor processor = null;
-            if (_commandConfigs.TryGetValue(command.Name + command.Entity + "Command", out ICommandConfig commandConfig))
+            // either take existing name from state, or construct from dto
+            var commandName = state == null ? command.Name + command.Entity + "Command" : state.CommandTypeId;
+            var parametersJson = state == null ? command.ParametersJson : state.ParametersJson;
+            if (_commandConfigs.TryGetValue(commandName, out ICommandConfig commandConfig))
             {
-                typedCommand = commandConfig.GetCommand(command.ParametersJson);
+                typedCommand = commandConfig.GetCommand(parametersJson);
                 processor = commandConfig.Processor;
             }
             else if (_configs.TryGetValue(command.Entity, out IProcessorConfig config))
             {
-                typedCommand = config.GetCommand(command.Name, command.Entity, command.ParametersJson);
+                typedCommand = config.GetCommand(command.Name, command.Entity, parametersJson);
                 processor = config.Processor;
             }
             if (typedCommand != null)
             {
-                CopyCommandDtoIntoCommand(command, _repo, processor, typedCommand);
+                CopyCommandDtoIntoCommand(command, _repo, processor, typedCommand, state);
 
                 typedCommand.Execute();
                 typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
@@ -129,8 +149,9 @@ namespace CommandsShared
             throw new CommandNotConfiguredException($"The command named '{command.Name}' for entity '{command.Entity}' does not have a matching configuration.");
         }
 
-        private void CopyCommandDtoIntoCommand(CommandDto command, ICommandStateRepository commandRepository, ICommandProcessor processor, ICommand typedCommand)
+        private void CopyCommandDtoIntoCommand(CommandDto command, ICommandStateRepository commandRepository, ICommandProcessor processor, ICommand typedCommand, ICommandState state)
         {
+            ((CommandBase)typedCommand).State = state;
             typedCommand.CommandRepository = commandRepository;
             typedCommand.CreatedOn = command.CreatedOn;
             typedCommand.ReceivedOn = _dateTimeProvider.GetSessionUtcDateTime();

@@ -54,6 +54,7 @@ namespace CommandsShared
         //IList<ICommandState> GetCreates();
         IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp);
         bool Exists(Guid guid);
+        IEnumerable<ICommandState> GetCommandStates(Guid entityGuid);
     }
     public interface IEntityState
     {
@@ -62,7 +63,7 @@ namespace CommandsShared
         DateTime UpdatedOn { get; set; }
     }
 
-    public interface INamedEntityState: IEntityState
+    public interface INamedEntityState : IEntityState
     {
         string Name { get; set; }
     }
@@ -138,6 +139,8 @@ namespace CommandsShared
         public DateTime? ExecutedOn { get { return _state.ExecutedOn; } set { _state.ExecutedOn = value; } }
 
         public string CommandTypeId { get { return _state.CommandTypeId; } set { _state.CommandTypeId = value; } }
+        public ICommandState State { get { return _state; } set { _state = value; } }
+
         public ICommandStateRepository CommandRepository { get { return _repository; } set { _repository = value; InitState(); } }
 
         private ICommandProcessor _commandProcessor;
@@ -190,8 +193,6 @@ namespace CommandsShared
             //command.Post();
             PostedCommands.Add(command);
         }
-        //todo: get the commands from the repository and restore them properly using the CommandTypeId ... ?
-        //this would only be possible on the Aggregate root or something like that? (needs references/dlls)
         public void ProcessCommands(IList<ICommand> commands)
         {
             foreach (var command in commands.Where(w => w.ExecutedOn == null))

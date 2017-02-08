@@ -402,5 +402,12 @@ namespace SoftwareManagementEFCoreRepository
             var states = _context.EmploymentStates.AsNoTracking().ToList();
             return states as ICollection<IEmploymentState>;
         }
+
+        public IEnumerable<ICommandState> GetCommandStates(Guid guid)
+        {
+            // todo: consider which date I want to use. Ideally the created on reflects the time the user created the command correctly. Ideally ... 
+            var states = _context.CommandStates.Where(w => w.EntityGuid == guid).OrderByDescending(o=>o.CreatedOn).AsNoTracking().ToList();
+            return states;
+        }
     }
 }
