@@ -103,6 +103,8 @@ namespace CommandsShared
         }
         public void MergeCommands(IEnumerable<CommandDto> commands)
         {
+            // todo: replay should be done once for each unique entity, or we need to refresh
+            // the existing entity for every command
             foreach (var command in commands)
             {
                 // cheap solution. Should find a way to wrap the state here as well.
@@ -124,16 +126,17 @@ namespace CommandsShared
             ICommand typedCommand = null;
             ICommandProcessor processor = null;
             // either take existing name from state, or construct from dto
-            var commandName = state == null ? command.Name + command.Entity + "Command" : state.CommandTypeId;
+            // the replace is a bit hacky, should probably clean the commandstore
+            var commandName = state == null ? command.Name  : state.CommandTypeId.Replace(command.Entity + "Command", "");
             var parametersJson = state == null ? command.ParametersJson : state.ParametersJson;
-            if (_commandConfigs.TryGetValue(commandName, out ICommandConfig commandConfig))
+            if (_commandConfigs.TryGetValue(commandName + command.Entity + "Command", out ICommandConfig commandConfig))
             {
                 typedCommand = commandConfig.GetCommand(parametersJson);
                 processor = commandConfig.Processor;
             }
             else if (_configs.TryGetValue(command.Entity, out IProcessorConfig config))
             {
-                typedCommand = config.GetCommand(command.Name, command.Entity, parametersJson);
+                typedCommand = config.GetCommand(commandName, command.Entity, parametersJson);
                 processor = config.Processor;
             }
             if (typedCommand != null)

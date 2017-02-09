@@ -36,6 +36,7 @@ namespace ContactsShared
     }
     public interface IContact : IEntity
     {
+        string Email { get; }
         void ChangeBirthDate(DateTime? birthDate, DateTime? originalBirthDate);
         void ChangeEmail(string email, string originalEmail);
     }
@@ -55,7 +56,7 @@ namespace ContactsShared
 
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
-        public string email { get { return _state.Email; } }
+        public string Email { get { return _state.Email; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
         public void Rename(string name, string originalName)

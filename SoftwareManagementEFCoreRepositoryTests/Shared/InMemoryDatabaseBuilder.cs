@@ -67,13 +67,16 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         public void InitializeContext(MainContext context)
         {
             context.Database.EnsureCreated();
+
             var sut = new MainRepository(context);
+
             context.ProductStates.AddRange(_productStates);
             context.ProjectStates.AddRange(_projectStates);
             context.ProjectRoleStates.AddRange(_projectRoleStates);
             context.ContactStates.AddRange(_contactStates);
             context.CompanyStates.AddRange(_companyStates);
             context.CompanyRoleStates.AddRange(_companyRoleStates);
+            context.EmploymentStates.AddRange(_employmentStates);
 
             sut.PersistChanges();
         }
