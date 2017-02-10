@@ -47,8 +47,8 @@ namespace SoftwareManagementCoreApiTests
 
         public void Dispose()
         {
-            Client.Dispose();
-            _server.Dispose();
+            //Client.Dispose();
+            //_server.Dispose();
         }
 
         protected virtual void InitializeServices(IServiceCollection services)
