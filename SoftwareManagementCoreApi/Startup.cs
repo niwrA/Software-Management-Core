@@ -74,7 +74,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IEmploymentService, EmploymentService>();
 
             services.AddTransient<ICommandStateRepository, MainRepository>();
-            services.AddTransient<ICommandManager, CommandManager>();
+            services.AddTransient<ICommandService, CommandService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

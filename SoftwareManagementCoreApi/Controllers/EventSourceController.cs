@@ -26,13 +26,13 @@ namespace SoftwareManagementCoreWeb.Controllers
         private IProjectService _projectService;
         private IContactService _contactService;
         private ICompanyService _companyService;
-        private ICommandManager _commandManager;
+        private ICommandService _commandManager;
         private IContactStateRepository _contactStateRepository;
         private ICompanyStateRepository _companyStateRepository;
         private IProjectStateRepository _projectStateRepository;
         private IProductStateRepository _productStateRepository;
 
-        public EventSourceController(ICommandManager commandManager)
+        public EventSourceController(ICommandService commandManager)
         {
             _commandManager = commandManager;
 

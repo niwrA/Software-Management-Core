@@ -73,7 +73,7 @@ namespace SoftwareManagementCoreTests.Products
             sutBuilder.ProductMock.Verify(s => s.ChangeBusinessCase(sut.BusinessCase), Times.Once);
         }
 
-        // todo: move to another file, along with the gloabls?
+        // todo: move to another file, along with the globals?
         public enum CommandTypes
         {
             Create,
@@ -98,7 +98,7 @@ namespace SoftwareManagementCoreTests.Products
             var guid = Guid.NewGuid();
             var name = "New Project";
 
-            var sut = new CommandManager(commandRepoMock.Object, new DateTimeProvider());
+            var sut = new CommandService(commandRepoMock.Object, new DateTimeProvider());
             var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, Name = CommandTypes.Create.ToString(), ProcessorName = TestGlobals.Entity, Processor = productsMock.Object };
 
             sut.AddConfig(commandConfig);

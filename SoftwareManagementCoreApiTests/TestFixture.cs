@@ -21,9 +21,9 @@ namespace SoftwareManagementCoreApiTests
         private const string SolutionName = "SoftwareManagement.sln";
         private readonly TestServer _server;
 
-        public TestFixture()
-//            : this(Path.Combine("src"))
+        public TestFixture() : this("")
         {
+
         }
 
         protected TestFixture(string solutionRelativeTargetProjectParentDir)
@@ -81,7 +81,7 @@ namespace SoftwareManagementCoreApiTests
 
             // Get currently executing test project path
             var applicationBasePath = PlatformServices.Default.Application.ApplicationBasePath;
-            applicationBasePath = applicationBasePath.Substring(0,applicationBasePath.IndexOf(@"\bin"));
+            applicationBasePath = applicationBasePath.Substring(0, applicationBasePath.IndexOf(@"\bin"));
             applicationBasePath = applicationBasePath.Substring(0, applicationBasePath.LastIndexOf(@"\"));
 
             // Find the folder which contains the solution file. We then use this information to find the target

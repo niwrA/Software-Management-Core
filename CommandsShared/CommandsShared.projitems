@@ -9,12 +9,8 @@
     <Import_RootNamespace>CommandsShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)CommandManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandNotConfiguredException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ICommandConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ICommandManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ICommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TypeNotFoundException.cs" />
   </ItemGroup>
 </Project>

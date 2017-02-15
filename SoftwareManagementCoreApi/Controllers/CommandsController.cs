@@ -24,9 +24,9 @@ namespace SoftwareManagementCoreWeb.Controllers
         private IProjectService _projectService;
         private IContactService _contactService;
         private ICompanyService _companyService;
-        private ICommandManager _commandManager;
+        private ICommandService _commandManager;
 
-        public CommandsController(ICommandManager commandManager, IProductService productService, IProjectService projectService, IContactService contactService, ICompanyService companyService)
+        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, ICompanyService companyService)
         {
             _commandManager = commandManager;
 
@@ -78,7 +78,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _contactService.PersistChanges();
             _companyService.PersistChanges();
             _commandManager.PersistChanges();
-            // todo command dtos should be updated from commands
+
             return commands;
         }
     }

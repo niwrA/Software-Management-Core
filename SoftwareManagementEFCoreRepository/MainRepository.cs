@@ -128,6 +128,7 @@ namespace SoftwareManagementEFCoreRepository
         public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
     }
+    // just because the repositories can each be separate, doesn't mean we always want to
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
         IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository
     { };
@@ -310,6 +311,8 @@ namespace SoftwareManagementEFCoreRepository
 
         public void SetProcessed(ICommandState state)
         {
+            // todo: do we want to have the repository manage this or 
+            // the commandservice only?
             //            state.UserName = 
             //throw new NotImplementedException();
         }
