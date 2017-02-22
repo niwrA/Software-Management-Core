@@ -47,16 +47,9 @@ namespace CommandsShared
     {
         void PersistChanges();
         ICommandState CreateCommandState();
-        void AddCommandState(ICommandState state);
-        void SetProcessed(ICommandState state);
-        IEnumerable<ICommandState> GetAllProcessed();
-        IEnumerable<ICommandState> GetAllNew();
-        //IList<ICommandState> GetUpdates();
-        //IList<ICommandState> GetCreates();
-        IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp);
-        bool Exists(Guid guid);
         IEnumerable<ICommandState> GetCommandStates(Guid entityGuid);
     }
+
     public interface IEntityState
     {
         Guid Guid { get; set; }
@@ -130,7 +123,7 @@ namespace CommandsShared
         }
         public Guid Guid { get { return _state.Guid; } set { _state.Guid = value; } }
         public Guid EntityGuid { get { return _state.EntityGuid; } set { _state.EntityGuid = value; } }
-        public virtual void Execute() { _repository.SetProcessed(_state); }
+        public virtual void Execute() {  }
         public DateTime? ExecutedOn { get { return _state.ExecutedOn; } set { _state.ExecutedOn = value; } }
 
         public string CommandTypeId { get { return _state.CommandTypeId; } set { _state.CommandTypeId = value; } }
@@ -284,15 +277,20 @@ namespace CommandsShared
         public void MergeCommands(IEnumerable<CommandDto> commands)
         {
             // todo: replay should be done once for each unique entity, or we need to refresh
+            var processedEntities = new HashSet<Guid>();
             // the existing entity for every command
             foreach (var command in commands)
             {
-                // cheap solution. Should find a way to wrap the state here as well.
-                var states = _repo.GetCommandStates(command.EntityGuid);//.Select(s => new CommandDto { Guid = s.Guid, Entity = command.Entity, EntityGuid = s.EntityGuid, Name = s.CommandTypeId.Replace(command.Entity + "Command", ""), ParametersJson = s.ParametersJson, CreatedOn = s.CreatedOn });
-                foreach (var state in states)
+                if(!processedEntities.Contains(command.EntityGuid))
                 {
-                    // these will always be the same Entity
-                    ProcessCommand(command, state);
+                    // cheap solution. Should find a way to wrap the state here as well.
+                    var states = _repo.GetCommandStates(command.EntityGuid);//.Select(s => new CommandDto { Guid = s.Guid, Entity = command.Entity, EntityGuid = s.EntityGuid, Name = s.CommandTypeId.Replace(command.Entity + "Command", ""), ParametersJson = s.ParametersJson, CreatedOn = s.CreatedOn });
+                    foreach (var state in states)
+                    {
+                        // these will always be the same Entity
+                        ProcessCommand(command, state);
+                    }
+                    processedEntities.Add(command.EntityGuid);
                 }
                 ProcessCommand(command);
             }

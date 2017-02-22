@@ -13,7 +13,7 @@ namespace SoftwareManagementCoreTests.Commands
     public class CommandManagerTests
     {
         // todo: consider creating test specific commands
-        [Fact(DisplayName = "CanMergeCommands_WithExistingStateAndApply")] 
+        [Fact(DisplayName = "CanMergeCommands_WithExistingStateAndApply")]
         // basically we are testing full event/commandsourcing here, restoring state
         // from existing commands and applying new commands to that state
         [Trait("Category", "IntegrationTests")]
@@ -51,7 +51,8 @@ namespace SoftwareManagementCoreTests.Commands
             // create a new command to merge/apply
             // todo: make builder
             var updateEmailCommandDto = new CommandDto { CreatedOn = DateTime.Now.AddTicks(1), Entity = "Contact", EntityGuid = entityGuid, Guid = Guid.NewGuid(), Name = "ChangeEmailFor", ParametersJson = @"{Email: 'john@smith.com', OriginalEmail:'john@smith.net'}" };
-            var commandDtos = new List<CommandDto> { updateEmailCommandDto };
+            var renameCommandDto = new CommandDto { CreatedOn = DateTime.Now.AddTicks(1), Entity = "Contact", EntityGuid = entityGuid, Guid = Guid.NewGuid(), Name = "Rename", ParametersJson = @"{Name: 'James Smith', OriginalName:'John Smith'}" };
+            var commandDtos = new List<CommandDto> { updateEmailCommandDto, renameCommandDto };
 
             // perform the actual merge
             sut.MergeCommands(commandDtos);
@@ -59,7 +60,7 @@ namespace SoftwareManagementCoreTests.Commands
             // retrieve the contact from in-memory state to check if state is as expected
             var contact = processor.GetContact(entityGuid);
 
-            Assert.Equal("John Smith", contact.Name);
+            Assert.Equal("James Smith", contact.Name);
             Assert.Equal("john@smith.com", contact.Email);
         }
     }

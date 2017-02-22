@@ -43,27 +43,8 @@ namespace SoftwareManagementCoreApi.Test
 
     public class CommandStateRepositoryFake : ICommandStateRepository
     {
-        public void AddCommandState(ICommandState state)
-        {
-            throw new NotImplementedException();
-        }
 
         public ICommandState CreateCommandState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Exists(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<ICommandState> GetAllNew()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<ICommandState> GetAllProcessed()
         {
             throw new NotImplementedException();
         }
@@ -71,21 +52,12 @@ namespace SoftwareManagementCoreApi.Test
         public IEnumerable<ICommandState> GetCommandStates(Guid entityGuid)
         {
             throw new NotImplementedException();
-        }
-
-        public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)
-        {
-            throw new NotImplementedException();
-        }
+        }        
 
         public void PersistChanges()
         {
             throw new NotImplementedException();
         }
 
-        public void SetProcessed(ICommandState state)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

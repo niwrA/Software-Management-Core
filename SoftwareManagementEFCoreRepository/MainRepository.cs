@@ -144,10 +144,6 @@ namespace SoftwareManagementEFCoreRepository
             //}
         }
 
-        public void AddCommandState(ICommandState state)
-        {
-            throw new NotImplementedException();
-        }
 
         public ICommandState CreateCommandState()
         {
@@ -191,21 +187,6 @@ namespace SoftwareManagementEFCoreRepository
             };
             _context.ProjectStates.Add(state);
             return state;
-        }
-
-        public bool Exists(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<ICommandState> GetAllNew()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<ICommandState> GetAllProcessed()
-        {
-            throw new NotImplementedException();
         }
 
         public IProductState GetProductState(Guid guid)
@@ -294,11 +275,6 @@ namespace SoftwareManagementEFCoreRepository
             }
         }
 
-        public IList<ICommandState> GetUpdatesSinceLast(long lastReceivedStamp)
-        {
-            throw new NotImplementedException();
-        }
-
         public void PersistChanges()
         {
             _context.SaveChanges();
@@ -307,14 +283,6 @@ namespace SoftwareManagementEFCoreRepository
         public Task PersistChangesAsync()
         {
             return _context.SaveChangesAsync();
-        }
-
-        public void SetProcessed(ICommandState state)
-        {
-            // todo: do we want to have the repository manage this or 
-            // the commandservice only?
-            //            state.UserName = 
-            //throw new NotImplementedException();
         }
 
         public IContactState CreateContactState(Guid guid, string name)
