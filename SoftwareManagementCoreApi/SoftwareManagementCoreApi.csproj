@@ -29,5 +29,6 @@
     <ProjectReference Include="..\SoftwareManagementCore\SoftwareManagementCore.csproj" />
     <ProjectReference Include="..\SoftwareManagementEFCoreRepository\SoftwareManagementEFCoreRepository.csproj" />
     <ProjectReference Include="..\SoftwareManagementEventSourcedRepository\SoftwareManagementEventSourcedRepository.csproj" />
+    <ProjectReference Include="..\SoftwareManagementMongoDbCoreRepository\SoftwareManagementMongoDbCoreRepository.csproj" />
   </ItemGroup>
 </Project>

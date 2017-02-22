@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProductsShared;
 using CommandsShared;
-using SoftwareManagementEFCoreRepository;
 using Microsoft.EntityFrameworkCore;
 using DateTimeShared;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -17,6 +16,9 @@ using ProjectsShared;
 using ContactsShared;
 using CompaniesShared;
 using EmploymentsShared;
+//using SoftwareManagementEFCoreRepository; // enable to switch to efcorerepo
+using SoftwareManagementMongoDbCoreRepository; // enable to switch to mongodb repo
+using MongoDB.Driver;
 
 namespace SoftwareManagementCoreApi
 {
@@ -50,9 +52,14 @@ namespace SoftwareManagementCoreApi
                 options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
             });
             services.AddMvc();
-            
-            var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
-            services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
+
+            #region "EntityFramework Configuration with SQL Server"
+            //var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
+            //services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
+#endregion
+            #region "MongoDb Config"
+            services.AddTransient<IMongoClient, MongoClient>();
+            #endregion
 
             // helpers
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
