@@ -35,7 +35,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             return this;
         }
 
-        public DbContextOptions<MainContext> Build(string databaseName, bool? useSqlLite = false)
+        public DbContextOptions<MainContext> Build(string databaseName, bool? useSqlLite = true)
         {
             DbContextOptionsBuilder<MainContext> contextOptionsBuilder;
             contextOptionsBuilder = new DbContextOptionsBuilder<MainContext>();

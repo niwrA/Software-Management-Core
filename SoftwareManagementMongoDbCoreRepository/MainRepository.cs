@@ -7,8 +7,6 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using ProductsShared;
 using ProjectsShared;
-using CompaniesShared;
-using ContactsShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,11 +27,23 @@ namespace SoftwareManagementMongoDbCoreRepository
     [BsonIgnoreExtraElements]
     public class ProjectState : IProjectState
     {
+        public ProjectState()
+        {
+            ProjectRoleStates = new List<IProjectRoleState>() as ICollection<IProjectRoleState>;
+        }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
         public string Name { get; set; }
         public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+
+    public class ProjectRoleState : IProjectRoleState
+    {
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
@@ -52,9 +62,21 @@ namespace SoftwareManagementMongoDbCoreRepository
     [BsonIgnoreExtraElements]
     public class CompanyState : ICompanyState
     {
+        public CompanyState()
+        {
+            CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
+        }
         public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
         public string Name { get; set; }
         public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+    
+    public class CompanyRoleState : ICompanyRoleState
+    {
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
@@ -124,14 +146,24 @@ namespace SoftwareManagementMongoDbCoreRepository
             _updatedCompanyStates = new Dictionary<Guid, ICompanyState>();
         }
 
-        public void AddRoleToCompanyState(Guid projectGuid, Guid roleGuid, string name)
+        public void AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
         {
-            throw new NotImplementedException();
+            var state = GetCompanyState(guid);
+            var roleState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
+            if(roleState == null)
+            {
+                state.CompanyRoleStates.Add(new CompanyRoleState { Guid = roleGuid, Name = name });
+            }
         }
 
-        public void AddRoleToProjectState(Guid projectGuid, Guid roleGuid, string name)
+        public void AddRoleToProjectState(Guid guid, Guid roleGuid, string name)
         {
-            throw new NotImplementedException();
+            var state = GetProjectState(guid);
+            var roleState = state.ProjectRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
+            if (roleState == null)
+            {
+                state.ProjectRoleStates.Add(new ProjectRoleState { Guid = roleGuid, Name = name });
+            }
         }
 
         public ICommandState CreateCommandState()
@@ -231,12 +263,19 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public ICompanyState GetCompanyState(Guid guid)
         {
-            var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
-            var filter = Builders<CompanyState>.Filter.Eq("Guid", guid);
-            ICompanyState state = collection.Find(filter).First();
+            ICompanyState state;
+            if (!_companyStates.TryGetValue(guid, out state))
+            {
+                if (!_updatedCompanyStates.TryGetValue(guid, out state))
+                {
+                    var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
+                    var filter = Builders<CompanyState>.Filter.Eq("Guid", guid);
+                    state = collection.Find(filter).FirstOrDefault();
 
-            TrackCompanyState(state);
+                    TrackCompanyState(state);
 
+                }
+            }
             return state;
         }
 
@@ -251,12 +290,18 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IContactState GetContactState(Guid guid)
         {
-            var collection = _database.GetCollection<ContactState>(ContactStatesCollection);
-            var filter = Builders<ContactState>.Filter.Eq("Guid", guid);
-            IContactState state = collection.Find(filter).First();
+            IContactState state;
+            if (!_contactStates.TryGetValue(guid, out state))
+            {
+                if (!_updatedContactStates.TryGetValue(guid, out state))
+                {
+                    var collection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                    var filter = Builders<ContactState>.Filter.Eq("Guid", guid);
+                    state = collection.Find(filter).FirstOrDefault();
 
-            TrackContactState(state);
-
+                    TrackContactState(state);
+                }
+            }
             return state;
         }
 
@@ -293,18 +338,26 @@ namespace SoftwareManagementMongoDbCoreRepository
         // as long as for write mode persistchanges does the work
         public IProductState GetProductState(Guid guid)
         {
-            var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
-            var filter = Builders<ProductState>.Filter.Eq("Guid", guid);
-            IProductState state = collection.Find(filter).First();
+            IProductState state;
+            if (!_productStates.TryGetValue(guid, out state))
+            {
+                if (!_updatedProductStates.TryGetValue(guid, out state))
+                {
 
-            TrackProductState(state);
+                    var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
+                    var filter = Builders<ProductState>.Filter.Eq("Guid", guid);
 
+                    state = collection.Find(filter).FirstOrDefault();
+
+                    TrackProductState(state);
+                }
+            }
             return state;
         }
 
         private void TrackProductState(IProductState state)
         {
-            if (!_updatedProductStates.ContainsKey(state.Guid))
+            if (state != null && !_updatedProductStates.ContainsKey(state.Guid))
             {
                 _updatedProductStates.Add(state.Guid, state);
             }
@@ -312,12 +365,18 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IProjectState GetProjectState(Guid guid)
         {
-            var collection = _database.GetCollection<ProjectState>(ProjectStatesCollection);
-            var filter = Builders<ProjectState>.Filter.Eq("Guid", guid);
-            IProjectState state = collection.Find(filter).First();
+            IProjectState state;
+            if (!_projectStates.TryGetValue(guid, out state))
+            {
+                if (!_updatedProjectStates.TryGetValue(guid, out state))
+                {
+                    var collection = _database.GetCollection<ProjectState>(ProjectStatesCollection);
+                    var filter = Builders<ProjectState>.Filter.Eq("Guid", guid);
+                    state = collection.Find(filter).FirstOrDefault();
 
-            TrackProjectState(state);
-
+                    TrackProjectState(state);
+                }
+            }
             return state;
         }
 
@@ -367,8 +426,9 @@ namespace SoftwareManagementMongoDbCoreRepository
         public void PersistChanges()
         {
             PersistCommands();
-
+            PersistContacts();
             PersistProducts();
+            PersistProjects();
 
             PersistContacts();
         }
@@ -420,6 +480,43 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
+        private void PersistProjects()
+        {
+            var projectCollection = _database.GetCollection<ProjectState>(ProjectStatesCollection);
+            // inserts
+            if (_projectStates.Values.Any())
+            {
+                var projects = _projectStates.Values.Select(s => s as ProjectState).ToList();
+                projectCollection.InsertMany(projects);
+                _projectStates.Clear();
+            }
+
+            // todo: can these be batched?
+            // updates
+            if (_updatedProjectStates.Values.Any())
+            {
+                var projects = _updatedProjectStates.Values.Select(s => s as ProjectState).ToList();
+                foreach (var state in projects)
+                {
+                    var filter = Builders<ProjectState>.Filter.Eq("Guid", state.Guid);
+                    projectCollection.ReplaceOne(filter, state);
+                }
+                _updatedProjectStates.Clear();
+            }
+
+            // deletes
+            if (_deletedProjectStates.Any())
+            {
+                var collection = _database.GetCollection<ProjectState>(ProjectStatesCollection);
+                foreach (var guid in _deletedProjectStates)
+                {
+                    var filter = Builders<ProjectState>.Filter.Eq("Guid", guid);
+                    collection.DeleteOne(filter);
+                }
+                _deletedProjectStates.Clear();
+            }
+        }
+
         private void PersistContacts()
         {
             var contactCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
@@ -457,6 +554,43 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
+        private void PersistCompanies()
+        {
+            var companyCollection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
+            // inserts
+            if (_companyStates.Values.Any())
+            {
+                var companies = _companyStates.Values.Select(s => s as CompanyState).ToList();
+                companyCollection.InsertMany(companies);
+                _companyStates.Clear();
+            }
+
+            // todo: can these be batched?
+            // updates
+            if (_updatedCompanyStates.Values.Any())
+            {
+                var companies = _updatedCompanyStates.Values.Select(s => s as CompanyState).ToList();
+                foreach (var state in companies)
+                {
+                    var filter = Builders<CompanyState>.Filter.Eq("Guid", state.Guid);
+                    companyCollection.ReplaceOne(filter, state);
+                }
+                _updatedCompanyStates.Clear();
+            }
+
+            // deletes
+            if (_deletedCompanyStates.Any())
+            {
+                var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
+                foreach (var guid in _deletedCompanyStates)
+                {
+                    var filter = Builders<CompanyState>.Filter.Eq("Guid", guid);
+                    collection.DeleteOne(filter);
+                }
+                _deletedCompanyStates.Clear();
+            }
+        }
+
         public Task PersistChangesAsync()
         {
             throw new NotImplementedException();
@@ -464,12 +598,24 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid)
         {
-            throw new NotImplementedException();
+            var state = GetCompanyState(guid);
+            var roleState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
+            if (roleState != null)
+            {
+                state.CompanyRoleStates.Remove(roleState);
+            }
         }
 
         public void RemoveRoleFromProjectState(Guid guid, Guid roleGuid)
         {
-            throw new NotImplementedException();
+            var state = GetProjectState(guid);
+            var roleState = state.ProjectRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
+            if (roleState != null)
+            {
+                state.ProjectRoleStates.Remove(roleState);
+            }
         }
     }
+
+
 }
