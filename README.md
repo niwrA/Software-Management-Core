@@ -9,9 +9,15 @@ This requires Visual Studio 2017 RC or higher with .NET Core 1.1.0 or higher and
 Windows
 1. Install the latest Visual Studio 2017 (RC) if you haven't already. You only need the web module with aspnetcore for running this. 
 2. If you want to contribute, clone the project to your own github account, and then clone it locally from there. Otherwise, just clone the project locally (on Windows I recommend using GitHub Desktop for convencience).
-3. Install a SQL Sever Community or Developer edition if you haven't already (or reconfigure the project to use localdb, SQLLite, etc.) and create a database called SoftwareManagement
-4. Open the project and change the connection string in both the api and entityframeworkcore projects. 
-5. Open the Package Manager console in Visual Studio, select the EntityFrameworkCore project, and run Update-Database to create and/or migrate the database to the latest version. 
+3. If you wan to use SQL Server: install a SQL Sever Community or Developer edition if you haven't already (or reconfigure the project to use localdb, SQLLite, etc.) and create a database called SoftwareManagement, or use a Docker install of the new SQL Server preview
+4. Open the project and change the connection string in both the api and entityframeworkcore projects (if you used SQL)
+5. If you want to use MongoDb (currently in development): install MongoDB using the default port, or use a Docker install, like this:
+
+- Install Docker for Windows if you haven't already
+- Goto Powershell and type "docker pull mongo"
+- type "docker run -p 27017:27017 --name dockedmongo -d mongo
+
+6. Open the Package Manager console in Visual Studio, select the EntityFrameworkCore project, and run Update-Database to create and/or migrate the database to the latest version. 
 
 You should now be ready to run the project (I prefer using Kestrel rather than IIS Express, it's faster and it gives immediate feedback on what's happening in its console)
 
