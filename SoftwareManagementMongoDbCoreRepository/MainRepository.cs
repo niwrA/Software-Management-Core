@@ -178,7 +178,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var state = new CompanyState()
             {
-                Guid = Guid.NewGuid()
+                Guid = guid
             };
             _companyStates.Add(state.Guid, state);
             return state;
@@ -188,7 +188,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var state = new ContactState()
             {
-                Guid = Guid.NewGuid()
+                Guid = guid
             };
             _contactStates.Add(state.Guid, state);
             return state;
@@ -203,7 +203,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var state = new ProductState()
             {
-                Guid = Guid.NewGuid()
+                Guid = guid
             };
             _productStates.Add(state.Guid, state);
             return state;
@@ -213,7 +213,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var state = new ProjectState()
             {
-                Guid = Guid.NewGuid()
+                Guid = guid
             };
             _projectStates.Add(state.Guid, state);
             return state;
@@ -382,7 +382,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private void TrackProjectState(IProjectState state)
         {
-            if (!_updatedProjectStates.ContainsKey(state.Guid))
+            if (state != null && !_updatedProjectStates.ContainsKey(state.Guid))
             {
                 _updatedProjectStates.Add(state.Guid, state);
             }
@@ -390,7 +390,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private void TrackContactState(IContactState state)
         {
-            if (!_updatedContactStates.ContainsKey(state.Guid))
+            if (state!=null && !_updatedContactStates.ContainsKey(state.Guid))
             {
                 _updatedContactStates.Add(state.Guid, state);
             }
@@ -398,7 +398,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private void TrackCompanyState(ICompanyState state)
         {
-            if (!_updatedCompanyStates.ContainsKey(state.Guid))
+            if (state != null && !_updatedCompanyStates.ContainsKey(state.Guid))
             {
                 _updatedCompanyStates.Add(state.Guid, state);
             }
