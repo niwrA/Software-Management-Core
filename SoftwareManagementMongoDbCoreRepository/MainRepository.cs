@@ -3,7 +3,9 @@ using CompaniesShared;
 using ContactsShared;
 using EmploymentsShared;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using ProductsShared;
 using ProjectsShared;
@@ -17,10 +19,11 @@ namespace SoftwareManagementMongoDbCoreRepository
     [BsonIgnoreExtraElements]
     public class ProductState : IProductState
     {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
         public string Description { get; set; }
         public string BusinessCase { get; set; }
         public string Name { get; set; }
-        public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
@@ -31,17 +34,20 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             ProjectRoleStates = new List<IProjectRoleState>() as ICollection<IProjectRoleState>;
         }
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
         public string Name { get; set; }
-        public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class ProjectRoleState : IProjectRoleState
     {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -54,6 +60,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public DateTime? BirthDate { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
@@ -66,15 +73,18 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
         }
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
         public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
         public string Name { get; set; }
-        public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
-    
+
+    [BsonIgnoreExtraElements]
     public class CompanyRoleState : ICompanyRoleState
     {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -84,6 +94,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     [BsonIgnoreExtraElements]
     public class CommandState : ICommandState
     {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
         public Guid EntityGuid { get; set; }
         public string CommandTypeId { get; set; }
@@ -106,6 +117,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private IMongoClient _client;
         private IMongoDatabase _database;
+
         private Dictionary<Guid, IProductState> _productStates;
         private List<Guid> _deletedProductStates;
         private Dictionary<Guid, IProductState> _updatedProductStates;
@@ -128,7 +140,9 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             _client = client;
             _database = _client.GetDatabase("SoftwareManagement");
+
             _commandStates = new Dictionary<Guid, ICommandState>();
+
             _productStates = new Dictionary<Guid, IProductState>();
             _deletedProductStates = new List<Guid>();
             _updatedProductStates = new Dictionary<Guid, IProductState>();
@@ -150,7 +164,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var state = GetCompanyState(guid);
             var roleState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
-            if(roleState == null)
+            if (roleState == null)
             {
                 state.CompanyRoleStates.Add(new CompanyRoleState { Guid = roleGuid, Name = name });
             }
@@ -249,10 +263,10 @@ namespace SoftwareManagementMongoDbCoreRepository
             var states = new List<ICommandState>();
             var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
             var filter = Builders<CommandState>.Filter.Eq("EntityGuid", entityGuid);
-            var results = collection.Find(filter).ToList();
-            if (results.Count > 0)
+            var results = collection.Find(filter);
+            if (results?.Count() > 0)
             {
-                foreach (var result in results)
+                foreach (var result in results.ToList())
                 {
                     states.Add(result);
                 }
@@ -283,9 +297,9 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
             var filter = new BsonDocument();
-            var states = collection.Find(filter).ToList();
+            var states = collection.Find(filter);
 
-            return states;
+            return states?.ToList();
         }
 
         public IContactState GetContactState(Guid guid)
@@ -309,9 +323,9 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var collection = _database.GetCollection<ContactState>(ContactStatesCollection);
             var filter = new BsonDocument();
-            var states = collection.Find(filter).ToList();
+            var states = collection.Find(filter);
 
-            return states;
+            return states?.ToList();
         }
 
         public ICollection<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
@@ -390,7 +404,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private void TrackContactState(IContactState state)
         {
-            if (state!=null && !_updatedContactStates.ContainsKey(state.Guid))
+            if (state != null && !_updatedContactStates.ContainsKey(state.Guid))
             {
                 _updatedContactStates.Add(state.Guid, state);
             }
@@ -409,18 +423,18 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
             var filter = new BsonDocument();
-            var states = collection.Find(filter).ToList();
+            var states = collection.Find(filter);
 
-            return states;
+            return states?.ToList();
         }
 
         public IEnumerable<IProjectState> GetProjectStates()
         {
             var collection = _database.GetCollection<ProjectState>(ProjectStatesCollection);
             var filter = new BsonDocument();
-            var states = collection.Find(filter).ToList();
+            var states = collection.Find(filter);
 
-            return states;
+            return states?.ToList();
         }
 
         public void PersistChanges()

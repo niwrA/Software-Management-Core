@@ -19,6 +19,7 @@ using EmploymentsShared;
 //using SoftwareManagementEFCoreRepository; // enable to switch to efcorerepo
 using SoftwareManagementMongoDbCoreRepository; // enable to switch to mongodb repo
 using MongoDB.Driver;
+using MongoDB.Bson.Serialization;
 
 namespace SoftwareManagementCoreApi
 {
@@ -56,9 +57,12 @@ namespace SoftwareManagementCoreApi
             #region "EntityFramework Configuration with SQL Server"
             //var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
             //services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
-#endregion
+            #endregion
             #region "MongoDb Config"
             services.AddTransient<IMongoClient, MongoClient>();
+            // this needs to be here for now, because MainRepository is instanced per Controller
+            BsonClassMap.RegisterClassMap<CompanyRoleState>();
+            BsonClassMap.RegisterClassMap<ProjectRoleState>();
             #endregion
 
             // helpers
