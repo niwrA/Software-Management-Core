@@ -426,11 +426,11 @@ namespace SoftwareManagementMongoDbCoreRepository
         public void PersistChanges()
         {
             PersistCommands();
+
             PersistContacts();
             PersistProducts();
             PersistProjects();
-
-            PersistContacts();
+            PersistCompanies();
         }
 
         private void PersistCommands()
