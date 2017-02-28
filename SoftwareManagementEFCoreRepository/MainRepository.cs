@@ -356,19 +356,19 @@ namespace SoftwareManagementEFCoreRepository
             _context.EmploymentStates.Remove(state);
         }
 
-        public ICollection<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
+        public IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
         {
             var states = _context.EmploymentStates.AsNoTracking().Where(w => w.CompanyRoleGuid == companyRoleGuid).ToList();
             return states as ICollection<IEmploymentState>;
         }
 
-        public ICollection<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
+        public IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
         {
             var states = _context.EmploymentStates.AsNoTracking().Where(w => w.ContactGuid == contactGuid).ToList();
             return states as ICollection<IEmploymentState>;
         }
 
-        public ICollection<IEmploymentState> GetEmploymentStates()
+        public IEnumerable<IEmploymentState> GetEmploymentStates()
         {
             var states = _context.EmploymentStates.AsNoTracking().ToList();
             return states as ICollection<IEmploymentState>;

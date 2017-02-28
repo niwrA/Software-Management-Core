@@ -12,6 +12,7 @@ using ProjectsShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SoftwareManagementMongoDbCoreRepository
@@ -92,6 +93,19 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
 
     [BsonIgnoreExtraElements]
+    public class EmploymentState : IEmploymentState
+    {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public Guid ContactGuid { get; set; }
+        public Guid CompanyRoleGuid { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
+
+    [BsonIgnoreExtraElements]
     public class CommandState : ICommandState
     {
         [BsonId(IdGenerator = typeof(GuidGenerator))]
@@ -114,6 +128,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         private const string ProjectStatesCollection = "ProjectStates";
         private const string ContactStatesCollection = "ContactStates";
         private const string CompanyStatesCollection = "CompanyStates";
+        private const string EmploymentStatesCollection = "EmploymentStates";
 
         private IMongoClient _client;
         private IMongoDatabase _database;
@@ -133,6 +148,9 @@ namespace SoftwareManagementMongoDbCoreRepository
         private Dictionary<Guid, ICompanyState> _companyStates;
         private List<Guid> _deletedCompanyStates;
         private Dictionary<Guid, ICompanyState> _updatedCompanyStates;
+
+        private Dictionary<Guid, IEmploymentState> _employmentStates;
+        private List<Guid> _deletedEmploymentStates;
 
         private Dictionary<Guid, ICommandState> _commandStates { get; set; }
 
@@ -158,6 +176,9 @@ namespace SoftwareManagementMongoDbCoreRepository
             _companyStates = new Dictionary<Guid, ICompanyState>();
             _deletedCompanyStates = new List<Guid>();
             _updatedCompanyStates = new Dictionary<Guid, ICompanyState>();
+
+            _employmentStates = new Dictionary<Guid, IEmploymentState>();
+            _deletedEmploymentStates = new List<Guid>();
         }
 
         public void AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
@@ -208,9 +229,17 @@ namespace SoftwareManagementMongoDbCoreRepository
             return state;
         }
 
+        // for consideration - include some part of this in both the contact and company entity read projections?
         public IEmploymentState CreateEmploymentState(Guid guid, Guid contactGuid, Guid companyRoleGuid)
         {
-            throw new NotImplementedException();
+            var state = new EmploymentState()
+            {
+                Guid = guid,
+                ContactGuid = contactGuid,
+                CompanyRoleGuid = companyRoleGuid
+            };
+            _employmentStates.Add(state.Guid, state);
+            return state;
         }
 
         public IProductState CreateProductState(Guid guid, string name)
@@ -243,9 +272,9 @@ namespace SoftwareManagementMongoDbCoreRepository
             _deletedContactStates.Add(guid);
         }
 
-        public void DeleteEmploymentState(Guid entityGuid)
+        public void DeleteEmploymentState(Guid guid)
         {
-            throw new NotImplementedException();
+            _deletedEmploymentStates.Add(guid);
         }
 
         public void DeleteProductState(Guid guid)
@@ -328,24 +357,43 @@ namespace SoftwareManagementMongoDbCoreRepository
             return states?.ToList();
         }
 
-        public ICollection<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
+        public IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
         {
-            throw new NotImplementedException();
+            var collection = _database.GetCollection<EmploymentState>(ContactStatesCollection);
+            var filter = Builders<EmploymentState>.Filter.Eq("CompanyRoleGuid", companyRoleGuid);
+            var states = collection.Find(filter);
+
+            return states?.ToList();
         }
 
-        public ICollection<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
+        public IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
         {
-            throw new NotImplementedException();
+            var collection = _database.GetCollection<EmploymentState>(ContactStatesCollection);
+            var filter = Builders<EmploymentState>.Filter.Eq("ContactRoleGuid", contactGuid);
+            var states = collection.Find(filter);
+
+            return states?.ToList();
         }
 
         public IEmploymentState GetEmploymentState(Guid guid)
         {
-            throw new NotImplementedException();
+            IEmploymentState state;
+            if (!_employmentStates.TryGetValue(guid, out state))
+            {
+                var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
+                var filter = Builders<EmploymentState>.Filter.Eq("Guid", guid);
+                state = collection.Find(filter).FirstOrDefault();
+            }
+            return state;
         }
 
-        public ICollection<IEmploymentState> GetEmploymentStates()
+        public IEnumerable<IEmploymentState> GetEmploymentStates()
         {
-            throw new NotImplementedException();
+            var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
+            var filter = new BsonDocument();
+            var states = collection.Find(filter);
+
+            return states?.ToList();
         }
 
         // todo: specify if read-only? it will likely barely matter in most cases,
@@ -445,6 +493,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             PersistProducts();
             PersistProjects();
             PersistCompanies();
+            PersistEmployments();
         }
 
         private void PersistCommands()
@@ -605,6 +654,30 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
+        private void PersistEmployments()
+        {
+            // inserts
+            if (_employmentStates.Values.Any())
+            {
+                var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
+                var entities = _employmentStates.Values.Select(s => s as EmploymentState).ToList();
+                collection.InsertMany(entities);
+                _employmentStates.Clear();
+            }
+
+            // deletes
+            if (_deletedEmploymentStates.Any())
+            {
+                var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
+                foreach (var guid in _deletedEmploymentStates)
+                {
+                    var filter = Builders<EmploymentState>.Filter.Eq("Guid", guid);
+                    collection.DeleteOne(filter, null, CancellationToken.None);
+                }
+                _deletedEmploymentStates.Clear();
+            }
+        }
+
         public Task PersistChangesAsync()
         {
             throw new NotImplementedException();
@@ -630,6 +703,4 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
     }
-
-
 }

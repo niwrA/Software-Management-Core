@@ -7,6 +7,7 @@ namespace EmploymentsShared
 {
     public interface IEmploymentState: IEntityState
     {
+        Guid Guid { get; set; }
         Guid ContactGuid { get; set; }
         Guid CompanyRoleGuid { get; set; }
         DateTime? StartDate { get; set; }
@@ -28,10 +29,11 @@ namespace EmploymentsShared
     {
         IEmploymentState CreateEmploymentState(Guid guid, Guid contactGuid, Guid companyRoleGuid);
         IEmploymentState GetEmploymentState(Guid guid);
-        ICollection<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid);
-        ICollection<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid);
+        IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid);
+        IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid);
         void DeleteEmploymentState(Guid entityGuid);
-        ICollection<IEmploymentState> GetEmploymentStates();
+        IEnumerable<IEmploymentState> GetEmploymentStates();
+        void PersistChanges();
     }
     public class Employment : IEmployment
     {
@@ -80,6 +82,7 @@ namespace EmploymentsShared
         IEmployment CreateEmployment(Guid guid, Guid contactGuid, Guid companyGuid, DateTime? startDate, DateTime? endDate);
         void DeleteEmployment(Guid entityGuid);
         IEmployment GetEmployment(Guid guid);
+        void PersistChanges();
     }
 
     public class EmploymentService : IEmploymentService
@@ -106,6 +109,10 @@ namespace EmploymentsShared
         {
             var state = _repo.GetEmploymentState(guid);
             return new Employment(state, _repo);
+        }
+        public void PersistChanges()
+        {
+            _repo.PersistChanges();
         }
     }
 }

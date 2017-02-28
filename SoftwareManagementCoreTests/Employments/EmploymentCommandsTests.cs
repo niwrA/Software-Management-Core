@@ -27,6 +27,8 @@ namespace SoftwareManagementCoreTests.Employments
             employmentsMock.Verify(s => s.CreateEmployment(sut.EntityGuid, sut.ContactGuid, sut.CompanyRoleGuid, sut.StartDate, sut.EndDate), Times.Once);
         }
 
+        // todo: duplicate check on Employments
+
         [Fact(DisplayName = "DeleteEmploymentCommand")]
         public void DeleteCommand()
         {

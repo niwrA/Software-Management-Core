@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26206.0
+VisualStudioVersion = 15.0.26127.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementCore", "SoftwareManagementCore\SoftwareManagementCore.csproj", "{201FF2B7-DF85-414E-8CCB-A76FFC261D6B}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementEventSourcedRepository", "SoftwareManagementEventSourcedRepository\SoftwareManagementEventSourcedRepository.csproj", "{A46E4D81-1CA1-46EF-9424-1073E2E54B15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementMongoDbCoreRepository", "SoftwareManagementMongoDbCoreRepository\SoftwareManagementMongoDbCoreRepository.csproj", "{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementMongoDbCoreRepositoryTests", "SoftwareManagementMongoDbCoreRepositoryTests\SoftwareManagementMongoDbCoreRepositoryTests.csproj", "{5949935B-9EC1-4C47-87BE-1A8A5D56C127}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -177,6 +179,18 @@ Global
 		{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4}.Release|x64.Build.0 = Release|x64
 		{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4}.Release|x86.ActiveCfg = Release|x86
 		{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4}.Release|x86.Build.0 = Release|x86
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Debug|x64.ActiveCfg = Debug|x64
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Debug|x64.Build.0 = Debug|x64
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Debug|x86.ActiveCfg = Debug|x86
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Debug|x86.Build.0 = Debug|x86
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x64.ActiveCfg = Release|x64
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x64.Build.0 = Release|x64
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x86.ActiveCfg = Release|x86
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -207,5 +221,6 @@ Global
 		{3EF38306-DDC8-42F9-923B-3DC288DF5BF5} = {9C0B4DC0-4D71-48B2-A589-1D9EFD0C8DE0}
 		{A46E4D81-1CA1-46EF-9424-1073E2E54B15} = {E80390EA-362A-430D-B82A-48C5992AE209}
 		{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4} = {E80390EA-362A-430D-B82A-48C5992AE209}
+		{5949935B-9EC1-4C47-87BE-1A8A5D56C127} = {E80390EA-362A-430D-B82A-48C5992AE209}
 	EndGlobalSection
 EndGlobal
