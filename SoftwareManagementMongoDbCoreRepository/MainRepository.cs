@@ -359,11 +359,30 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
         {
-            var collection = _database.GetCollection<EmploymentState>(ContactStatesCollection);
+            var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
             var filter = Builders<EmploymentState>.Filter.Eq("CompanyRoleGuid", companyRoleGuid);
             var states = collection.Find(filter);
 
             return states?.ToList();
+        }
+
+        // todo: do we maybe want to store all contact data so that we can get all that by companyGuid at once?
+        // if so we would need to update both here and in contacts for contactupates
+        public IEnumerable<IContactState> GetContactsByCompanyRoleGuid(Guid companyRoleGuid)
+        {
+            var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
+            var filter = Builders<EmploymentState>.Filter.Eq("CompanyRoleGuid", companyRoleGuid);
+            var states = collection.Find(filter);
+            if (states != null)
+            {
+                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var filterDef = new FilterDefinitionBuilder<ContactState>();
+                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
+                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                return contactStates?.ToList();
+            }
+            return null;
         }
 
         public IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)

@@ -380,5 +380,10 @@ namespace SoftwareManagementEFCoreRepository
             var states = _context.CommandStates.Where(w => w.EntityGuid == guid).OrderByDescending(o=>o.CreatedOn).AsNoTracking().ToList();
             return states;
         }
+
+        public IEnumerable<IContactState> GetContactsByCompanyRoleGuid(Guid companyRoleGuid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommandsShared;
+using ContactsShared;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,6 +32,7 @@ namespace EmploymentsShared
         IEmploymentState GetEmploymentState(Guid guid);
         IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid);
         IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid);
+        IEnumerable<IContactState> GetContactsByCompanyRoleGuid(Guid companyRoleGuid);
         void DeleteEmploymentState(Guid entityGuid);
         IEnumerable<IEmploymentState> GetEmploymentStates();
         void PersistChanges();
