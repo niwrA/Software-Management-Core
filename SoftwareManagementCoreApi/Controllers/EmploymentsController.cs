@@ -42,11 +42,12 @@ namespace SoftwareManagementCoreApi.Controllers
         }
 
         // GET: api/employments/getbycompanyroleid/5
-        [HttpGet("/getbycompanyroleid/{guid}")]
-        public IEnumerable<EmploymentDto> GetByCompanyRoleId(Guid guid)
+        // [Route("companyrole/{guid}/contacts")]
+        [Route("getcontactsbycompanyroleid/{guid}")]
+        public IEnumerable<ContactDto> GetContactsByCompanyRoleId(Guid guid)
         {
-            var states = _employmentStateRepository.GetEmploymentsByCompanyRoleGuid(guid);
-            var dtos = states.Select(s => new EmploymentDto(s)).ToList();
+            var states = _employmentStateRepository.GetContactsByCompanyRoleGuid(guid);
+            var dtos = states.Select(s => new ContactDto(s)).ToList();
             return dtos;
         }
 
