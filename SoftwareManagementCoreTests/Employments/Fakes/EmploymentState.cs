@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ContactsShared;
 
 namespace SoftwareManagementCoreTests.Fakes
 {
@@ -16,7 +17,7 @@ namespace SoftwareManagementCoreTests.Fakes
             EndDate = DateTime.Now.Date.AddYears(1);
             CreatedOn = DateTime.Now;
             UpdatedOn = DateTime.Now;
-
+            ContactName = "Jane Smith";
         }
         public Guid Guid { get; set; }
         public Guid ContactGuid { get; set; }
@@ -25,5 +26,6 @@ namespace SoftwareManagementCoreTests.Fakes
         public DateTime UpdatedOn { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string ContactName { get; set; }
     }
 }

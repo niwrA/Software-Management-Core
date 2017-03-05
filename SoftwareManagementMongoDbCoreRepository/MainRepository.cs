@@ -103,6 +103,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public Guid CompanyRoleGuid { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string ContactName { get; set; }
     }
 
     [BsonIgnoreExtraElements]
@@ -357,11 +358,31 @@ namespace SoftwareManagementMongoDbCoreRepository
             return states?.ToList();
         }
 
+        // todo: this can probably be done more efficiently
         public IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
         {
             var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
             var filter = Builders<EmploymentState>.Filter.Eq("CompanyRoleGuid", companyRoleGuid);
             var states = collection.Find(filter);
+
+            if (states != null)
+            {
+                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var filterDef = new FilterDefinitionBuilder<ContactState>();
+                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
+                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                var employmentStates = states.ToList();
+                foreach(var state in contactStates)
+                {
+                    var employmentState = employmentStates.FirstOrDefault(s => s.ContactGuid == state.Guid);
+                    if(employmentState!=null)
+                    {
+                        employmentState.ContactName = state.Name;
+                    }
+                }
+            }
+            return null;
 
             return states?.ToList();
         }

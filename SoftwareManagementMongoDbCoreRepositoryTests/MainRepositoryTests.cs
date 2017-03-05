@@ -37,7 +37,7 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
 
             var guid = Guid.NewGuid();
 
-            sut.DeleteCompanyState(guid);
+            sut.DeleteEmploymentState(guid);
         }
 
         [Fact(DisplayName = "PersistCreatedEmploymentState")]

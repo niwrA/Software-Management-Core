@@ -15,11 +15,12 @@ namespace EmploymentsShared
     {
         public Guid ContactGuid { get; set; }
         public Guid CompanyRoleGuid { get; set; }
+        public string ContactName { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public override void Execute()
         {
-            ((IEmploymentService)base.CommandProcessor).CreateEmployment(this.EntityGuid, this.ContactGuid, this.CompanyRoleGuid, this.StartDate, this.EndDate);
+            ((IEmploymentService)base.CommandProcessor).CreateEmployment(this.EntityGuid, this.ContactGuid, this.CompanyRoleGuid, this.StartDate, this.EndDate, this.ContactName);
             base.Execute();
         }
     }

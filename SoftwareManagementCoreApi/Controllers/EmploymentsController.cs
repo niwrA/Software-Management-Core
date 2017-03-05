@@ -21,6 +21,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public Guid CompanyRoleGuid { get { return _state.CompanyRoleGuid; } }
         public string StartDate { get { return _state.StartDate.HasValue ? _state.StartDate.Value.ToString("yyyy-MM-dd") : ""; } }
         public string EndDate { get { return _state.EndDate.HasValue ? _state.EndDate.Value.ToString("yyyy-MM-dd") : ""; } }
+        public string ContactName { get { return _state.ContactName;  } }
     }
 
     [Route("api/[controller]")]
@@ -41,13 +42,23 @@ namespace SoftwareManagementCoreApi.Controllers
             return dtos;
         }
 
-        // GET: api/employments/getbycompanyroleid/5
+        // todo: this one can probably be deleted again when the employments contains the ContactName
         // [Route("companyrole/{guid}/contacts")]
         [Route("getcontactsbycompanyroleid/{guid}")]
         public IEnumerable<ContactDto> GetContactsByCompanyRoleId(Guid guid)
         {
             var states = _employmentStateRepository.GetContactsByCompanyRoleGuid(guid);
             var dtos = states.Select(s => new ContactDto(s)).ToList();
+            return dtos;
+        }
+
+        // GET: api/employments/getbycompanyroleid/5
+        // [Route("companyrole/{guid}/contacts")]
+        [Route("getemploymentsbycompanyroleid/{guid}")]
+        public IEnumerable<EmploymentDto> GetEmploymentsByCompanyRoleId(Guid guid)
+        {
+            var states = _employmentStateRepository.GetEmploymentsByCompanyRoleGuid(guid);
+            var dtos = states.Select(s => new EmploymentDto(s)).ToList();
             return dtos;
         }
 

@@ -21,7 +21,7 @@ namespace SoftwareManagementCoreTests.Employments
             Guid companyRoleGuid = Guid.NewGuid();
 
             var startDate = DateTime.Now.Date as DateTime?;
-            var employment = sut.CreateEmployment(guid, contactGuid, companyRoleGuid, startDate, null);
+            var employment = sut.CreateEmployment(guid, contactGuid, companyRoleGuid, startDate, null, null);
 
             sutBuilder.RepoMock.Verify(v => v.CreateEmploymentState(guid, contactGuid, companyRoleGuid), Times.Once);
         }
@@ -37,7 +37,7 @@ namespace SoftwareManagementCoreTests.Employments
             Assert.Equal(state.CompanyRoleGuid, sut.CompanyRoleGuid);
             Assert.Equal(state.StartDate, sut.StartDate);
             Assert.Equal(state.EndDate, sut.EndDate);
-
+            Assert.Equal(state.ContactName, sut.ContactName);
         }
 
         public class EmploymentSutBuilder

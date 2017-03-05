@@ -24,7 +24,7 @@ namespace SoftwareManagementCoreTests.Employments
             sut.EndDate = DateTime.Now.Date.AddYears(1);
             sut.Execute();
 
-            employmentsMock.Verify(s => s.CreateEmployment(sut.EntityGuid, sut.ContactGuid, sut.CompanyRoleGuid, sut.StartDate, sut.EndDate), Times.Once);
+            employmentsMock.Verify(s => s.CreateEmployment(sut.EntityGuid, sut.ContactGuid, sut.CompanyRoleGuid, sut.StartDate, sut.EndDate, sut.ContactName), Times.Once);
         }
 
         // todo: duplicate check on Employments
