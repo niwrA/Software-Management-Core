@@ -204,8 +204,10 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public ICommandState CreateCommandState()
         {
-            var state = new CommandState();
-            state.Guid = Guid.NewGuid();
+            var state = new CommandState()
+            {
+                Guid = Guid.NewGuid()
+            };
             _commandStates.Add(state.Guid, state);
             return state;
         }
@@ -307,8 +309,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public ICompanyState GetCompanyState(Guid guid)
         {
-            ICompanyState state;
-            if (!_companyStates.TryGetValue(guid, out state))
+            if (!_companyStates.TryGetValue(guid, out ICompanyState state))
             {
                 if (!_updatedCompanyStates.TryGetValue(guid, out state))
                 {
@@ -334,8 +335,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IContactState GetContactState(Guid guid)
         {
-            IContactState state;
-            if (!_contactStates.TryGetValue(guid, out state))
+            if (!_contactStates.TryGetValue(guid, out IContactState state))
             {
                 if (!_updatedContactStates.TryGetValue(guid, out state))
                 {
@@ -382,8 +382,6 @@ namespace SoftwareManagementMongoDbCoreRepository
                     }
                 }
             }
-            return null;
-
             return states?.ToList();
         }
 
@@ -417,8 +415,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IEmploymentState GetEmploymentState(Guid guid)
         {
-            IEmploymentState state;
-            if (!_employmentStates.TryGetValue(guid, out state))
+            if (!_employmentStates.TryGetValue(guid, out IEmploymentState state))
             {
                 var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
                 var filter = Builders<EmploymentState>.Filter.Eq("Guid", guid);
@@ -440,8 +437,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         // as long as for write mode persistchanges does the work
         public IProductState GetProductState(Guid guid)
         {
-            IProductState state;
-            if (!_productStates.TryGetValue(guid, out state))
+            if (!_productStates.TryGetValue(guid, out IProductState state))
             {
                 if (!_updatedProductStates.TryGetValue(guid, out state))
                 {
@@ -467,8 +463,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IProjectState GetProjectState(Guid guid)
         {
-            IProjectState state;
-            if (!_projectStates.TryGetValue(guid, out state))
+            if (!_projectStates.TryGetValue(guid, out IProjectState state))
             {
                 if (!_updatedProjectStates.TryGetValue(guid, out state))
                 {

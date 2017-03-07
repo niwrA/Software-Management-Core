@@ -88,8 +88,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public ICompanyState CreateCompanyState(Guid guid, string name)
         {
-            ICompanyState state;
-            if (_companyDictionary.TryGetValue(guid, out state))
+            if (_companyDictionary.TryGetValue(guid, out ICompanyState state))
             {
                 state.Name = name; // todo: do we need concurrency check?
             }
@@ -104,8 +103,7 @@ namespace SoftwareManagementEventSourceRepository
         public IContactState CreateContactState(Guid guid, string name)
         {
             // in eventsourcing, state may already exist
-            IContactState state;
-            if(_contactDictionary.TryGetValue(guid, out state))
+            if (_contactDictionary.TryGetValue(guid, out IContactState state))
             {
                 state.Name = name; // todo: do we need concurrency check?
             }
@@ -119,8 +117,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public IProductState CreateProductState(Guid guid, string name)
         {
-            IProductState state;
-            if (_productDictionary.TryGetValue(guid, out state))
+            if (_productDictionary.TryGetValue(guid, out IProductState state))
             {
                 state.Name = name; // todo: do we need concurrency check?
             }
@@ -134,14 +131,13 @@ namespace SoftwareManagementEventSourceRepository
 
         public IProjectState CreateProjectState(Guid guid, string name)
         {
-            IProjectState state;
-            if (_projectDictionary.TryGetValue(guid, out state))
+            if (_projectDictionary.TryGetValue(guid, out IProjectState state))
             {
                 state.Name = name; // todo: do we need concurrency check?
             }
             else
             {
-                state = new ProjectState{ Guid = guid, Name = name };
+                state = new ProjectState { Guid = guid, Name = name };
                 _projectDictionary.Add(guid, state);
             }
             return state;
@@ -169,8 +165,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public ICompanyState GetCompanyState(Guid guid)
         {
-            ICompanyState state;
-            if (_companyDictionary.TryGetValue(guid, out state))
+            if (_companyDictionary.TryGetValue(guid, out ICompanyState state))
             {
                 return state;
             }
@@ -186,8 +181,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public IContactState GetContactState(Guid guid)
         {
-            IContactState state;
-            if (_contactDictionary.TryGetValue(guid, out state))
+            if (_contactDictionary.TryGetValue(guid, out IContactState state))
             {
                 return state;
             }
@@ -204,8 +198,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public IProductState GetProductState(Guid guid)
         {
-            IProductState state;
-            if (_productDictionary.TryGetValue(guid, out state))
+            if (_productDictionary.TryGetValue(guid, out IProductState state))
             {
                 return state;
             }
@@ -221,8 +214,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public IProjectState GetProjectState(Guid guid)
         {
-            IProjectState state;
-            if (_projectDictionary.TryGetValue(guid, out state))
+            if (_projectDictionary.TryGetValue(guid, out IProjectState state))
             {
                 return state;
             }

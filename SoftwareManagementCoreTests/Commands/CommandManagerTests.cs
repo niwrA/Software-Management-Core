@@ -41,11 +41,13 @@ namespace SoftwareManagementCoreTests.Commands
 
             // setup configuration for all Contact commands to use the service above
             // for command processing
-            var processorConfig = new ProcessorConfig();
-            processorConfig.Assembly = "SoftwareManagementCore";
-            processorConfig.NameSpace = "ContactsShared";
-            processorConfig.Entity = "Contact";
-            processorConfig.Processor = processor;
+            var processorConfig = new ProcessorConfig()
+            {
+                Assembly = "SoftwareManagementCore",
+                NameSpace = "ContactsShared",
+                Entity = "Contact",
+                Processor = processor
+            };
             sut.AddConfig(processorConfig);
 
             // create a new command to merge/apply
