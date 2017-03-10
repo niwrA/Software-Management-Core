@@ -4,10 +4,10 @@ End goal for this project is a flexible setup of a CQRS system with eventsourcin
 The main application business logic, including api and datalayer(s) implementations are all in this repository's solution for now, for convenience. This is intended to be split up later to prevent a huge repository download (that happens far too often). Components should stand on their own.
 
 ## Setup
-This requires Visual Studio 2017 RC or higher with .NET Core 1.1.0 or higher and an EntityFrameworkCore compatible backing for the database (set to SQL for now, others can be easily added). Right now you need to modify the connectionstring in the project directly. This will be made configurable in future.
+This requires Visual Studio 2017 RC or higher with .NET Core 1.1.0 or higher and an EntityFrameworkCore compatible backing for the database or MongoDb. Right now you need to modify the connectionstring in the project directly. This will probably be made more configurable in future.
 
 Windows
-1. Install the latest Visual Studio 2017 (RC) if you haven't already. You only need the web module with aspnetcore for running this. 
+1. Install Visual Studio 2017 if you haven't already. You only need the web module with aspnetcore for running this. 
 
 2. If you want to contribute, clone the project to your own github account, and then clone it locally from there. Otherwise, just clone the project locally (on Windows I recommend using GitHub Desktop for convencience).
 
@@ -25,21 +25,27 @@ If you wan to use SQL Server:
 MongoDb
 If you want to use MongoDb (currently in development): install MongoDB using the default port, or use a Docker install, like this:
 
-- Install Docker for Windows if you haven't already
-
-- Goto Powershell and type "docker pull mongo"
+- Install Docker for Windows if you haven't already (requires Windows 10 anniversary update or later)
 
 - type "docker run -p 27017:27017 --name dockedmongo -d mongo
 
 You should now be ready to run the project (I prefer using Kestrel rather than IIS Express, it's faster and it gives immediate feedback on what's happening in its console)
 
+I haven't tested yet, but the project is probably compatible with Linux and MacOS versions of .NET Core as well and could be run there just as easily.
+
 ### Controller
-CommandController is the main controller, which receives a list of CommandDtos from the front-end (see the Angular 2 repo). This is an AspNetCore project which picks up the commands which have a Name property which indicates the type of command, and an Entity property which indicates the entity (aggregate root) the command is for. 
+The controllers are divided into Query and Command controllers. The Query controllers speak for themselves, and are pretty straightforward translations of state into dtos. 
+
+The Command controller comes in two flavors. A regular CommandController which is similar to a more traditional, transacted Post, and an EventSourceController, which shows the setup can use full EventSourcing easily. 
+
+The controllers are in an AspNetCore project which picks up the commands which have a Name property which indicates the type of command, and an Entity property which indicates the entity (aggregate root) the command is for. Although they are currently processed against a repository directly, the commands are also sourced, so this setup still allows for doing projections after the fact, even if you don't use 'full' eventsourcing.
+
+There is also an EventSourceController, which implements rebuilding the business object state from the sourced commands, as an example of how easy it is to switch to that pattern with this setup. You can just change the target in the client project to the batch entry point on the EventSource controller, although note that there is no projection taking place yet, so you won't see the changes saved (just validated against current state).
 
 ### Command Manager
 The CommandManager will determine which Command object matches that combination of Name and Entity, which can be configured in the CommandManager with CommandConfigs. This will route the command to the correct service (e.g. ProductService) which can execute the command. It can route all commands for a specific entity to a (Micro)Service, but also override a specific command for that entity to another service if necessary.
 
-### (Micro)Services
+### (Micro)Services / Domain Driven Design
 Each service as well as the commands defines its repository and state interfaces, which have to be injected. This ensures that the services are as agnostic as possible about what kind of datastore backs them, which is an important goal for this project (being able to easily implement and experiment with different types of datastore, both as a learning exercise and as an important practical approach where different datastores can be mixed and matched purposefully). The services (and most helpers like IDateTimeProvider) are also written as Shared Projects, which don't have any dependency of their own and are therefore easily packaged in any platform (so could be used as .NET Framework 4.5 client dlls, Xamarin Forms, targeting different .NET Standard versions, etc.) They are all bundeled into a single SoftwareManagementCore project/dll, but are intended such that at a minimum each 'domain' (projects, products, contacts etc.) can be published as a separate dll.
 For more information on Shared Projects as used here, read this blog: https://www.linkedin.com/pulse/i-shared-projects-arwin-van-arum
 For more information on how the services interact with the repository for state management, read this blog: https://www.linkedin.com/pulse/i-repository-arwin-van-arum
