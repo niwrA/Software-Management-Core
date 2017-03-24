@@ -73,6 +73,23 @@ namespace SoftwareManagementCoreTests.Products
             sutBuilder.ProductMock.Verify(s => s.ChangeBusinessCase(sut.BusinessCase), Times.Once);
         }
 
+        [Fact(DisplayName = "AddVersionToProductCommand")]
+        public void AddVersionToProductCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<AddVersionToProductCommand>();
+            var sut = sutBuilder.Build() as AddVersionToProductCommand;
+
+            sut.ProductVersionGuid = Guid.NewGuid();
+            sut.Name = "New name";
+            sut.Major = 1;
+            sut.Minor = 2;
+            sut.Revision = 3;
+            sut.Build = 4;
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.AddVersion(sut.ProductVersionGuid, sut.Name, sut.Major, sut.Minor, sut.Revision, sut.Build), Times.Once);
+        }
+
         // todo: move to another file, along with the globals?
         public enum CommandTypes
         {

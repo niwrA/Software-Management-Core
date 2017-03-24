@@ -14,6 +14,10 @@ namespace SoftwareManagementCoreApi.Test
         {
             throw new NotImplementedException();
         }
+        public IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name)
+        {
+            throw new NotImplementedException();
+        }
 
         public void DeleteProductState(Guid guid)
         {

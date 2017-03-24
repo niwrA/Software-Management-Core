@@ -66,6 +66,7 @@ namespace SoftwareManagementEFCoreRepository
     {
         public string Description { get; set; }
         public string BusinessCase { get; set; }
+        public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     }
 
     public class ProjectRoleState : NamedEntityState, IProjectRoleState
@@ -383,6 +384,16 @@ namespace SoftwareManagementEFCoreRepository
         }
 
         public IEnumerable<IContactState> GetContactsByCompanyRoleGuid(Guid companyRoleGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProductVersionState CreateProductVersionState(Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name)
         {
             throw new NotImplementedException();
         }

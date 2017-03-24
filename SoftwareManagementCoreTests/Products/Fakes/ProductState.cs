@@ -1,5 +1,6 @@
 ﻿using ProductsShared;
 using System;
+using System.Collections.Generic;
 
 namespace SoftwareManagementCoreTests.Fakes
 {
@@ -11,5 +12,6 @@ namespace SoftwareManagementCoreTests.Fakes
         public string Name { get; set; }
         public string Description { get; set; }
         public string BusinessCase { get; set; }
+        public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     }
 }

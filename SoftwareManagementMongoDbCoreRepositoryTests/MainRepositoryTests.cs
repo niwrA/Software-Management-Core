@@ -6,6 +6,8 @@ using MongoDB.Driver;
 using SoftwareManagementMongoDbCoreRepository;
 using System.Collections.Generic;
 using System.Threading;
+using ProductsShared;
+using System.Linq;
 
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
@@ -54,7 +56,11 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
 
             sut.PersistChanges();
 
-            sutBuilder.EmploymentStateCollection.Verify(s => s.InsertMany(It.IsAny<IEnumerable<EmploymentState>>(), null, CancellationToken.None), Times.Once, "InsertMany was not called");
+            sutBuilder.EmploymentStateCollection.Verify(s => s.InsertMany(
+                It.Is<ICollection<EmploymentState>>(
+                l => l.Contains(state) &&
+                l.Count == 1)
+                , null, CancellationToken.None), Times.Once, "InsertMany was not called correctly");
         }
 
         [Fact(DisplayName = "PersistDeletedEmploymentState")]
@@ -70,6 +76,41 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             sut.PersistChanges();
 
             sutBuilder.EmploymentStateCollection.Verify(s => s.DeleteOne(It.IsAny<FilterDefinition<EmploymentState>>(), null, CancellationToken.None), Times.Once, "DeleteOne was not called");
+        }
+
+        [Fact(DisplayName = "AddProductVersionState")]
+        public void CanAddProductVersionState()
+        {
+            var sutBuilder = new SutBuilder().WithProductCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var versionGuid = Guid.NewGuid();
+            var productState = (ProductState)sut.CreateProductState(guid, "testproductstate");
+            var state = sut.CreateProductVersionState(guid, versionGuid, "testversionstate");
+
+            sut.PersistChanges();
+
+            sutBuilder.ProductStateCollection.Verify(s => s.InsertMany(
+                It.Is<ICollection<ProductState>>(
+                    l => l.Contains(productState) &&
+                    l.Count == 1 &&
+                    l.First().ProductVersionStates.Contains(state) &&
+                    l.First().ProductVersionStates.Count == 1),
+                null, CancellationToken.None), Times.Once,
+                "InsertMany was not called with the expected state");
+        }
+
+        [Fact(DisplayName = "DeleteProductVersionState", Skip = "In progress")]
+        public void CanDeleteProductVersionState()
+        {
+            var sutBuilder = new SutBuilder().WithProductCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var versionGuid = Guid.NewGuid();
+            var productState = (ProductState)sut.CreateProductState(guid, "testproductstate");
+
+            sut.PersistChanges();
+
         }
 
         [Fact(DisplayName = "CanPersistChanges_WhenNoChanges")]
@@ -90,6 +131,8 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public Mock<IMongoCollection<EmploymentState>> EmploymentStateCollection { get; set; }
         public Mock<IMongoDatabase> Database { get { return _databaseMock; } }
         public Mock<IMongoClient> Client { get { return _clientMock; } }
+        public Mock<IMongoCollection<ProductState>> ProductStateCollection { get; private set; }
+
         public MainRepository Build()
         {
             _clientMock = new Mock<IMongoClient>();
@@ -98,6 +141,10 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             if (EmploymentStateCollection != null)
             {
                 _databaseMock.Setup(s => s.GetCollection<EmploymentState>("EmploymentStates", null)).Returns(EmploymentStateCollection.Object);
+            }
+            if (ProductStateCollection != null)
+            {
+                _databaseMock.Setup(s => s.GetCollection<ProductState>("ProductStates", null)).Returns(ProductStateCollection.Object);
             }
 
             _clientMock.Setup(s => s.GetDatabase("SoftwareManagement", null)).Returns(_databaseMock.Object);
@@ -108,6 +155,12 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public SutBuilder WithEmploymentCollection()
         {
             EmploymentStateCollection = new Mock<IMongoCollection<EmploymentState>>();
+            return this;
+        }
+
+        public SutBuilder WithProductCollection()
+        {
+            ProductStateCollection = new Mock<IMongoCollection<ProductState>>();
             return this;
         }
     }

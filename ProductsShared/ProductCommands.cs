@@ -66,4 +66,20 @@ namespace ProductsShared
             base.Execute();
         }
     }
+    public class AddVersionToProductCommand : ProductCommand
+    {
+        public string Name { get; set; }
+        public int Major { get; set; }
+        public int Minor { get; set; }
+        public int Revision { get; set; }
+        public int Build { get; set; }
+        public Guid ProductVersionGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.AddVersion(ProductVersionGuid, Name, Major, Minor, Revision, Build);
+            base.Execute();
+        }
+
+    }
 }

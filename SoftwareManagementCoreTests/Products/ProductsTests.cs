@@ -50,13 +50,38 @@ namespace SoftwareManagementCoreTests
         public void CanRenameProduct()
         {
             var stateMock = new Mock<IProductState>();
-            var sut = new Product(stateMock.Object);
+            var repoMock = new Mock<IProductStateRepository>();
+            var sut = new Product(stateMock.Object, repoMock.Object);
 
             sut.Rename("new", "old");
 
-            stateMock.Setup(s => s.Name).Returns("old");            
+            stateMock.Setup(s => s.Name).Returns("old");
             sut.Rename("new", "old");
             stateMock.VerifySet(t => t.Name = "new");
+        }
+
+        [Fact(DisplayName = "AddVersion Implements IRepository")]
+        public void CanAddVersion()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductVersionState>();
+            const string name = "new";
+
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+            repoMock.Setup(t => t.CreateProductVersionState(productGuid, guid, name)).Returns(stateMock.Object);
+
+            var result = sut.AddVersion(guid, name, 1, 2, 3, 4);
+
+            stateMock.VerifySet(t => t.Major = 1);
+            stateMock.VerifySet(t => t.Minor = 2);
+            stateMock.VerifySet(t => t.Revision = 3);
+            stateMock.VerifySet(t => t.Build = 4);
+            stateMock.VerifySet(t => t.ProductGuid = productGuid);
         }
 
     }

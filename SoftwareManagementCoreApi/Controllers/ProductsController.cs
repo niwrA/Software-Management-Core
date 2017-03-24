@@ -9,6 +9,20 @@ using ProductsShared;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
+    public class ProductVersionDto
+    {
+        private IProductVersionState _state;
+        public ProductVersionDto(IProductVersionState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public int Major {  get { return _state.Major; } }
+        public int Minor {  get { return _state.Minor; } }
+        public int Revision {  get { return _state.Revision; } }
+        public int Build {  get { return _state.Build; } }
+    }
     public class ProductDto
     {
         private IProductState _state;
@@ -20,6 +34,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public string Name { get { return _state.Name; } }
         public string Description {  get { return _state.Description; } }
         public string BusinessCase { get { return _state.BusinessCase; } }
+        public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates.Select(s => new ProductVersionDto(s)).ToList(); } }
     }
 
     [Route("api/[controller]")]
@@ -45,7 +60,12 @@ namespace SoftwareManagementCoreApi.Controllers
         public ProductDto Get(Guid guid)
         {
             var state = _productStateRepository.GetProductState(guid);
-            return new ProductDto(state);
+            if (state != null)
+            {
+                var dto = new ProductDto(state);
+                return dto;
+            }
+            return null;
         }
     }
 }

@@ -18,8 +18,27 @@ using System.Threading.Tasks;
 namespace SoftwareManagementMongoDbCoreRepository
 {
     [BsonIgnoreExtraElements]
+    public class ProductVersionState : IProductVersionState
+    {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public int Major { get; set; }
+        public int Minor { get; set; }
+        public int Revision { get; set; }
+        public int Build { get; set; }
+        public Guid ProductGuid { get; set; }
+        public string Name { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+    [BsonIgnoreExtraElements]
     public class ProductState : IProductState
     {
+        public ProductState()
+        {
+            ProductVersionStates = new List<IProductVersionState>();
+        }
+
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
         public string Description { get; set; }
@@ -27,6 +46,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     }
     [BsonIgnoreExtraElements]
     public class ProjectState : IProjectState
@@ -736,6 +756,16 @@ namespace SoftwareManagementMongoDbCoreRepository
             {
                 state.ProjectRoleStates.Remove(roleState);
             }
+        }
+
+        public IProductVersionState CreateProductVersionState(Guid guid, Guid versionGuid, string name)
+        {
+            var state = GetProductState(guid);
+            var versionState = new ProductVersionState();
+            versionState.Guid = versionGuid;
+            versionState.Name = name;
+            state.ProductVersionStates.Add(versionState);
+            return versionState;
         }
     }
 }

@@ -58,6 +58,7 @@ namespace SoftwareManagementEventSourceRepository
         public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     }
     public class EventSourcedMainRepository : IContactStateRepository, ICompanyStateRepository, IProjectStateRepository, IProductStateRepository
     {
@@ -129,6 +130,16 @@ namespace SoftwareManagementEventSourceRepository
             return state;
         }
 
+        public IProductVersionState CreateProductVersionState(Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
         public IProjectState CreateProjectState(Guid guid, string name)
         {
             if (_projectDictionary.TryGetValue(guid, out IProjectState state))
@@ -145,7 +156,7 @@ namespace SoftwareManagementEventSourceRepository
 
         public void DeleteCompanyState(Guid guid)
         {
-//            throw new NotImplementedException();
+            //            throw new NotImplementedException();
         }
 
         public void DeleteContactState(Guid guid)

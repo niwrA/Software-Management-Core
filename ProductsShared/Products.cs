@@ -10,6 +10,16 @@ namespace ProductsShared
     {
         string Description { get; set; }
         string BusinessCase { get; set; }
+        ICollection<IProductVersionState> ProductVersionStates { get; set; }
+
+    }
+    public interface IProductVersionState : INamedEntityState
+    {
+        int Major { get; set; }
+        int Minor { get; set; }
+        int Revision { get; set; }
+        int Build { get; set; }
+        Guid ProductGuid { get; set; }
     }
     public interface IProductStateRepository : IEntityRepository
     {
@@ -17,7 +27,19 @@ namespace ProductsShared
         IProductState GetProductState(Guid guid);
         IEnumerable<IProductState> GetProductStates();
         void DeleteProductState(Guid guid);
+        IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name);
     }
+    public interface IProductVersion
+    {
+        DateTime CreatedOn { get; }
+        Guid Guid { get; }
+        string Name { get; }
+        int Major { get; }
+        int Minor { get; }
+        int Revision { get; }
+        int Build { get; }
+    }
+
     public interface IProduct
     {
         DateTime CreatedOn { get; }
@@ -27,13 +49,18 @@ namespace ProductsShared
         void Rename(string name, string original);
         void ChangeDescription(string description);
         void ChangeBusinessCase(string businessCase);
+        IProductVersion AddVersion(Guid guid, string name, int major, int minor, int revision, int build);
+        IReadOnlyCollection<IProductVersion> ProductVersions { get; }
     }
     public class Product : IProduct
     {
         private IProductState _state;
-        public Product(IProductState state)
+        private IProductStateRepository _repo;
+
+        public Product(IProductState state, IProductStateRepository repo) 
         {
             _state = state;
+            _repo = repo;
         }
 
         public Guid Guid { get { return _state.Guid; } }
@@ -41,6 +68,8 @@ namespace ProductsShared
         public string Description { get { return _state.Description; } }
         public string BusinessCase { get { return _state.BusinessCase; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+        public IReadOnlyCollection<IProductVersion> ProductVersions => throw new NotImplementedException();
 
         public void Rename(string name, string originalName)
         {
@@ -62,6 +91,40 @@ namespace ProductsShared
         {
             _state.BusinessCase = businessCase;
         }
+
+        public IProductVersion AddVersion(Guid guid, string name, int major, int minor, int revision, int build)
+        {
+            var state = _repo.CreateProductVersionState(Guid, guid, name);
+            state.Major = major;
+            state.Minor = minor;
+            state.Revision = revision;
+            state.Build = build;
+            state.ProductGuid = Guid;
+            var productVersion = new ProductVersion(state);
+            return productVersion;
+        }
+    }
+
+    public class ProductVersion : IProductVersion
+    {
+        private IProductVersionState _state;
+        public ProductVersion(IProductVersionState state)
+        {
+            _state = state;
+        }
+        public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+        public Guid Guid { get { return _state.Guid; } }
+
+        public string Name { get { return _state.Name; } }
+
+        public int Major { get { return _state.Major; } }
+
+        public int Minor { get { return _state.Minor; } }
+
+        public int Revision { get { return _state.Revision; } }
+
+        public int Build { get { return _state.Build; } }
     }
 
     public interface IProductService : ICommandProcessor
@@ -86,12 +149,12 @@ namespace ProductsShared
             state.Name = name;
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
-            return new Product(state) as IProduct;
+            return new Product(state, _repo) as IProduct;
         }
         public IProduct GetProduct(Guid guid)
         {
             var state = _repo.GetProductState(guid);
-            return new Product(state) as IProduct;
+            return new Product(state, _repo) as IProduct;
         }
         public void DeleteProduct(Guid guid)
         {
