@@ -23,7 +23,7 @@ namespace SoftwareManagementCoreApiTests.Products
             Assert.Equal(productState.Name, sutResult.Name);
             Assert.Equal(productState.Description, sutResult.Description);
             Assert.Equal(productState.BusinessCase, sutResult.BusinessCase);
-            Assert.Equal(productState.ProductVersionStates.Count, sutResult.ProductVersions.Count);
+            Assert.Equal(productState.ProductVersionStates.Count, sutResult.Versions.Count);
         }
     }
 }

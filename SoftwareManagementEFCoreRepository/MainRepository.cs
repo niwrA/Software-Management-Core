@@ -23,6 +23,7 @@ namespace SoftwareManagementEFCoreRepository
         {
         }
         public DbSet<ProductState> ProductStates { get; set; }
+        public DbSet<ProductVersionState> ProductVersionStates { get; set; }
         public DbSet<ProjectState> ProjectStates { get; set; }
         public DbSet<ProjectRoleState> ProjectRoleStates { get; set; }
         public DbSet<CommandState> CommandStates { get; set; }
@@ -43,7 +44,12 @@ namespace SoftwareManagementEFCoreRepository
                 .WithOne()
                 .HasForeignKey(p => p.CompanyGuid);
 
+            modelBuilder.Entity<ProductState>()
+                .HasMany(h => (ICollection<ProductVersionState>)h.ProductVersionStates)
+                .WithOne()
+                .HasForeignKey(p => p.ProductGuid);
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -60,6 +66,15 @@ namespace SoftwareManagementEFCoreRepository
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string Name { get; set; }
+    }
+
+    public class ProductVersionState : NamedEntityState, IProductVersionState
+    {
+        public int Major { get; set; }
+        public int Minor { get; set; }
+        public int Revision { get; set; }
+        public int Build { get; set; }
+        public Guid ProductGuid { get; set; }
     }
 
     public class ProductState : NamedEntityState, IProductState
@@ -388,14 +403,11 @@ namespace SoftwareManagementEFCoreRepository
             throw new NotImplementedException();
         }
 
-        public IProductVersionState CreateProductVersionState(Guid guid, string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name)
         {
-            throw new NotImplementedException();
+            var state = new ProductVersionState { Guid = productVersionGuid, ProductGuid = guid, Name = name };
+            _context.ProductVersionStates.Add(state);
+            return state;
         }
     }
 }
