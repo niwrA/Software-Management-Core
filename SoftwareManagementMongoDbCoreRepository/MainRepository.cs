@@ -796,10 +796,10 @@ namespace SoftwareManagementMongoDbCoreRepository
         public void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid)
         {
             var state = GetCompanyState(guid);
-            var environmentState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == environmentGuid); // todo: work with Single and catch errors?
+            var environmentState = state.CompanyEnvironmentStates.FirstOrDefault(s => s.Guid == environmentGuid); // todo: work with Single and catch errors?
             if (environmentState != null)
             {
-                state.CompanyRoleStates.Remove(environmentState);
+                state.CompanyEnvironmentStates.Remove(environmentState);
             }
         }
 
