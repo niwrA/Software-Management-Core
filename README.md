@@ -31,6 +31,8 @@ If you want to use MongoDb (currently in development): install MongoDB using the
 
 You should now be ready to run the project (I prefer using Kestrel rather than IIS Express, it's faster and it gives immediate feedback on what's happening in its console)
 
+When using MongoDb, don't forget to register the child classes of aggregate roots using BsonClassMap.RegisterClassMap (currently in startup.cs)
+
 I haven't tested yet, but the project is probably compatible with Linux and MacOS versions of .NET Core as well and could be run there just as easily.
 
 ### Controller
@@ -46,9 +48,13 @@ There is also an EventSourceController, which implements rebuilding the business
 The CommandManager will determine which Command object matches that combination of Name and Entity, which can be configured in the CommandManager with CommandConfigs. This will route the command to the correct service (e.g. ProductService) which can execute the command. It can route all commands for a specific entity to a (Micro)Service, but also override a specific command for that entity to another service if necessary.
 
 ### (Micro)Services / Domain Driven Design
-Each service as well as the commands defines its repository and state interfaces, which have to be injected. This ensures that the services are as agnostic as possible about what kind of datastore backs them, which is an important goal for this project (being able to easily implement and experiment with different types of datastore, both as a learning exercise and as an important practical approach where different datastores can be mixed and matched purposefully). The services (and most helpers like IDateTimeProvider) are also written as Shared Projects, which don't have any dependency of their own and are therefore easily packaged in any platform (so could be used as .NET Framework 4.5 client dlls, Xamarin Forms, targeting different .NET Standard versions, etc.) They are all bundeled into a single SoftwareManagementCore project/dll, but are intended such that at a minimum each 'domain' (projects, products, contacts etc.) can be published as a separate dll.
+Each service as well as the commands defines its repository and state interfaces, which have to be injected. This ensures that the services are as agnostic as possible about what kind of datastore backs them, which is an important goal for this project (being able to easily implement and experiment with different types of datastore, both as a learning exercise and as an important practical approach where different datastores can be mixed and matched purposefully). 
+
+The services (and most helpers like IDateTimeProvider) are also written as Shared Projects, which don't have any dependency of their own and are therefore easily packaged in any platform (so could be used as .NET Framework 4.5 client dlls, Xamarin Forms, targeting different .NET Standard versions, etc.) They are all bundeled into a single SoftwareManagementCore project/dll, but are intended such that at a minimum each 'domain' (projects, products, contacts etc.) can be published as a separate dll.
+
 For more information on Shared Projects as used here, read this blog: https://www.linkedin.com/pulse/i-shared-projects-arwin-van-arum
 For more information on how the services interact with the repository for state management, read this blog: https://www.linkedin.com/pulse/i-repository-arwin-van-arum
+
 Determining what the barriers are for the services follows many of the DDD principles, where each aggregate root gets its own service. In addition, as an anti-corruption method, each relationship between aggregate roots is its own service. E.g. contacts and companies are separate entities that can have (both over time and in shape of contracting) many to many relationships, which are defined in the Employment service. 
 
 ### Api
