@@ -137,6 +137,58 @@ namespace SoftwareManagementEFCoreRepositoryTests.Companies
             }
         }
 
+        [Fact(DisplayName = "CanAddCompanyEnvironmentStateToCompanyState")]
+        public void AddCompanyEnvironmentState_Succeeds_WithNewEnvironment_AndCreatesEnvironmentState()
+        {
+            var companyGuid = Guid.NewGuid();
+            const string companyName = "Cool Company";
+            var environmentGuid = Guid.NewGuid();
+            const string environmentName = "Tester";
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder
+                .WithCompanyState(companyGuid, companyName)
+                .Build("GetCompanyState", true);
+
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                inMemoryDatabaseBuilder.InitializeContext(context);
+                var sut = new MainRepository(context);
+                sut.AddEnvironmentToCompanyState(companyGuid, environmentGuid, environmentName);
+                var companyState = sut.GetCompanyState(companyGuid);
+                var environmentState = companyState.CompanyEnvironmentStates.Single(w => w.Guid == environmentGuid);
+
+                Assert.Equal(EntityState.Added, context.Entry(environmentState).State);
+                Assert.Equal(environmentName, environmentState.Name);
+            }
+        }
+
+        [Fact(DisplayName = "CanRemoveCompanyEnvironmentStateToCompanyState")]
+        public void RemoveCompanyEnvironmentState_Succeeds()
+        {
+            var companyGuid = Guid.NewGuid();
+            const string companyName = "Cool Company";
+            var environmentGuid = Guid.NewGuid();
+            const string environmentName = "Software Developer 2";
+            var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
+            var options = inMemoryDatabaseBuilder
+                .WithCompanyState(companyGuid, companyName)
+                .WithCompanyEnvironmentState(environmentGuid, environmentName, companyGuid)
+                .Build("GetCompanyState", true);
+
+            // Run the test against a clean instance of the context
+            using (var context = new MainContext(options))
+            {
+                inMemoryDatabaseBuilder.InitializeContext(context);
+                var sut = new MainRepository(context);
+                sut.RemoveEnvironmentFromCompanyState(companyGuid, environmentGuid);
+                var companyState = sut.GetCompanyState(companyGuid);
+                var environmentState = companyState.CompanyEnvironmentStates.SingleOrDefault(w => w.Guid == environmentGuid);
+                environmentState = context.CompanyEnvironmentStates.Find(environmentGuid);
+                Assert.Equal(EntityState.Deleted, context.Entry(environmentState).State);
+                Assert.Equal(environmentName, environmentState.Name);
+            }
+        }
 
     }
     public class CompanyStateBuilder : EntityStateBuilder<CompanyState>
@@ -151,6 +203,21 @@ namespace SoftwareManagementEFCoreRepositoryTests.Companies
             return this;
         }
         public override CompanyRoleState Build()
+        {
+            var state = base.Build();
+            state.CompanyGuid = _companyGuid;
+            return state;
+        }
+    }
+    public class CompanyEnvironmentStateBuilder : EntityStateBuilder<CompanyEnvironmentState>
+    {
+        private Guid _companyGuid;
+        public CompanyEnvironmentStateBuilder WithCompanyGuid(Guid companyGuid)
+        {
+            _companyGuid = companyGuid;
+            return this;
+        }
+        public override CompanyEnvironmentState Build()
         {
             var state = base.Build();
             state.CompanyGuid = _companyGuid;

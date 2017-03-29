@@ -113,6 +113,42 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
 
         }
 
+        [Fact(DisplayName = "AddCompanyEnvironmentState")]
+        public void CanAddCompanyEnvironmentState()
+        {
+            var sutBuilder = new SutBuilder().WithCompanyCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var environmentGuid = Guid.NewGuid();
+            var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
+            var state = sut.CreateCompanyEnvironmentState(guid, environmentGuid, "testenvironmentstate");
+
+            sut.PersistChanges();
+
+            sutBuilder.CompanyStateCollection.Verify(s => s.InsertMany(
+                It.Is<ICollection<CompanyState>>(
+                    l => l.Contains(companyState) &&
+                    l.Count == 1 &&
+                    l.First().CompanyEnvironmentStates.Contains(state) &&
+                    l.First().CompanyEnvironmentStates.Count == 1),
+                null, CancellationToken.None), Times.Once,
+                "InsertMany was not called with the expected state");
+        }
+
+        [Fact(DisplayName = "DeleteCompanyEnvironmentState", Skip = "In progress")]
+        public void CanDeleteCompanyEnvironmentState()
+        {
+            var sutBuilder = new SutBuilder().WithCompanyCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var environmentGuid = Guid.NewGuid();
+            var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
+
+            sut.PersistChanges();
+
+        }
+
+
         [Fact(DisplayName = "CanPersistChanges_WhenNoChanges")]
         public void CanPersistChanges_WhenNoChanges()
         {
@@ -132,6 +168,7 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public Mock<IMongoDatabase> Database { get { return _databaseMock; } }
         public Mock<IMongoClient> Client { get { return _clientMock; } }
         public Mock<IMongoCollection<ProductState>> ProductStateCollection { get; private set; }
+        public Mock<IMongoCollection<CompanyState>> CompanyStateCollection { get; private set; }
 
         public MainRepository Build()
         {
@@ -145,6 +182,10 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             if (ProductStateCollection != null)
             {
                 _databaseMock.Setup(s => s.GetCollection<ProductState>("ProductStates", null)).Returns(ProductStateCollection.Object);
+            }
+            if (CompanyStateCollection != null)
+            {
+                _databaseMock.Setup(s => s.GetCollection<CompanyState>("CompanyStates", null)).Returns(CompanyStateCollection.Object);
             }
 
             _clientMock.Setup(s => s.GetDatabase("SoftwareManagement", null)).Returns(_databaseMock.Object);
@@ -161,6 +202,33 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public SutBuilder WithProductCollection()
         {
             ProductStateCollection = new Mock<IMongoCollection<ProductState>>();
+            return this;
+        }
+
+        public SutBuilder WithCompanyCollection()
+        {
+            CompanyStateCollection = new Mock<IMongoCollection<CompanyState>>();
+            return this;
+        }
+    }
+
+    public class CompanyStateBuilder
+    {
+        private List<CompanyEnvironmentState> _environments = new List<CompanyEnvironmentState>();
+        public CompanyState Build()
+        {
+            var state = new CompanyState();
+            foreach (var environmentState in _environments)
+            {
+                state.CompanyEnvironmentStates.Add(environmentState);
+            }
+            return state;
+        }
+         
+        public CompanyStateBuilder WithEnvironment(string name)
+        {
+            var state = new CompanyEnvironmentState { Name = name };
+            _environments.Add(state);
             return this;
         }
     }

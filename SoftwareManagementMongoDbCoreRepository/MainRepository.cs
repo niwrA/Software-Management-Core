@@ -36,7 +36,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     {
         public ProductState()
         {
-            ProductVersionStates = new List<IProductVersionState>();
+            ProductVersionStates = new List<IProductVersionState>() as ICollection<IProductVersionState>;
         }
 
         [BsonId(IdGenerator = typeof(GuidGenerator))]
@@ -93,6 +93,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public CompanyState()
         {
             CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
+            CompanyEnvironmentStates = new List<ICompanyEnvironmentState>() as ICollection<ICompanyEnvironmentState>;
         }
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
@@ -100,10 +101,20 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     }
 
     [BsonIgnoreExtraElements]
     public class CompanyRoleState : ICompanyRoleState
+    {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+    [BsonIgnoreExtraElements]
+    public class CompanyEnvironmentState : ICompanyEnvironmentState
     {
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
@@ -766,6 +777,28 @@ namespace SoftwareManagementMongoDbCoreRepository
             versionState.Name = name;
             state.ProductVersionStates.Add(versionState);
             return versionState;
+        }
+
+        public void AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object CreateCompanyEnvironmentState(Guid guid, Guid environmentGuid, string name)
+        {
+            var state = GetCompanyState(guid);
+            var environmentState = new CompanyEnvironmentState();
+
+            environmentState.Guid = environmentGuid;
+            environmentState.Name = name;
+            state.CompanyEnvironmentStates.Add(environmentState);
+
+            return environmentState;
         }
     }
 }

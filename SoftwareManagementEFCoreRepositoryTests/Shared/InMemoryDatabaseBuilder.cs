@@ -23,6 +23,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
         private List<CompanyState> _companyStates = new List<CompanyState>();
         private List<CompanyRoleState> _companyRoleStates = new List<CompanyRoleState>();
         private List<EmploymentState> _employmentStates = new List<EmploymentState>();
+        private List<CompanyEnvironmentState> _companyEnvironmentStates = new List<CompanyEnvironmentState>();
 
         // todo: move to domain specific version
         public InMemoryDatabaseBuilder WithDefaultProductStates()
@@ -76,6 +77,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             context.ContactStates.AddRange(_contactStates);
             context.CompanyStates.AddRange(_companyStates);
             context.CompanyRoleStates.AddRange(_companyRoleStates);
+            context.CompanyEnvironmentStates.AddRange(_companyEnvironmentStates);
             context.EmploymentStates.AddRange(_employmentStates);
 
             sut.PersistChanges();
@@ -132,6 +134,19 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             _companyRoleStates.Add(state);
             return this;
 
+        }
+
+        internal InMemoryDatabaseBuilder WithCompanyEnvironmentState(Guid guid, string name, Guid companyGuid)
+        {
+            var state = new CompanyEnvironmentStateBuilder()
+                .WithGuid(guid)
+                .WithName(name)
+                //.WithCompanyGuid(companyGuid) <- reported as a bug to microsoft
+                .Build();
+            state.CompanyGuid = companyGuid; // <- workaround
+            _companyEnvironmentStates.Add(state);
+            return this;
+            throw new NotImplementedException();
         }
     }
     public class EntityStateBuilder<T> where T : IEntityState, new()

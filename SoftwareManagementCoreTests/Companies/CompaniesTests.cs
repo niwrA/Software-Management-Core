@@ -98,6 +98,33 @@ namespace SoftwareManagementCoreTests
 
             repoMock.Verify(s => s.RemoveRoleFromCompanyState(stateMock.Guid, roleGuid), Times.Once);
         }
+        [Fact(DisplayName = "CanAddEnvironmentToCompany")]
+        public void CanAddEnvironmentToCompany()
+        {
+            var repoMock = new Mock<ICompanyStateRepository>();
+            var stateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
+            var sut = new Company(stateMock, repoMock.Object);
 
+            var EnvironmentGuid = Guid.NewGuid();
+            var EnvironmentName = "Tester";
+
+            sut.AddEnvironmentToCompany(EnvironmentGuid, EnvironmentName);
+
+            repoMock.Verify(s => s.AddEnvironmentToCompanyState(stateMock.Guid, EnvironmentGuid, EnvironmentName), Times.Once);
+        }
+
+        [Fact(DisplayName = "CanRemoveEnvironmentFromCompany")]
+        public void CanRemoveEnvironmentFromCompany()
+        {
+            var repoMock = new Mock<ICompanyStateRepository>();
+            var stateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
+            var sut = new Company(stateMock, repoMock.Object);
+
+            var EnvironmentGuid = Guid.NewGuid();
+
+            sut.RemoveEnvironmentFromCompany(EnvironmentGuid);
+
+            repoMock.Verify(s => s.RemoveEnvironmentFromCompanyState(stateMock.Guid, EnvironmentGuid), Times.Once);
+        }
     }
 }

@@ -61,8 +61,10 @@ namespace SoftwareManagementCoreApi
             #region "MongoDb Config"
             services.AddTransient<IMongoClient, MongoClient>();
             // this needs to be here for now, because MainRepository is instanced per Controller
+            // see: http://mongodb.github.io/mongo-csharp-driver/2.2/reference/bson/mapping/
             BsonClassMap.RegisterClassMap<CompanyRoleState>();
             BsonClassMap.RegisterClassMap<ProjectRoleState>();
+            BsonClassMap.RegisterClassMap<ProductVersionState>();
             #endregion
 
             // helpers

@@ -64,4 +64,26 @@ namespace CompaniesShared
         }
     }
 
+    public class AddEnvironmentToCompanyCommand : CompanyCommand
+    {
+        public string EnvironmentName { get; set; }
+        public Guid EnvironmentGuid { get; set; }
+        public override void Execute()
+        {
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+            company.AddEnvironmentToCompany(this.EnvironmentGuid, this.EnvironmentName);
+            base.Execute();
+        }
+    }
+    public class RemoveEnvironmentFromCompanyCommand : CompanyCommand
+    {
+        public Guid EnvironmentGuid { get; set; }
+        public override void Execute()
+        {
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+            company.RemoveEnvironmentFromCompany(this.EnvironmentGuid);
+            base.Execute();
+        }
+    }
+
 }

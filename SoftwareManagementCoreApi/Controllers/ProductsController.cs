@@ -22,6 +22,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public int Minor {  get { return _state.Minor; } }
         public int Revision {  get { return _state.Revision; } }
         public int Build {  get { return _state.Build; } }
+        public Guid ProductGuid { get { return _state.ProductGuid; } }
     }
     public class ProductDto
     {

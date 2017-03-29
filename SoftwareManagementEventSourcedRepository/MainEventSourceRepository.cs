@@ -25,6 +25,7 @@ namespace SoftwareManagementEventSourceRepository
         public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     }
     public class CompanyRoleState : ICompanyRoleState
     {
@@ -73,6 +74,11 @@ namespace SoftwareManagementEventSourceRepository
             _projectDictionary = new Dictionary<Guid, IProjectState>();
             _companyDictionary = new Dictionary<Guid, ICompanyState>();
             _productDictionary = new Dictionary<Guid, IProductState>();
+        }
+
+        public void AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName)
+        {
+            throw new NotImplementedException();
         }
 
         public void AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
@@ -248,6 +254,11 @@ namespace SoftwareManagementEventSourceRepository
         {
             // we don't persist state - we're always rebuilding from persisted events instead
             return Task.CompletedTask;
+        }
+
+        public void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid)
+        {
+            throw new NotImplementedException();
         }
 
         public void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid)

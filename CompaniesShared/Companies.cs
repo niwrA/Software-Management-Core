@@ -17,8 +17,12 @@ namespace CompaniesShared
     public interface ICompanyState : INamedEntityState
     {
         ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
+        ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     }
     public interface ICompanyRoleState : INamedEntityState
+    {
+    }
+    public interface ICompanyEnvironmentState : INamedEntityState
     {
     }
     public interface ICompanyStateRepository : IEntityRepository
@@ -29,7 +33,8 @@ namespace CompaniesShared
         void DeleteCompanyState(Guid guid);
         void AddRoleToCompanyState(Guid projectGuid, Guid roleGuid, string name);
         void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid);
-
+        void AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName);
+        void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid);
     }
     public interface IEntity
     {
@@ -42,6 +47,8 @@ namespace CompaniesShared
     {
         void AddRoleToCompany(Guid roleGuid, string roleName);
         void RemoveRoleFromCompany(Guid roleGuid);
+        void AddEnvironmentToCompany(Guid environmentGuid, string environmentName);
+        void RemoveEnvironmentFromCompany(Guid environmentGuid);
     }
     public class Company : ICompany
     {
@@ -82,6 +89,15 @@ namespace CompaniesShared
             _repo.RemoveRoleFromCompanyState(this.Guid, roleGuid);
         }
 
+        public void AddEnvironmentToCompany(Guid environmentGuid, string environmentName)
+        {
+            _repo.AddEnvironmentToCompanyState(this.Guid, environmentGuid, environmentName);
+        }
+
+        public void RemoveEnvironmentFromCompany(Guid environmentGuid)
+        {
+            _repo.RemoveEnvironmentFromCompanyState(this.Guid, environmentGuid);
+        }
     }
     public class CompanyService : ICompanyService
     {

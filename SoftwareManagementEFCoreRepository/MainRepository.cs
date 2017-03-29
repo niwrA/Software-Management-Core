@@ -31,6 +31,7 @@ namespace SoftwareManagementEFCoreRepository
         public DbSet<CompanyState> CompanyStates { get; set; }
         public DbSet<CompanyRoleState> CompanyRoleStates { get; set; }
         public DbSet<EmploymentState> EmploymentStates { get; set; }
+        public DbSet<CompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,11 @@ namespace SoftwareManagementEFCoreRepository
 
             modelBuilder.Entity<CompanyState>()
                 .HasMany(h => (ICollection<CompanyRoleState>)h.CompanyRoleStates)
+                .WithOne()
+                .HasForeignKey(p => p.CompanyGuid);
+
+            modelBuilder.Entity<CompanyState>()
+                .HasMany(h => (ICollection<CompanyEnvironmentState>)h.CompanyEnvironmentStates)
                 .WithOne()
                 .HasForeignKey(p => p.CompanyGuid);
 
@@ -100,15 +106,20 @@ namespace SoftwareManagementEFCoreRepository
         public CompanyState()
         {
             CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
+            CompanyEnvironmentStates = new List<ICompanyEnvironmentState>() as ICollection<ICompanyEnvironmentState>;
         }
         public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
+        public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     }
 
     public class CompanyRoleState : NamedEntityState, ICompanyRoleState
     {
         public Guid CompanyGuid { get; set; }
     }
-
+    public class CompanyEnvironmentState : NamedEntityState, ICompanyEnvironmentState
+    {
+        public Guid CompanyGuid { get; set; }
+    }
     public class ProjectState : NamedEntityState, IProjectState
     {
         public ProjectState()
@@ -270,6 +281,13 @@ namespace SoftwareManagementEFCoreRepository
             return newState;
 
         }
+        public ICompanyEnvironmentState CreateCompanyEnvironmentState(Guid companyGuid, Guid guid, string name)
+        {
+            var newState = new CompanyEnvironmentState { CompanyGuid = companyGuid, Guid = guid, Name = name };
+            _context.CompanyEnvironmentStates.Add(newState);
+            return newState;
+
+        }
 
         public void AddRoleToCompanyState(Guid companyGuid, Guid companyRoleGuid, string companyRoleName)
         {
@@ -408,6 +426,27 @@ namespace SoftwareManagementEFCoreRepository
             var state = new ProductVersionState { Guid = productVersionGuid, ProductGuid = guid, Name = name };
             _context.ProductVersionStates.Add(state);
             return state;
+        }
+
+        public void AddEnvironmentToCompanyState(Guid companyGuid, Guid companyEnvironmentGuid, string companyEnvironmentName)
+        {
+            var companyState = GetCompanyState(companyGuid);
+
+            if (companyState.CompanyEnvironmentStates.All(w => w.Guid != companyEnvironmentGuid))
+            {
+                CreateCompanyEnvironmentState(companyGuid, companyEnvironmentGuid, companyEnvironmentName);
+            }
+        }
+
+        public void RemoveEnvironmentFromCompanyState(Guid companyGuid, Guid companyEnvironmentGuid)
+        {
+            var companyState = GetCompanyState(companyGuid);
+            var companyEnvironmentState = companyState.CompanyEnvironmentStates.SingleOrDefault(s => s.Guid == companyEnvironmentGuid);
+            if (companyEnvironmentState != null)
+            {
+                companyState.CompanyEnvironmentStates.Remove(companyEnvironmentState);
+                _context.CompanyEnvironmentStates.Remove((CompanyEnvironmentState)companyEnvironmentState);
+            }
         }
     }
 }
