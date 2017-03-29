@@ -792,7 +792,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             } // todo: else throw error? replace?
             return environmentState;
         }
-
+        // todo: add test
         public void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid)
         {
             var state = GetCompanyState(guid);
