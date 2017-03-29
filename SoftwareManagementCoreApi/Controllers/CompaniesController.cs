@@ -19,20 +19,33 @@ namespace SoftwareManagementCoreApi.Controllers
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
     }
+    public class CompanyEnvironmentDto
+    {
+        private ICompanyEnvironmentState _state;
+        public CompanyEnvironmentDto(ICompanyEnvironmentState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+    }
 
     public class CompanyDto
     {
         private ICompanyState _state;
-        private List<CompanyRoleDto> _companyRoleStates;
+        private List<CompanyRoleDto> _companyRoles;
+        private List<CompanyEnvironmentDto> _companyEnvironments;
 
         public CompanyDto(ICompanyState state)
         {
             _state = state;
-            _companyRoleStates = _state.CompanyRoleStates.Select(s => new CompanyRoleDto(s)).ToList();
+            _companyRoles = _state.CompanyRoleStates.Select(s => new CompanyRoleDto(s)).ToList();
+            _companyEnvironments = _state.CompanyEnvironmentStates.Select(s => new CompanyEnvironmentDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
-        public List<CompanyRoleDto> CompanyRoles { get { return _companyRoleStates; } }
+        public List<CompanyRoleDto> Roles { get { return _companyRoles; } }
+        public List<CompanyEnvironmentDto> Environments { get { return _companyEnvironments; } }
 
     }
 

@@ -31,9 +31,9 @@ namespace CompaniesShared
         ICompanyState GetCompanyState(Guid guid);
         IEnumerable<ICompanyState> GetCompanyStates();
         void DeleteCompanyState(Guid guid);
-        void AddRoleToCompanyState(Guid projectGuid, Guid roleGuid, string name);
+        ICompanyRoleState AddRoleToCompanyState(Guid projectGuid, Guid roleGuid, string name);
         void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid);
-        void AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName);
+        ICompanyEnvironmentState AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName);
         void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid);
     }
     public interface IEntity

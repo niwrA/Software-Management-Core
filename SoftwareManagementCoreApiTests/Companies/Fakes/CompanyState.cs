@@ -11,12 +11,14 @@ namespace SoftwareManagementCoreApiTests.Fakes
             Guid = Guid.NewGuid();
             Name = "Company Name";
             CompanyRoleStates = new List<ICompanyRoleState>();
+            CompanyEnvironmentStates = new List<ICompanyEnvironmentState>();
             CreatedOn = DateTime.Now;
             UpdatedOn = DateTime.Now;
         }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
+        public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
         public Guid Guid { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }

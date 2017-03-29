@@ -121,7 +121,7 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             var guid = Guid.NewGuid();
             var environmentGuid = Guid.NewGuid();
             var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
-            var state = sut.CreateCompanyEnvironmentState(guid, environmentGuid, "testenvironmentstate");
+            var state = sut.AddEnvironmentToCompanyState(guid, environmentGuid, "testenvironmentstate");
 
             sut.PersistChanges();
 

@@ -12,5 +12,6 @@ namespace SoftwareManagementCoreTests.Fakes
         public Guid Guid { get; set; }
         public string Name { get; set; }
         public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
+        public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     }
 }

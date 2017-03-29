@@ -289,14 +289,15 @@ namespace SoftwareManagementEFCoreRepository
 
         }
 
-        public void AddRoleToCompanyState(Guid companyGuid, Guid companyRoleGuid, string companyRoleName)
+        public ICompanyRoleState AddRoleToCompanyState(Guid companyGuid, Guid companyRoleGuid, string companyRoleName)
         {
             var companyState = GetCompanyState(companyGuid);
-
-            if (companyState.CompanyRoleStates.All(w => w.Guid != companyRoleGuid))
+            var roleState = companyState.CompanyRoleStates.SingleOrDefault(s => s.Guid == companyRoleGuid);
+            if (roleState == null)
             {
-                CreateCompanyRoleState(companyGuid, companyRoleGuid, companyRoleName);
+                roleState = CreateCompanyRoleState(companyGuid, companyRoleGuid, companyRoleName);
             }
+            return roleState;
         }
 
         public void RemoveRoleFromCompanyState(Guid companyGuid, Guid companyRoleGuid)
@@ -428,14 +429,15 @@ namespace SoftwareManagementEFCoreRepository
             return state;
         }
 
-        public void AddEnvironmentToCompanyState(Guid companyGuid, Guid companyEnvironmentGuid, string companyEnvironmentName)
+        public ICompanyEnvironmentState AddEnvironmentToCompanyState(Guid companyGuid, Guid companyEnvironmentGuid, string companyEnvironmentName)
         {
             var companyState = GetCompanyState(companyGuid);
-
-            if (companyState.CompanyEnvironmentStates.All(w => w.Guid != companyEnvironmentGuid))
+            var state = companyState.CompanyEnvironmentStates.SingleOrDefault(s => s.Guid == companyEnvironmentGuid);
+            if (state == null)
             {
-                CreateCompanyEnvironmentState(companyGuid, companyEnvironmentGuid, companyEnvironmentName);
+                state = CreateCompanyEnvironmentState(companyGuid, companyEnvironmentGuid, companyEnvironmentName);
             }
+            return state;
         }
 
         public void RemoveEnvironmentFromCompanyState(Guid companyGuid, Guid companyEnvironmentGuid)

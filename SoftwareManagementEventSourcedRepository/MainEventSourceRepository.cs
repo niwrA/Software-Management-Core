@@ -34,6 +34,13 @@ namespace SoftwareManagementEventSourceRepository
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
+    public class CompanyEnvironmentState : ICompanyEnvironmentState
+    {
+        public string Name { get; set; }
+        public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
     public class ProjectState : IProjectState
     {
         public DateTime? StartDate { get; set; }
@@ -76,15 +83,20 @@ namespace SoftwareManagementEventSourceRepository
             _productDictionary = new Dictionary<Guid, IProductState>();
         }
 
-        public void AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
+        public ICompanyEnvironmentState AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string name)
         {
             var state = GetCompanyState(guid);
-            state.CompanyRoleStates.Add(new CompanyRoleState { Guid = roleGuid, Name = name });
+            var companyEnvironmentState = new CompanyEnvironmentState { Guid = environmentGuid, Name = name };
+            state.CompanyEnvironmentStates.Add(companyEnvironmentState);
+            return companyEnvironmentState;
+        }
+
+        public ICompanyRoleState AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
+        {
+            var state = GetCompanyState(guid);
+            var companyRoleState = new CompanyRoleState { Guid = roleGuid, Name = name };
+            state.CompanyRoleStates.Add(companyRoleState);
+            return companyRoleState;
         }
 
         public void AddRoleToProjectState(Guid guid, Guid roleGuid, string name)

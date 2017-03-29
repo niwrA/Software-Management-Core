@@ -213,14 +213,16 @@ namespace SoftwareManagementMongoDbCoreRepository
             _deletedEmploymentStates = new List<Guid>();
         }
 
-        public void AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
+        public ICompanyRoleState AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
         {
             var state = GetCompanyState(guid);
             var roleState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
             if (roleState == null)
             {
-                state.CompanyRoleStates.Add(new CompanyRoleState { Guid = roleGuid, Name = name });
+                roleState = new CompanyRoleState { Guid = roleGuid, Name = name };
+                state.CompanyRoleStates.Add(roleState);
             }
+            return roleState;
         }
 
         public void AddRoleToProjectState(Guid guid, Guid roleGuid, string name)
@@ -748,7 +750,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             throw new NotImplementedException();
         }
-
+        // todo: repository tests
         public void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid)
         {
             var state = GetCompanyState(guid);
@@ -779,14 +781,26 @@ namespace SoftwareManagementMongoDbCoreRepository
             return versionState;
         }
 
-        public void AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName)
+        public ICompanyEnvironmentState AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string name)
         {
-            throw new NotImplementedException();
+            var state = GetCompanyState(guid);
+            var environmentState = state.CompanyEnvironmentStates.FirstOrDefault(s => s.Guid == environmentGuid); // todo: work with Single and catch errors?
+            if (environmentState == null)
+            {
+                environmentState = new CompanyEnvironmentState { Guid = environmentGuid, Name = name };
+                state.CompanyEnvironmentStates.Add(environmentState);
+            } // todo: else throw error? replace?
+            return environmentState;
         }
 
         public void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid)
         {
-            throw new NotImplementedException();
+            var state = GetCompanyState(guid);
+            var environmentState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == environmentGuid); // todo: work with Single and catch errors?
+            if (environmentState != null)
+            {
+                state.CompanyRoleStates.Remove(environmentState);
+            }
         }
 
         public object CreateCompanyEnvironmentState(Guid guid, Guid environmentGuid, string name)
