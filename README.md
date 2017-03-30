@@ -4,7 +4,7 @@ End goal for this project is a flexible setup of a CQRS system with eventsourcin
 The main application business logic, including api and datalayer(s) implementations are all in this repository's solution for now, for convenience. This is intended to be split up later to prevent a huge repository download (that happens far too often). Components should stand on their own.
 
 ## Setup
-This requires Visual Studio 2017 RC or higher with .NET Core 1.1.0 or higher and an EntityFrameworkCore compatible backing for the database or MongoDb. Right now you need to modify the connectionstring in the project directly. This will probably be made more configurable in future.
+This requires Visual Studio 2017 RC or higher with .NET Core 1.1.0 or higher and an EntityFrameworkCore compatible backing for the database or MongoDb. 
 
 Windows
 1. Install Visual Studio 2017 if you haven't already. You only need the web module with aspnetcore for running this. 
@@ -18,7 +18,7 @@ If you wan to use SQL Server:
 
 - install a SQL Sever Community or Developer edition if you haven't already (or reconfigure the project to use localdb, SQLLite, etc.) and create a database called SoftwareManagement, or use a Docker install of the new SQL Server preview
 
-- Open the project and change the connection string in both the api and entityframeworkcore projects (if you used SQL)
+- Open the project and change the connection string in both the api and entityframeworkcore projects
 
 - Open the Package Manager console in Visual Studio, select the EntityFrameworkCore project, and run Update-Database to create and/or migrate the database to the latest version. 
 
