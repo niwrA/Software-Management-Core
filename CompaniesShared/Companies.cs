@@ -24,6 +24,7 @@ namespace CompaniesShared
     }
     public interface ICompanyEnvironmentState : INamedEntityState
     {
+        string Url { get; set; }
     }
     public interface ICompanyStateRepository : IEntityRepository
     {
@@ -35,6 +36,7 @@ namespace CompaniesShared
         void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid);
         ICompanyEnvironmentState AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string environmentName);
         void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid);
+        ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid);
     }
     public interface IEntity
     {
@@ -49,7 +51,13 @@ namespace CompaniesShared
         void RemoveRoleFromCompany(Guid roleGuid);
         void AddEnvironmentToCompany(Guid environmentGuid, string environmentName);
         void RemoveEnvironmentFromCompany(Guid environmentGuid);
+        ICompanyEnvironment GetEnvironment(Guid guid);
     }
+    public interface ICompanyEnvironment: IEntity
+    {
+        void ChangeUrl(string url, string originalUrl);
+    }
+
     public class Company : ICompany
     {
         private ICompanyState _state;
@@ -97,6 +105,67 @@ namespace CompaniesShared
         public void RemoveEnvironmentFromCompany(Guid environmentGuid)
         {
             _repo.RemoveEnvironmentFromCompanyState(this.Guid, environmentGuid);
+        }
+
+        public ICompanyEnvironment GetEnvironment(Guid guid)
+        {
+            var state = _repo.GetEnvironmentState(this.Guid, guid);
+            return new CompanyEnvironment(state);
+        }
+    }
+    public class CompanyEnvironment : ICompanyEnvironment
+    {
+        private ICompanyEnvironmentState _state;
+        private ICompanyStateRepository _repo;
+
+        public CompanyEnvironment(ICompanyEnvironmentState state)
+        {
+            _state = state;
+        }
+        public CompanyEnvironment(ICompanyEnvironmentState state, ICompanyStateRepository repo) : this(state)
+        {
+            _repo = repo;
+        }
+
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+        public void ChangeUrl(string url, string originalUrl)
+        {
+            if (_state.Url == originalUrl)
+            {
+                _state.Url = url;
+            }
+            else
+            {
+                // todo: implement concurrency policy
+            }
+        }
+
+        public void Rename(string name, string originalName)
+        {
+            if (_state.Name == originalName)
+            {
+                _state.Name = name;
+            }
+            else
+            {
+                // todo: implement concurrency policy
+            }
+        }
+
+
+        public void Url(string url, string originalUrl)
+        {
+            if (_state.Url == originalUrl)
+            {
+                _state.Url = url;
+            }
+            else
+            {
+                // todo: implement concurrency policy
+            }
         }
     }
     public class CompanyService : ICompanyService

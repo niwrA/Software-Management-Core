@@ -3,6 +3,7 @@ using System;
 using Xunit;
 using Moq;
 using DateTimeShared;
+using SoftwareManagementCoreTests.Fakes;
 
 namespace SoftwareManagementCoreTests
 {
@@ -70,6 +71,7 @@ namespace SoftwareManagementCoreTests
 
             stateMock.VerifySet(t => t.Name = "new");
         }
+
         [Fact(DisplayName = "CanAddRoleToCompany")]
         public void CanAddRoleToCompany()
         {
@@ -98,33 +100,58 @@ namespace SoftwareManagementCoreTests
 
             repoMock.Verify(s => s.RemoveRoleFromCompanyState(stateMock.Guid, roleGuid), Times.Once);
         }
+
         [Fact(DisplayName = "CanAddEnvironmentToCompany")]
         public void CanAddEnvironmentToCompany()
         {
-            var repoMock = new Mock<ICompanyStateRepository>();
-            var stateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
-            var sut = new Company(stateMock, repoMock.Object);
+            var sutBuilder = new SutBuilder();
+            var sut = sutBuilder.Build();
 
-            var EnvironmentGuid = Guid.NewGuid();
             var EnvironmentName = "Tester";
 
-            sut.AddEnvironmentToCompany(EnvironmentGuid, EnvironmentName);
+            sut.AddEnvironmentToCompany(sutBuilder.EnvironmentGuid, EnvironmentName);
 
-            repoMock.Verify(s => s.AddEnvironmentToCompanyState(stateMock.Guid, EnvironmentGuid, EnvironmentName), Times.Once);
+            sutBuilder.RepoMock.Verify(s => s.AddEnvironmentToCompanyState(sutBuilder.StateMock.Guid, sutBuilder.EnvironmentGuid, EnvironmentName), Times.Once);
         }
 
         [Fact(DisplayName = "CanRemoveEnvironmentFromCompany")]
         public void CanRemoveEnvironmentFromCompany()
         {
-            var repoMock = new Mock<ICompanyStateRepository>();
-            var stateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
-            var sut = new Company(stateMock, repoMock.Object);
+            var sutBuilder = new SutBuilder();
+            var sut = sutBuilder.Build();
 
-            var EnvironmentGuid = Guid.NewGuid();
+            sut.RemoveEnvironmentFromCompany(sutBuilder.EnvironmentGuid);
 
-            sut.RemoveEnvironmentFromCompany(EnvironmentGuid);
+            sutBuilder.RepoMock.Verify(s => s.RemoveEnvironmentFromCompanyState(sutBuilder.StateMock.Guid, sutBuilder.EnvironmentGuid), Times.Once);
+        }
 
-            repoMock.Verify(s => s.RemoveEnvironmentFromCompanyState(stateMock.Guid, EnvironmentGuid), Times.Once);
+        [Fact(DisplayName = "CanGetEnvironment")]
+        public void CanGetEnvironment()
+        {
+            var sutBuilder = new SutBuilder();
+            var sut = sutBuilder.Build();
+
+            sut.GetEnvironment(sutBuilder.EnvironmentGuid);
+
+            sutBuilder.RepoMock.Verify(s => s.GetEnvironmentState(sutBuilder.StateMock.Guid, sutBuilder.EnvironmentGuid), Times.Once);
+        }
+    }
+
+    internal class SutBuilder
+    {
+        public Mock<ICompanyStateRepository> RepoMock { get; set; }
+        public Guid EnvironmentGuid { get; private set; }
+        public CompanyState StateMock { get; private set; }
+
+        public Company Build()
+        {
+            RepoMock = new Mock<ICompanyStateRepository>();
+
+            StateMock = new Fakes.CompanyState { Guid = Guid.NewGuid() };
+            var sut = new Company(StateMock, RepoMock.Object);
+            EnvironmentGuid = Guid.NewGuid();
+
+            return sut;
         }
     }
 }

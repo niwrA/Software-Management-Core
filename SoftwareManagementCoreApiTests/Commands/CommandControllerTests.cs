@@ -48,7 +48,8 @@ namespace SoftwareManagementCoreApiTests
             var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object, employmentsService.Object, companiesService.Object);
             var sutResult = sut.Post(new List<CommandDto> { projectCommandDto, productCommandDto });
 
-            Assert.Equal(2, sutResult.Count());
+            Assert.True(sutResult.Success);
+            Assert.Equal(2, sutResult.ExecutedCommands.Count());
         }
     }
     [Trait("Controller", "ProductController")]

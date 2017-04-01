@@ -58,6 +58,11 @@ namespace SoftwareManagementCoreApi
             //var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
             //services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
             #endregion
+            SetupDI(services);
+        }
+
+        private static void SetupDI(IServiceCollection services)
+        {
             #region "MongoDb Config"
             services.AddTransient<IMongoClient, MongoClient>();
             // this needs to be here for now, because MainRepository is instanced per Controller

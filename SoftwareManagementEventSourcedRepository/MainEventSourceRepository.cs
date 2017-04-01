@@ -40,6 +40,7 @@ namespace SoftwareManagementEventSourceRepository
         public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public string Url { get; set; }
     }
     public class ProjectState : IProjectState
     {
@@ -222,6 +223,11 @@ namespace SoftwareManagementEventSourceRepository
         public IEnumerable<IContactState> GetContactStates()
         {
             // we may need this at some point, but probably not
+            throw new NotImplementedException();
+        }
+
+        public ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid)
+        {
             throw new NotImplementedException();
         }
 

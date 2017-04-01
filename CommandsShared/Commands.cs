@@ -123,7 +123,7 @@ namespace CommandsShared
         }
         public Guid Guid { get { return _state.Guid; } set { _state.Guid = value; } }
         public Guid EntityGuid { get { return _state.EntityGuid; } set { _state.EntityGuid = value; } }
-        public virtual void Execute() {  }
+        public virtual void Execute() { }
         public DateTime? ExecutedOn { get { return _state.ExecutedOn; } set { _state.ExecutedOn = value; } }
 
         public string CommandTypeId { get { return _state.CommandTypeId; } set { _state.CommandTypeId = value; } }
@@ -212,6 +212,12 @@ namespace CommandsShared
         public ICommand GetCommand(string json)
         {
             ICommand command;
+            Type type = Type.GetType(NameSpace + "." + Key + ", " + Assembly);
+            if (type == null)
+            {
+                throw new TypeNotFoundException($"{Key} not found in {NameSpace} of {Assembly}");
+            }
+
             if (!string.IsNullOrWhiteSpace(json))
             {
                 var insert = @"'$type': '" + NameSpace + "." + Key + @", " + Assembly + "', ";
@@ -223,15 +229,7 @@ namespace CommandsShared
             }
             else
             {
-                Type type = Type.GetType(NameSpace + "." + Key + ", " + Assembly);
-                if (type != null)
-                {
-                    command = Activator.CreateInstance(type) as ICommand;
-                }
-                else
-                {
-                    throw new TypeNotFoundException($"{Key} not found in {NameSpace} of {Assembly}");
-                }
+                command = Activator.CreateInstance(type) as ICommand;
             }
             return command;
         }
@@ -281,7 +279,7 @@ namespace CommandsShared
             // the existing entity for every command
             foreach (var command in commands)
             {
-                if(!processedEntities.Contains(command.EntityGuid))
+                if (!processedEntities.Contains(command.EntityGuid))
                 {
                     // cheap solution. Should find a way to wrap the state here as well.
                     var states = _repo.GetCommandStates(command.EntityGuid);//.Select(s => new CommandDto { Guid = s.Guid, Entity = command.Entity, EntityGuid = s.EntityGuid, Name = s.CommandTypeId.Replace(command.Entity + "Command", ""), ParametersJson = s.ParametersJson, CreatedOn = s.CreatedOn });

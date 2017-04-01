@@ -2,7 +2,7 @@
 
 namespace CommandsShared
 {
-    internal class TypeNotFoundException : Exception
+    public class TypeNotFoundException : Exception
     {
         public TypeNotFoundException()
         {

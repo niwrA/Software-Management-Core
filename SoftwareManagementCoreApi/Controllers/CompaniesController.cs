@@ -28,6 +28,7 @@ namespace SoftwareManagementCoreApi.Controllers
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
+        public string Url { get { return _state.Url; } }
     }
 
     public class CompanyDto

@@ -31,5 +31,13 @@ namespace SoftwareManagementCoreTests.Commands
             Assert.Equal("oude naam", command.OriginalName);
         }
         //todo: check that CommandConfig overrides ProcessorConfig
+        [Fact(DisplayName = "CommandConfig_CanSerializeToTypedCommand")]
+        public void ThrowsTypeNotFoundException_WhenTypeNotFound()
+        {
+            var json = @"{'OriginalName': 'oude naam', 'Name': 'nieuwe naam'}";
+            var projectsMoq = new Mock<IProductService>();
+            var commandConfig = new CommandConfig { Assembly = "SomethingNotExisting", NameSpace = "ProductsShared", Name = "Rename", ProcessorName = "Product", Processor = projectsMoq.Object };
+            Assert.Throws<TypeNotFoundException>(()=> commandConfig.GetCommand(json));
+        }
     }
 }

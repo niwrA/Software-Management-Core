@@ -121,6 +121,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public string Url { get; set; }
     }
 
     [BsonIgnoreExtraElements]
@@ -774,9 +775,11 @@ namespace SoftwareManagementMongoDbCoreRepository
         public IProductVersionState CreateProductVersionState(Guid guid, Guid versionGuid, string name)
         {
             var state = GetProductState(guid);
-            var versionState = new ProductVersionState();
-            versionState.Guid = versionGuid;
-            versionState.Name = name;
+            var versionState = new ProductVersionState()
+            {
+                Guid = versionGuid,
+                Name = name
+            };
             state.ProductVersionStates.Add(versionState);
             return versionState;
         }
@@ -803,16 +806,11 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
-        public object CreateCompanyEnvironmentState(Guid guid, Guid environmentGuid, string name)
+        public ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid)
         {
-            var state = GetCompanyState(guid);
-            var environmentState = new CompanyEnvironmentState();
-
-            environmentState.Guid = environmentGuid;
-            environmentState.Name = name;
-            state.CompanyEnvironmentStates.Add(environmentState);
-
-            return environmentState;
+            var companyState = GetCompanyState(companyGuid);
+            var state = companyState.CompanyEnvironmentStates.SingleOrDefault(s => s.Guid == environmentGuid);
+            return state;
         }
     }
 }

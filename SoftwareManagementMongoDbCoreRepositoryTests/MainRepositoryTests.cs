@@ -148,6 +148,19 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
 
         }
 
+        [Fact(DisplayName = "CanGetEnvironmentState", Skip = "In progress")]
+        public void CanGetEnvironmentState()
+        {
+            var sutBuilder = new SutBuilder().WithCompanyCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var environmentGuid = Guid.NewGuid();
+
+            // todo: setup mock for GetCompanyState
+
+            sut.GetEnvironmentState(guid, environmentGuid);
+        }
+
 
         [Fact(DisplayName = "CanPersistChanges_WhenNoChanges")]
         public void CanPersistChanges_WhenNoChanges()

@@ -16,6 +16,12 @@ using EmploymentsShared;
 
 namespace SoftwareManagementCoreWeb.Controllers
 {
+    public class CommandBatchResults
+    {
+        public bool Success { get; set; }
+        public IEnumerable<CommandDto> ExecutedCommands { get; set; }
+        public string Message { get; set; }
+    }
     [EnableCors("SiteCorsPolicy")]
     [Route("api/[controller]")]
     [AllowAnonymous]
@@ -39,7 +45,6 @@ namespace SoftwareManagementCoreWeb.Controllers
             _companyService = companyService;
             _employmentService = employmentService;
 
-            // todo: move to configuration
             ConfigureCommandManager();
         }
 
@@ -49,12 +54,14 @@ namespace SoftwareManagementCoreWeb.Controllers
             var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
             var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
             var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
+            var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Environment", Processor = _companyService };
             var employmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService };
 
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
             _commandManager.AddConfig(contactsConfig);
             _commandManager.AddConfig(companiesConfig);
+            _commandManager.AddConfig(environmentsConfig);
             _commandManager.AddConfig(employmentsConfig);
         }
 
@@ -68,25 +75,36 @@ namespace SoftwareManagementCoreWeb.Controllers
         // POST api/commands/batch
         [HttpPost]
         [Route("batch")]
-        public IEnumerable<CommandDto> Post([FromBody]IEnumerable<CommandDto> commands)
+        public CommandBatchResults Post([FromBody]IEnumerable<CommandDto> commands)
         {
             // simple, direct execution of one or more commands, like a transaction
+            var result = new CommandBatchResults();
 
-            foreach (var command in commands)
+            try
             {
-                var typedCommand = _commandManager.ProcessCommand(command);
-                command.ExecutedOn = typedCommand.ExecutedOn;
+                foreach (var command in commands)
+                {
+                    var typedCommand = _commandManager.ProcessCommand(command);
+                    command.ExecutedOn = typedCommand.ExecutedOn;
+                }
+
+                // these can be all the same contexts, but may also be different
+                _productService.PersistChanges();
+                _projectService.PersistChanges();
+                _contactService.PersistChanges();
+                _companyService.PersistChanges();
+                _employmentService.PersistChanges();
+                _commandManager.PersistChanges();
+                result.ExecutedCommands = commands;
+                result.Success = true;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
             }
 
-            // these can be all the same contexts, but may also be different
-            _productService.PersistChanges();   
-            _projectService.PersistChanges();
-            _contactService.PersistChanges();
-            _companyService.PersistChanges();
-            _employmentService.PersistChanges();
-            _commandManager.PersistChanges();
-
-            return commands;
+            return result;
         }
     }
 }

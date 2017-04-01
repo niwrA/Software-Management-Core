@@ -119,6 +119,7 @@ namespace SoftwareManagementEFCoreRepository
     public class CompanyEnvironmentState : NamedEntityState, ICompanyEnvironmentState
     {
         public Guid CompanyGuid { get; set; }
+        public string Url { get; set; }
     }
     public class ProjectState : NamedEntityState, IProjectState
     {
@@ -449,6 +450,11 @@ namespace SoftwareManagementEFCoreRepository
                 companyState.CompanyEnvironmentStates.Remove(companyEnvironmentState);
                 _context.CompanyEnvironmentStates.Remove((CompanyEnvironmentState)companyEnvironmentState);
             }
+        }
+
+        public ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid)
+        {
+            throw new NotImplementedException();
         }
     }
 }
