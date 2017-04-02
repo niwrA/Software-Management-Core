@@ -21,6 +21,7 @@ using SoftwareManagementMongoDbCoreRepository; // enable to switch to mongodb re
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using ProjectRoleAssignmentsShared;
+using LinksShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -79,6 +80,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
             // modules (always repo first, then service etc.)
+            // note that I've used the same repo here for all, but that's just one of the options
             services.AddTransient<IProductStateRepository, MainRepository>();
             services.AddTransient<IProductService, ProductService>();
 
@@ -90,6 +92,9 @@ namespace SoftwareManagementCoreApi
 
             services.AddTransient<ICompanyStateRepository, MainRepository>();
             services.AddTransient<ICompanyService, CompanyService>();
+
+            services.AddTransient<ILinkStateRepository, MainRepository>();
+            services.AddTransient<ILinkService, LinkService>();
 
             services.AddTransient<IEmploymentStateRepository, MainRepository>();
             services.AddTransient<IEmploymentService, EmploymentService>();

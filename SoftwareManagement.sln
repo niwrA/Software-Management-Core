@@ -67,6 +67,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectRoleAssignment", "Pr
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ProjectRoleAssignmentsShared", "ProjectRoleAssignmentsShared\ProjectRoleAssignmentsShared.shproj", "{996CE0C6-45CA-4803-A601-6012D601C2E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Links", "Links", "{E3DE2F3E-AF1E-447C-BD04-020848375785}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LinksShared", "LinksShared\LinksShared.shproj", "{E497D6C4-60EF-4768-B0C7-41C11820BFD7}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		EmploymentShared\EmploymentShared.projitems*{3ef38306-ddc8-42f9-923b-3dc288df5bf5}*SharedItemsImports = 13
@@ -76,6 +80,7 @@ Global
 		DateTimeShared\DateTimeShared.projitems*{93ff6f34-93fa-4b1e-8828-3d056f144800}*SharedItemsImports = 13
 		ProjectRoleAssignmentsShared\ProjectRoleAssignmentsShared.projitems*{996ce0c6-45ca-4803-a601-6012d601c2e2}*SharedItemsImports = 13
 		TextFragmentsShared\TextFragmentsShared.projitems*{c70ef468-fbe9-4e66-8a24-3785140dd09b}*SharedItemsImports = 13
+		LinksShared\LinksShared.projitems*{e497d6c4-60ef-4768-b0c7-41c11820bfd7}*SharedItemsImports = 13
 		CommandsShared\CommandsShared.projitems*{e836653d-f62d-4262-89cd-622bf092f8e3}*SharedItemsImports = 13
 		ProjectsShared\ProjectsShared.projitems*{f36337f9-5492-4327-8301-b0be8708e8e0}*SharedItemsImports = 13
 	EndGlobalSection
@@ -229,5 +234,7 @@ Global
 		{5949935B-9EC1-4C47-87BE-1A8A5D56C127} = {E80390EA-362A-430D-B82A-48C5992AE209}
 		{B7E86F53-7178-4866-8812-7B6AFFB88D71} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{996CE0C6-45CA-4803-A601-6012D601C2E2} = {B7E86F53-7178-4866-8812-7B6AFFB88D71}
+		{E3DE2F3E-AF1E-447C-BD04-020848375785} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{E497D6C4-60EF-4768-B0C7-41C11820BFD7} = {E3DE2F3E-AF1E-447C-BD04-020848375785}
 	EndGlobalSection
 EndGlobal

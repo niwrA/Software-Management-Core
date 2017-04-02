@@ -18,4 +18,5 @@
   <Import Project="..\CompaniesShared\CompaniesShared.projitems" Label="Shared" />
   <Import Project="..\EmploymentShared\EmploymentShared.projitems" Label="Shared" />
   <Import Project="..\ProjectRoleAssignmentsShared\ProjectRoleAssignmentsShared.projitems" Label="Shared" />
+  <Import Project="..\LinksShared\LinksShared.projitems" Label="Shared" />
 </Project>

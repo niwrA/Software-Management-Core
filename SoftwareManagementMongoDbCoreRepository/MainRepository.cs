@@ -2,6 +2,7 @@
 using CompaniesShared;
 using ContactsShared;
 using EmploymentsShared;
+using LinksShared;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
@@ -152,6 +153,21 @@ namespace SoftwareManagementMongoDbCoreRepository
         public DateTime? EndDate { get; set; }
         public string ContactName { get; set; }
     }
+
+    [BsonIgnoreExtraElements]
+    public class LinkState : ILinkState
+    {
+        public DateTime? BirthDate { get; set; }
+        public string Url { get; set; }
+        public string Name { get; set; }
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public Guid EntityGuid { get; set; }
+        public Guid LinkForGuid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+
     [BsonIgnoreExtraElements]
     public class CommandState : ICommandState
     {
@@ -167,7 +183,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
         IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository,
-        IProjectRoleAssignmentStateRepository
+        IProjectRoleAssignmentStateRepository, ILinkStateRepository
     { };
     public class MainRepository : IMainRepository
     {
@@ -178,6 +194,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         private const string CompanyStatesCollection = "CompanyStates";
         private const string EmploymentStatesCollection = "EmploymentStates";
         private const string ProjectRoleAssignmentStatesCollection = "ProjectRoleAssignmentStates";
+        private const string LinkStatesCollection = "LinkStates";
 
         private IMongoClient _client;
         private IMongoDatabase _database;
@@ -197,6 +214,10 @@ namespace SoftwareManagementMongoDbCoreRepository
         private Dictionary<Guid, ICompanyState> _companyStates;
         private List<Guid> _deletedCompanyStates;
         private Dictionary<Guid, ICompanyState> _updatedCompanyStates;
+
+        private Dictionary<Guid, ILinkState> _linkStates;
+        private List<Guid> _deletedLinkStates;
+        private Dictionary<Guid, ILinkState> _updatedLinkStates;
 
         private Dictionary<Guid, IEmploymentState> _employmentStates;
         private List<Guid> _deletedEmploymentStates;
@@ -228,6 +249,10 @@ namespace SoftwareManagementMongoDbCoreRepository
             _companyStates = new Dictionary<Guid, ICompanyState>();
             _deletedCompanyStates = new List<Guid>();
             _updatedCompanyStates = new Dictionary<Guid, ICompanyState>();
+
+            _linkStates = new Dictionary<Guid, ILinkState>();
+            _deletedLinkStates = new List<Guid>();
+            _updatedLinkStates = new Dictionary<Guid, ILinkState>();
 
             _employmentStates = new Dictionary<Guid, IEmploymentState>();
             _deletedEmploymentStates = new List<Guid>();
@@ -288,13 +313,13 @@ namespace SoftwareManagementMongoDbCoreRepository
             return state;
         }
 
-        // for consideration - include some part of this in both the contact and company entity read projections?
-        public IEmploymentState CreateEmploymentState(Guid guid, Guid contactGuid, Guid companyRoleGuid)
+        // for consideration - include some part of this in both the link and company entity read projections?
+        public IEmploymentState CreateEmploymentState(Guid guid, Guid linkGuid, Guid companyRoleGuid)
         {
             var state = new EmploymentState()
             {
                 Guid = guid,
-                ContactGuid = contactGuid,
+                ContactGuid = linkGuid,
                 CompanyRoleGuid = companyRoleGuid
             };
             _employmentStates.Add(state.Guid, state);
@@ -423,13 +448,13 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             if (states != null)
             {
-                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
-                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var linksCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var linkGuids = states.ToList().Select(s => s.ContactGuid).ToList();
                 var filterDef = new FilterDefinitionBuilder<ContactState>();
-                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
-                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                var linksFilter = filterDef.In(x => x.Guid, linkGuids);
+                var linkStates = linksCollection.Find(linksFilter).ToList();
                 var employmentStates = states.ToList();
-                foreach(var state in contactStates)
+                foreach(var state in linkStates)
                 {
                     var employmentState = employmentStates.FirstOrDefault(s => s.ContactGuid == state.Guid);
                     if(employmentState!=null)
@@ -441,8 +466,8 @@ namespace SoftwareManagementMongoDbCoreRepository
             return states?.ToList();
         }
 
-        // todo: do we maybe want to store all contact data so that we can get all that by companyGuid at once?
-        // if so we would need to update both here and in contacts for contactupates
+        // todo: do we maybe want to store all link data so that we can get all that by companyGuid at once?
+        // if so we would need to update both here and in links for linkupates
         public IEnumerable<IContactState> GetContactsByCompanyRoleGuid(Guid companyRoleGuid)
         {
             var collection = _database.GetCollection<EmploymentState>(EmploymentStatesCollection);
@@ -450,20 +475,20 @@ namespace SoftwareManagementMongoDbCoreRepository
             var states = collection.Find(filter);
             if (states != null)
             {
-                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
-                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var linksCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var linkGuids = states.ToList().Select(s => s.ContactGuid).ToList();
                 var filterDef = new FilterDefinitionBuilder<ContactState>();
-                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
-                var contactStates = contactsCollection.Find(contactsFilter).ToList();
-                return contactStates?.ToList();
+                var linksFilter = filterDef.In(x => x.Guid, linkGuids);
+                var linkStates = linksCollection.Find(linksFilter).ToList();
+                return linkStates?.ToList();
             }
             return null;
         }
 
-        public IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
+        public IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid linkGuid)
         {
             var collection = _database.GetCollection<EmploymentState>(ContactStatesCollection);
-            var filter = Builders<EmploymentState>.Filter.Eq("ContactRoleGuid", contactGuid);
+            var filter = Builders<EmploymentState>.Filter.Eq("ContactRoleGuid", linkGuid);
             var states = collection.Find(filter);
 
             return states?.ToList();
@@ -557,6 +582,13 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
+        private void TrackLinkState(ILinkState state)
+        {
+            if (state != null && !_updatedLinkStates.ContainsKey(state.Guid))
+            {
+                _updatedLinkStates.Add(state.Guid, state);
+            }
+        }
         // readonly by default. Should we enhance the interface? Or create a separate read-only repo?
         public IEnumerable<IProductState> GetProductStates()
         {
@@ -586,6 +618,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             PersistCompanies();
             PersistEmployments();
             PersistProjectRoleAssignments();
+            PersistLinks();
         }
 
         private void PersistCommands()
@@ -674,24 +707,24 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private void PersistContacts()
         {
-            var contactCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+            var linkCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
             // inserts
-            if (_contactStates.Values.Any())
+            if (_linkStates.Values.Any())
             {
-                var contacts = _contactStates.Values.Select(s => s as ContactState).ToList();
-                contactCollection.InsertMany(contacts);
-                _contactStates.Clear();
+                var links = _linkStates.Values.Select(s => s as ContactState).ToList();
+                linkCollection.InsertMany(links);
+                _linkStates.Clear();
             }
 
             // todo: can these be batched?
             // updates
             if (_updatedContactStates.Values.Any())
             {
-                var contacts = _updatedContactStates.Values.Select(s => s as ContactState).ToList();
-                foreach (var state in contacts)
+                var links = _updatedContactStates.Values.Select(s => s as ContactState).ToList();
+                foreach (var state in links)
                 {
                     var filter = Builders<ContactState>.Filter.Eq("Guid", state.Guid);
-                    contactCollection.ReplaceOne(filter, state);
+                    linkCollection.ReplaceOne(filter, state);
                 }
                 _updatedContactStates.Clear();
             }
@@ -706,6 +739,44 @@ namespace SoftwareManagementMongoDbCoreRepository
                     collection.DeleteOne(filter);
                 }
                 _deletedContactStates.Clear();
+            }
+        }
+
+
+        private void PersistLinks()
+        {
+            var linkCollection = _database.GetCollection<LinkState>(LinkStatesCollection);
+            // inserts
+            if (_linkStates.Values.Any())
+            {
+                var links = _linkStates.Values.Select(s => s as LinkState).ToList();
+                linkCollection.InsertMany(links);
+                _linkStates.Clear();
+            }
+
+            // todo: can these be batched?
+            // updates
+            if (_updatedLinkStates.Values.Any())
+            {
+                var links = _updatedLinkStates.Values.Select(s => s as LinkState).ToList();
+                foreach (var state in links)
+                {
+                    var filter = Builders<LinkState>.Filter.Eq("Guid", state.Guid);
+                    linkCollection.ReplaceOne(filter, state);
+                }
+                _updatedLinkStates.Clear();
+            }
+
+            // deletes
+            if (_deletedLinkStates.Any())
+            {
+                var collection = _database.GetCollection<LinkState>(LinkStatesCollection);
+                foreach (var guid in _deletedLinkStates)
+                {
+                    var filter = Builders<LinkState>.Filter.Eq("Guid", guid);
+                    collection.DeleteOne(filter);
+                }
+                _deletedLinkStates.Clear();
             }
         }
 
@@ -860,12 +931,12 @@ namespace SoftwareManagementMongoDbCoreRepository
             return state;
         }
 
-        public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid companyRoleGuid)
+        public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid linkGuid, Guid companyRoleGuid)
         {
             var state = new ProjectRoleAssignmentState()
             {
                 Guid = guid,
-                ContactGuid = contactGuid,
+                ContactGuid = linkGuid,
                 ProjectRoleGuid = companyRoleGuid
             };
             _projectRoleAssignmentStates.Add(state.Guid, state);
@@ -891,13 +962,13 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             if (states != null)
             {
-                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
-                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var linksCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var linkGuids = states.ToList().Select(s => s.ContactGuid).ToList();
                 var filterDef = new FilterDefinitionBuilder<ContactState>();
-                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
-                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                var linksFilter = filterDef.In(x => x.Guid, linkGuids);
+                var linkStates = linksCollection.Find(linksFilter).ToList();
                 var projectRoleAssignmentStates = states.ToList();
-                foreach (var state in contactStates)
+                foreach (var state in linkStates)
                 {
                     var projectRoleAssignmentState = projectRoleAssignmentStates.FirstOrDefault(s => s.ContactGuid == state.Guid);
                     if (projectRoleAssignmentState != null)
@@ -909,11 +980,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             return states?.ToList();
         }
 
-        public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<IContactState> GetContactsByProjectRoleGuid(Guid projectRoleGuid)
         {
             var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
@@ -921,12 +987,12 @@ namespace SoftwareManagementMongoDbCoreRepository
             var states = collection.Find(filter);
             if (states != null)
             {
-                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
-                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var linksCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var linkGuids = states.ToList().Select(s => s.ContactGuid).ToList();
                 var filterDef = new FilterDefinitionBuilder<ContactState>();
-                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
-                var contactStates = contactsCollection.Find(contactsFilter).ToList();
-                return contactStates?.ToList();
+                var linksFilter = filterDef.In(x => x.Guid, linkGuids);
+                var linkStates = linksCollection.Find(linksFilter).ToList();
+                return linkStates?.ToList();
             }
             return null;
         }
@@ -943,6 +1009,52 @@ namespace SoftwareManagementMongoDbCoreRepository
             var states = collection.Find(filter);
 
             return states?.ToList();
+        }
+
+        public ILinkState CreateLinkState(Guid guid, string name)
+        {
+            var state = new LinkState()
+            {
+                Guid = guid
+            };
+            _linkStates.Add(state.Guid, state);
+            return state;
+        }
+
+        public ILinkState GetLinkState(Guid guid)
+        {
+            if (!_linkStates.TryGetValue(guid, out ILinkState state))
+            {
+                if (!_updatedLinkStates.TryGetValue(guid, out state))
+                {
+                    var collection = _database.GetCollection<LinkState>(LinkStatesCollection);
+                    var filter = Builders<LinkState>.Filter.Eq("Guid", guid);
+                    state = collection.Find(filter).FirstOrDefault();
+
+                    TrackLinkState(state);
+                }
+            }
+            return state;
+        }
+
+        public IEnumerable<ILinkState> GetLinkStates()
+        {
+            var collection = _database.GetCollection<LinkState>(LinkStatesCollection);
+            var filter = new BsonDocument();
+            var states = collection.Find(filter);
+
+            return states?.ToList();
+        }
+
+        public void DeleteLinkState(Guid guid)
+        {
+            _deletedLinkStates.Add(guid);
+        }
+
+        // todo: can probably be removed from interface and then here
+        public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid)
+        {
+            throw new NotImplementedException();
         }
     }
 }
