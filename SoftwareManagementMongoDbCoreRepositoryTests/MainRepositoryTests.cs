@@ -78,6 +78,70 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             sutBuilder.EmploymentStateCollection.Verify(s => s.DeleteOne(It.IsAny<FilterDefinition<EmploymentState>>(), null, CancellationToken.None), Times.Once, "DeleteOne was not called");
         }
 
+        [Fact(DisplayName = "CreateProjectRoleAssignmentState")]
+        public void CanCreateProjectRoleAssignmentState()
+        {
+            var sutBuilder = new SutBuilder();
+            var sut = sutBuilder.Build();
+
+            var guid = Guid.NewGuid();
+            var projectRoleGuid = Guid.NewGuid();
+            var contactGuid = Guid.NewGuid();
+
+            var state = sut.CreateProjectRoleAssignmentState(guid, contactGuid, projectRoleGuid);
+
+            Assert.Equal(guid, state.Guid);
+            Assert.Equal(contactGuid, state.ContactGuid);
+            Assert.Equal(projectRoleGuid, state.ProjectRoleGuid);
+        }
+
+        [Fact(DisplayName = "DeleteProjectRoleAssignmentState")]
+        public void CanDeleteProjectRoleAssignmentState()
+        {
+            var sutBuilder = new SutBuilder();
+            var sut = sutBuilder.Build();
+
+            var guid = Guid.NewGuid();
+
+            sut.DeleteProjectRoleAssignmentState(guid);
+        }
+
+        [Fact(DisplayName = "PersistCreatedProjectRoleAssignmentState")]
+        public void WhenCreateProjectRoleAssignmentState_PersistChanges_InsertsIntoCollection()
+        {
+            var sutBuilder = new SutBuilder().WithProjectRoleAssignmentCollection();
+            var sut = sutBuilder.Build();
+
+            var guid = Guid.NewGuid();
+            var projectRoleGuid = Guid.NewGuid();
+            var contactGuid = Guid.NewGuid();
+
+            var state = sut.CreateProjectRoleAssignmentState(guid, contactGuid, projectRoleGuid);
+
+            sut.PersistChanges();
+
+            sutBuilder.ProjectRoleAssignmentStateCollection.Verify(s => s.InsertMany(
+                It.Is<ICollection<ProjectRoleAssignmentState>>(
+                l => l.Contains(state) &&
+                l.Count == 1)
+                , null, CancellationToken.None), Times.Once, "InsertMany was not called correctly");
+        }
+
+        [Fact(DisplayName = "PersistDeletedProjectRoleAssignmentState")]
+        public void WhenDeleteProjectRoleAssignmentState_PersistChanges_DeletesFromCollection()
+        {
+            var sutBuilder = new SutBuilder().WithProjectRoleAssignmentCollection();
+            var sut = sutBuilder.Build();
+
+            var guid = Guid.NewGuid();
+
+            sut.DeleteProjectRoleAssignmentState(guid);
+
+            sut.PersistChanges();
+
+            sutBuilder.ProjectRoleAssignmentStateCollection.Verify(s => s.DeleteOne(It.IsAny<FilterDefinition<ProjectRoleAssignmentState>>(), null, CancellationToken.None), Times.Once, "DeleteOne was not called");
+        }
+
         [Fact(DisplayName = "AddProductVersionState")]
         public void CanAddProductVersionState()
         {
@@ -182,6 +246,7 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public Mock<IMongoClient> Client { get { return _clientMock; } }
         public Mock<IMongoCollection<ProductState>> ProductStateCollection { get; private set; }
         public Mock<IMongoCollection<CompanyState>> CompanyStateCollection { get; private set; }
+        public Mock<IMongoCollection<ProjectRoleAssignmentState>> ProjectRoleAssignmentStateCollection { get; private set; }
 
         public MainRepository Build()
         {
@@ -191,6 +256,10 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             if (EmploymentStateCollection != null)
             {
                 _databaseMock.Setup(s => s.GetCollection<EmploymentState>("EmploymentStates", null)).Returns(EmploymentStateCollection.Object);
+            }
+            if (ProjectRoleAssignmentStateCollection != null)
+            {
+                _databaseMock.Setup(s => s.GetCollection<ProjectRoleAssignmentState>("ProjectRoleAssignmentStates", null)).Returns(ProjectRoleAssignmentStateCollection.Object);
             }
             if (ProductStateCollection != null)
             {
@@ -221,6 +290,12 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public SutBuilder WithCompanyCollection()
         {
             CompanyStateCollection = new Mock<IMongoCollection<CompanyState>>();
+            return this;
+        }
+
+        public SutBuilder WithProjectRoleAssignmentCollection()
+        {
+            ProjectRoleAssignmentStateCollection = new Mock<IMongoCollection<ProjectRoleAssignmentState>>();
             return this;
         }
     }

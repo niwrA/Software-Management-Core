@@ -10,6 +10,7 @@ using ProjectsShared;
 using ContactsShared;
 using CompaniesShared;
 using EmploymentsShared;
+using ProjectRoleAssignmentsShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -32,6 +33,7 @@ namespace SoftwareManagementEFCoreRepository
         public DbSet<CompanyRoleState> CompanyRoleStates { get; set; }
         public DbSet<EmploymentState> EmploymentStates { get; set; }
         public DbSet<CompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
+        public DbSet<ProjectRoleAssignmentState> ProjectRoleAssignmentStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -138,6 +140,19 @@ namespace SoftwareManagementEFCoreRepository
         public Guid Guid { get; set; }
         public Guid ContactGuid { get; set; }
         public Guid CompanyRoleGuid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string ContactName { get; set; }
+    }
+
+    public class ProjectRoleAssignmentState : IProjectRoleAssignmentState
+    {
+        [Key]
+        public Guid Guid { get; set; }
+        public Guid ContactGuid { get; set; }
+        public Guid ProjectRoleGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public DateTime? StartDate { get; set; }

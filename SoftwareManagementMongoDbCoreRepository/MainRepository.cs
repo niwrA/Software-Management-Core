@@ -8,6 +8,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using ProductsShared;
+using ProjectRoleAssignmentsShared;
 using ProjectsShared;
 using System;
 using System.Collections.Generic;
@@ -139,6 +140,19 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
 
     [BsonIgnoreExtraElements]
+    public class ProjectRoleAssignmentState : IProjectRoleAssignmentState
+    {
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public Guid ContactGuid { get; set; }
+        public Guid ProjectRoleGuid { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string ContactName { get; set; }
+    }
+    [BsonIgnoreExtraElements]
     public class CommandState : ICommandState
     {
         [BsonId(IdGenerator = typeof(GuidGenerator))]
@@ -152,7 +166,8 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string UserName { get; set; }
     }
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
-        IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository
+        IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository,
+        IProjectRoleAssignmentStateRepository
     { };
     public class MainRepository : IMainRepository
     {
@@ -162,6 +177,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         private const string ContactStatesCollection = "ContactStates";
         private const string CompanyStatesCollection = "CompanyStates";
         private const string EmploymentStatesCollection = "EmploymentStates";
+        private const string ProjectRoleAssignmentStatesCollection = "ProjectRoleAssignmentStates";
 
         private IMongoClient _client;
         private IMongoDatabase _database;
@@ -184,6 +200,9 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private Dictionary<Guid, IEmploymentState> _employmentStates;
         private List<Guid> _deletedEmploymentStates;
+
+        private Dictionary<Guid, IProjectRoleAssignmentState> _projectRoleAssignmentStates;
+        private List<Guid> _deletedProjectRoleAssignmentStates;
 
         private Dictionary<Guid, ICommandState> _commandStates { get; set; }
 
@@ -212,6 +231,9 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             _employmentStates = new Dictionary<Guid, IEmploymentState>();
             _deletedEmploymentStates = new List<Guid>();
+
+            _projectRoleAssignmentStates = new Dictionary<Guid, IProjectRoleAssignmentState>();
+            _deletedProjectRoleAssignmentStates = new List<Guid>();
         }
 
         public ICompanyRoleState AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
@@ -563,6 +585,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             PersistProjects();
             PersistCompanies();
             PersistEmployments();
+            PersistProjectRoleAssignments();
         }
 
         private void PersistCommands()
@@ -747,6 +770,30 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
+
+        private void PersistProjectRoleAssignments()
+        {
+            // inserts
+            if (_projectRoleAssignmentStates.Values.Any())
+            {
+                var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+                var entities = _projectRoleAssignmentStates.Values.Select(s => s as ProjectRoleAssignmentState).ToList();
+                collection.InsertMany(entities);
+                _projectRoleAssignmentStates.Clear();
+            }
+
+            // deletes
+            if (_deletedProjectRoleAssignmentStates.Any())
+            {
+                var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+                foreach (var guid in _deletedProjectRoleAssignmentStates)
+                {
+                    var filter = Builders<ProjectRoleAssignmentState>.Filter.Eq("Guid", guid);
+                    collection.DeleteOne(filter, null, CancellationToken.None);
+                }
+                _deletedProjectRoleAssignmentStates.Clear();
+            }
+        }
         public Task PersistChangesAsync()
         {
             throw new NotImplementedException();
@@ -811,6 +858,91 @@ namespace SoftwareManagementMongoDbCoreRepository
             var companyState = GetCompanyState(companyGuid);
             var state = companyState.CompanyEnvironmentStates.SingleOrDefault(s => s.Guid == environmentGuid);
             return state;
+        }
+
+        public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid companyRoleGuid)
+        {
+            var state = new ProjectRoleAssignmentState()
+            {
+                Guid = guid,
+                ContactGuid = contactGuid,
+                ProjectRoleGuid = companyRoleGuid
+            };
+            _projectRoleAssignmentStates.Add(state.Guid, state);
+            return state;
+        }
+
+        public IProjectRoleAssignmentState GetProjectRoleAssignmentState(Guid guid)
+        {
+            if (!_projectRoleAssignmentStates.TryGetValue(guid, out IProjectRoleAssignmentState state))
+            {
+                var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+                var filter = Builders<ProjectRoleAssignmentState>.Filter.Eq("Guid", guid);
+                state = collection.Find(filter).FirstOrDefault();
+            }
+            return state;
+        }
+
+        public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByProjectRoleGuid(Guid projectRoleGuid)
+        {
+            var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+            var filter = Builders<ProjectRoleAssignmentState>.Filter.Eq("ProjectRoleGuid", projectRoleGuid);
+            var states = collection.Find(filter);
+
+            if (states != null)
+            {
+                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var filterDef = new FilterDefinitionBuilder<ContactState>();
+                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
+                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                var projectRoleAssignmentStates = states.ToList();
+                foreach (var state in contactStates)
+                {
+                    var projectRoleAssignmentState = projectRoleAssignmentStates.FirstOrDefault(s => s.ContactGuid == state.Guid);
+                    if (projectRoleAssignmentState != null)
+                    {
+                        projectRoleAssignmentState.ContactName = state.Name;
+                    }
+                }
+            }
+            return states?.ToList();
+        }
+
+        public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IContactState> GetContactsByProjectRoleGuid(Guid projectRoleGuid)
+        {
+            var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+            var filter = Builders<ProjectRoleAssignmentState>.Filter.Eq("ProjectRoleGuid", projectRoleGuid);
+            var states = collection.Find(filter);
+            if (states != null)
+            {
+                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var filterDef = new FilterDefinitionBuilder<ContactState>();
+                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
+                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                return contactStates?.ToList();
+            }
+            return null;
+        }
+
+        public void DeleteProjectRoleAssignmentState(Guid guid)
+        {
+            _deletedProjectRoleAssignmentStates.Add(guid);
+        }
+        // todo: add test
+        public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentStates()
+        {
+            var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+            var filter = new BsonDocument();
+            var states = collection.Find(filter);
+
+            return states?.ToList();
         }
     }
 }

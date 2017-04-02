@@ -11,6 +11,7 @@ using ProjectsShared;
 using ContactsShared;
 using CompaniesShared;
 using EmploymentsShared;
+using ProjectRoleAssignmentsShared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,10 +33,11 @@ namespace SoftwareManagementCoreWeb.Controllers
         private IContactService _contactService;
         private ICompanyService _companyService;
         private IEmploymentService _employmentService;
+        private IProjectRoleAssignmentService _projectRoleAssignmentService;
 
         private ICommandService _commandManager;
 
-        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService)
+        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService)
         {
             _commandManager = commandManager;
 
@@ -44,6 +46,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _contactService = contactService;
             _companyService = companyService;
             _employmentService = employmentService;
+            _projectRoleAssignmentService = projectRoleAssignmentService;
 
             ConfigureCommandManager();
         }
@@ -56,6 +59,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
             var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Environment", Processor = _companyService };
             var employmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService };
+            var projectRoleAssignmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectRoleAssignmentsShared", Entity = "ProjectRoleAssignment", Processor = _projectRoleAssignmentService };
 
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
@@ -63,6 +67,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _commandManager.AddConfig(companiesConfig);
             _commandManager.AddConfig(environmentsConfig);
             _commandManager.AddConfig(employmentsConfig);
+            _commandManager.AddConfig(projectRoleAssignmentsConfig);
         }
 
         // GET: api/commands
@@ -94,7 +99,9 @@ namespace SoftwareManagementCoreWeb.Controllers
                 _contactService.PersistChanges();
                 _companyService.PersistChanges();
                 _employmentService.PersistChanges();
+                _projectRoleAssignmentService.PersistChanges();
                 _commandManager.PersistChanges();
+
                 result.ExecutedCommands = commands;
                 result.Success = true;
             }

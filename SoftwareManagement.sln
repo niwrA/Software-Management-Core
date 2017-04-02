@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementCore", "SoftwareManagementCore\SoftwareManagementCore.csproj", "{201FF2B7-DF85-414E-8CCB-A76FFC261D6B}"
 EndProject
@@ -63,6 +63,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementMongoDbCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementMongoDbCoreRepositoryTests", "SoftwareManagementMongoDbCoreRepositoryTests\SoftwareManagementMongoDbCoreRepositoryTests.csproj", "{5949935B-9EC1-4C47-87BE-1A8A5D56C127}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectRoleAssignment", "ProjectRoleAssignment", "{B7E86F53-7178-4866-8812-7B6AFFB88D71}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ProjectRoleAssignmentsShared", "ProjectRoleAssignmentsShared\ProjectRoleAssignmentsShared.shproj", "{996CE0C6-45CA-4803-A601-6012D601C2E2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		EmploymentShared\EmploymentShared.projitems*{3ef38306-ddc8-42f9-923b-3dc288df5bf5}*SharedItemsImports = 13
@@ -70,6 +74,7 @@ Global
 		CompaniesShared\CompaniesShared.projitems*{61341421-bcc5-44ee-9fff-656e1e78e0e9}*SharedItemsImports = 13
 		ContactsShared\ContactsShared.projitems*{806e9edf-cb33-4509-a666-b13b1244058b}*SharedItemsImports = 13
 		DateTimeShared\DateTimeShared.projitems*{93ff6f34-93fa-4b1e-8828-3d056f144800}*SharedItemsImports = 13
+		ProjectRoleAssignmentsShared\ProjectRoleAssignmentsShared.projitems*{996ce0c6-45ca-4803-a601-6012d601c2e2}*SharedItemsImports = 13
 		TextFragmentsShared\TextFragmentsShared.projitems*{c70ef468-fbe9-4e66-8a24-3785140dd09b}*SharedItemsImports = 13
 		CommandsShared\CommandsShared.projitems*{e836653d-f62d-4262-89cd-622bf092f8e3}*SharedItemsImports = 13
 		ProjectsShared\ProjectsShared.projitems*{f36337f9-5492-4327-8301-b0be8708e8e0}*SharedItemsImports = 13
@@ -222,5 +227,7 @@ Global
 		{A46E4D81-1CA1-46EF-9424-1073E2E54B15} = {E80390EA-362A-430D-B82A-48C5992AE209}
 		{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4} = {E80390EA-362A-430D-B82A-48C5992AE209}
 		{5949935B-9EC1-4C47-87BE-1A8A5D56C127} = {E80390EA-362A-430D-B82A-48C5992AE209}
+		{B7E86F53-7178-4866-8812-7B6AFFB88D71} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{996CE0C6-45CA-4803-A601-6012D601C2E2} = {B7E86F53-7178-4866-8812-7B6AFFB88D71}
 	EndGlobalSection
 EndGlobal

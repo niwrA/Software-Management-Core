@@ -20,6 +20,7 @@ using EmploymentsShared;
 using SoftwareManagementMongoDbCoreRepository; // enable to switch to mongodb repo
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
+using ProjectRoleAssignmentsShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -92,6 +93,9 @@ namespace SoftwareManagementCoreApi
 
             services.AddTransient<IEmploymentStateRepository, MainRepository>();
             services.AddTransient<IEmploymentService, EmploymentService>();
+
+            services.AddTransient<IProjectRoleAssignmentStateRepository, MainRepository>();
+            services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
 
             services.AddTransient<ICommandStateRepository, MainRepository>();
             services.AddTransient<ICommandService, CommandService>();
