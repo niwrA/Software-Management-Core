@@ -20,10 +20,10 @@ namespace SoftwareManagementCoreTests.Links
 
             sut.Name = "New Link";
             sut.Url = "http://somewhere.nice";
-            sut.LinkForGuid = Guid.NewGuid();
+            sut.ForGuid = Guid.NewGuid();
             sut.Execute();
 
-            linksMock.Verify(s => s.CreateLink(sut.EntityGuid, sut.LinkForGuid, sut.Url, sut.Name), Times.Once);
+            linksMock.Verify(s => s.CreateLink(sut.EntityGuid, sut.ForGuid, sut.Url, sut.Name), Times.Once);
         }
 
         [Fact(DisplayName = "DeleteLinkCommand")]

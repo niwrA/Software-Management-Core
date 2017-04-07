@@ -95,6 +95,43 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             Assert.Equal(projectRoleGuid, state.ProjectRoleGuid);
         }
 
+
+        [Fact(DisplayName = "PersistCreatedLinkState")]
+        public void WhenCreateLinkState_PersistChanges_InsertsIntoCollection()
+        {
+            var sutBuilder = new SutBuilder().WithLinkCollection();
+            var sut = sutBuilder.Build();
+
+            var name = "Link name";
+            var guid = Guid.NewGuid();
+
+            var state = sut.CreateLinkState(guid, name);
+
+            sut.PersistChanges();
+
+            sutBuilder.LinkStateCollection.Verify(s => s.InsertMany(
+                It.Is<ICollection<LinkState>>(
+                l => l.Contains(state) &&
+                l.Count == 1)
+                , null, CancellationToken.None), Times.Once, "InsertMany was not called correctly");
+        }
+
+        [Fact(DisplayName = "PersistDeletedLinkState")]
+        public void WhenDeleteLinkState_PersistChanges_DeletesFromCollection()
+        {
+            var sutBuilder = new SutBuilder().WithLinkCollection();
+            var sut = sutBuilder.Build();
+
+            var guid = Guid.NewGuid();
+
+            sut.DeleteLinkState(guid);
+
+            sut.PersistChanges();
+
+            sutBuilder.LinkStateCollection.Verify(s => s.DeleteOne(It.IsAny<FilterDefinition<LinkState>>(), CancellationToken.None), Times.Once, "DeleteOne was not called");
+        }
+
+
         [Fact(DisplayName = "DeleteProjectRoleAssignmentState")]
         public void CanDeleteProjectRoleAssignmentState()
         {
@@ -247,6 +284,7 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public Mock<IMongoCollection<ProductState>> ProductStateCollection { get; private set; }
         public Mock<IMongoCollection<CompanyState>> CompanyStateCollection { get; private set; }
         public Mock<IMongoCollection<ProjectRoleAssignmentState>> ProjectRoleAssignmentStateCollection { get; private set; }
+        public Mock<IMongoCollection<LinkState>> LinkStateCollection { get; private set; }
 
         public MainRepository Build()
         {
@@ -268,6 +306,10 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             if (CompanyStateCollection != null)
             {
                 _databaseMock.Setup(s => s.GetCollection<CompanyState>("CompanyStates", null)).Returns(CompanyStateCollection.Object);
+            }
+            if (LinkStateCollection != null)
+            {
+                _databaseMock.Setup(s => s.GetCollection<LinkState>("LinkStates", null)).Returns(LinkStateCollection.Object);
             }
 
             _clientMock.Setup(s => s.GetDatabase("SoftwareManagement", null)).Returns(_databaseMock.Object);
@@ -296,6 +338,11 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public SutBuilder WithProjectRoleAssignmentCollection()
         {
             ProjectRoleAssignmentStateCollection = new Mock<IMongoCollection<ProjectRoleAssignmentState>>();
+            return this;
+        }
+        public SutBuilder WithLinkCollection()
+        {
+            LinkStateCollection = new Mock<IMongoCollection<LinkState>>();
             return this;
         }
     }

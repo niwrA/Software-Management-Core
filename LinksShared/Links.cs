@@ -18,7 +18,10 @@ namespace LinksShared
     {
         Guid EntityGuid { get; set; }
         string Url { get; set; }
-        Guid LinkForGuid { get; set; }
+        Guid ForGuid { get; set; }
+        string Description { get; set; }
+        string ImageUrl { get; set; }
+        string SiteName { get; set; }
     }
 
     public interface ILinkStateRepository : IEntityRepository
@@ -26,6 +29,7 @@ namespace LinksShared
         ILinkState CreateLinkState(Guid guid, string name);
         ILinkState GetLinkState(Guid guid);
         IEnumerable<ILinkState> GetLinkStates();
+        IEnumerable<ILinkState> GetLinkStatesForGuid(Guid forGuid);
         void DeleteLinkState(Guid guid);
     }
     public interface IEntity
@@ -39,25 +43,41 @@ namespace LinksShared
     {
         string Url { get; }
         void ChangeUrl(string url, string originalUrl);
+        string Description { get; }
+        string SiteName { get; }
+        string ImageUrl { get; }
+        // IImageLink ImageLink { get; }
     }
     public class Link : ILink
     {
         private ILinkState _state;
         private ILinkStateRepository _repo;
+        private ILinkDetailsProcessor _detailsProcessor;
 
         public Link(ILinkState state)
         {
             _state = state;
         }
-        public Link(ILinkState state, ILinkStateRepository repo) : this(state)
+        //public Link(ILinkState state, ILinkStateRepository repo) : this(state)
+        //{
+        //    _repo = repo;
+        //}
+        public Link(ILinkState state, ILinkStateRepository repo, ILinkDetailsProcessor detailsProcessor) : this(state)
         {
             _repo = repo;
+            _detailsProcessor = detailsProcessor;
         }
-
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
         public string Url { get { return _state.Url; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+        public string Description { get { return _state.Description; } }
+
+        public string SiteName { get { return _state.SiteName; } }
+        public string ImageUrl { get { return _state.ImageUrl; } }
+
+        //        public IImageLink ImageLink { get { return _state.ImageLink; } }
 
         public void Rename(string name, string originalName)
         {
@@ -76,6 +96,11 @@ namespace LinksShared
             if (_state.Url == originalUrl)
             {
                 _state.Url = url;
+                var updatedDetails = _detailsProcessor.ProcessLinkDetails(url);
+                _state.Description = updatedDetails.Description;
+                _state.ImageUrl = updatedDetails.Image == null ? "" : updatedDetails.Image.Url;
+                _state.Name = updatedDetails.Title;
+                _state.SiteName = updatedDetails.SiteName;
             }
             else
             {
@@ -87,24 +112,28 @@ namespace LinksShared
     {
         private IDateTimeProvider _dateTimeProvider;
         private ILinkStateRepository _repo;
-        public LinkService(ILinkStateRepository repo, IDateTimeProvider dateTimeProvider)
+        private ILinkDetailsProcessor _linkDetailsProcessor;
+
+        public LinkService(ILinkStateRepository repo, IDateTimeProvider dateTimeProvider, ILinkDetailsProcessor linkDetailsProcessor)
         {
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
+            _linkDetailsProcessor = linkDetailsProcessor;
         }
         public ILink CreateLink(Guid guid, Guid linkForGuid, string url, string name)
         {
             var state = _repo.CreateLinkState(guid, name);
-            state.LinkForGuid = linkForGuid;
+            state.ForGuid = linkForGuid;
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
-            state.Url = url;
-            return new Link(state);
+            var link = new Link(state, _repo, _linkDetailsProcessor);
+            link.ChangeUrl(url, null);
+            return link;
         }
         public ILink GetLink(Guid guid)
         {
             var state = _repo.GetLinkState(guid);
-            return new Link(state, _repo);
+            return new Link(state, _repo, _linkDetailsProcessor);
         }
         public void DeleteLink(Guid guid)
         {

@@ -13,10 +13,13 @@ namespace SoftwareManagementCoreTests
         public void CreateLink_ImplementsIRepository()
         {
             var repoMock = new Moq.Mock<ILinkStateRepository>();
-            var sut = new LinkService(repoMock.Object, new DateTimeProvider());
+            var linkDetailsProcessorMock = new Mock<ILinkDetailsProcessor>();
+            var sut = new LinkService(repoMock.Object, new DateTimeProvider(), linkDetailsProcessorMock.Object);
             var stateMock = new Mock<ILinkState>();
+            var linkDetailsMock = new Mock<ILinkDetails>();
 
             repoMock.Setup(t => t.CreateLinkState(It.IsAny<Guid>(), It.IsAny<string>())).Returns(stateMock.Object);
+            linkDetailsProcessorMock.Setup(s => s.ProcessLinkDetails(It.IsAny<string>())).Returns(linkDetailsMock.Object);
 
             var guid = Guid.NewGuid();
             var name = "New Link";
@@ -25,13 +28,15 @@ namespace SoftwareManagementCoreTests
             sut.CreateLink(guid, forGuid, url, name);
 
             repoMock.Verify(s => s.CreateLinkState(guid, name), Times.Once);
+            linkDetailsProcessorMock.Verify(s => s.ProcessLinkDetails(It.IsAny<string>()), Times.Once);
         }
 
         [Fact(DisplayName = "Delete")]
         public void CanDeleteLink()
         {
             var repoMock = new Mock<ILinkStateRepository>();
-            var sut = new LinkService(repoMock.Object, new DateTimeProvider());
+            var linkDetailsMock = new Mock<ILinkDetailsProcessor>();
+            var sut = new LinkService(repoMock.Object, new DateTimeProvider(), linkDetailsMock.Object);
             var guid = Guid.NewGuid();
 
             sut.DeleteLink(guid);
@@ -43,7 +48,8 @@ namespace SoftwareManagementCoreTests
         public void CanGetLink()
         {
             var repoMock = new Mock<ILinkStateRepository>();
-            var sut = new LinkService(repoMock.Object, new DateTimeProvider());
+            var linkDetailsMock = new Mock<ILinkDetailsProcessor>();
+            var sut = new LinkService(repoMock.Object, new DateTimeProvider(), linkDetailsMock.Object);
             var stateMock = new Mock<ILinkState>();
             var stateMockAlt = new Mock<ILinkState>();
 
@@ -71,6 +77,19 @@ namespace SoftwareManagementCoreTests
             sut.Rename("new", "old");
 
             stateMock.VerifySet(t => t.Name = "new");
+        }
+    }
+    public class LinkServiceSutBuilder
+    {
+        public Mock<ILinkStateRepository> RepoMock { get; set; }
+        public Mock<ILinkDetailsProcessor> LinkDetailsMock { get; set; }
+        public LinkService Build()
+        {
+            var RepoMock = new Mock<ILinkStateRepository>();
+            var LinkDetailsMock = new Mock<ILinkDetailsProcessor>();
+            var sut = new LinkService(RepoMock.Object, new DateTimeProvider(), LinkDetailsMock.Object);
+
+            return sut;
         }
     }
 }

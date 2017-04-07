@@ -25,10 +25,10 @@ namespace LinksShared
     {
         public string Url { get; set; }
         public string Name { get; set; }
-        public Guid LinkForGuid { get; set; }
+        public Guid ForGuid { get; set; }
         public override void Execute()
         {
-            ((ILinkService)base.CommandProcessor).CreateLink(EntityGuid, LinkForGuid, Url, Name);
+            ((ILinkService)base.CommandProcessor).CreateLink(EntityGuid, ForGuid, Url, Name);
             base.Execute();
         }
     }

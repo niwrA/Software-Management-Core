@@ -17,9 +17,15 @@ namespace SoftwareManagementCoreApi.Controllers
             _state = state;
         }
         public Guid Guid { get { return _state.Guid; } }
-        public Guid LinkForGuid { get { return _state.LinkForGuid; } }
+        public Guid LinkForGuid { get { return _state.ForGuid; } }
         public string Name { get { return _state.Name; } }
         public string Url { get { return _state.Url; } }
+
+        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
+        public string Description { get { return _state.Description; } }
+        public Guid EntityGuid { get { return _state.EntityGuid; } }
+        public string ImageUrl { get { return _state.ImageUrl; } }
+        public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
     }
 
     [Route("api/[controller]")]
@@ -40,12 +46,21 @@ namespace SoftwareManagementCoreApi.Controllers
             return dtos;
         }
 
-        // GET api/products/5
+        // GET api/links/5
         [HttpGet("{guid}")]
         public LinkDto Get(Guid guid)
         {
             var state = _linkStateRepository.GetLinkState(guid);
             return new LinkDto(state);
+        }
+
+        // GET api/links/forguid/5
+        [HttpGet("forGuid/{forGuid}")]
+        public IEnumerable<LinkDto> GetForGuid(Guid forGuid)
+        {
+            var states = _linkStateRepository.GetLinkStatesForGuid(forGuid);
+            var dtos = states.Select(s => new LinkDto(s)).ToList();
+            return dtos;
         }
     }
 }

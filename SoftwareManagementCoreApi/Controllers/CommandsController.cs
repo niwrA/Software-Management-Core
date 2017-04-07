@@ -76,6 +76,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _commandManager.AddConfig(environmentsConfig);
             _commandManager.AddConfig(employmentsConfig);
             _commandManager.AddConfig(projectRoleAssignmentsConfig);
+            _commandManager.AddConfig(linksConfig);
         }
 
         // GET: api/commands
@@ -108,6 +109,7 @@ namespace SoftwareManagementCoreWeb.Controllers
                 _companyService.PersistChanges();
                 _employmentService.PersistChanges();
                 _projectRoleAssignmentService.PersistChanges();
+                _linkService.PersistChanges();
                 _commandManager.PersistChanges();
 
                 result.ExecutedCommands = commands;

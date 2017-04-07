@@ -163,9 +163,12 @@ namespace SoftwareManagementMongoDbCoreRepository
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
         public Guid EntityGuid { get; set; }
-        public Guid LinkForGuid { get; set; }
+        public Guid ForGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+        public string SiteName { get; set; }
     }
 
     [BsonIgnoreExtraElements]
@@ -612,13 +615,13 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             PersistCommands();
 
+            PersistLinks();
             PersistContacts();
             PersistProducts();
             PersistProjects();
             PersistCompanies();
             PersistEmployments();
             PersistProjectRoleAssignments();
-            PersistLinks();
         }
 
         private void PersistCommands()
@@ -707,24 +710,24 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         private void PersistContacts()
         {
-            var linkCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+            var contactCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
             // inserts
-            if (_linkStates.Values.Any())
+            if (_contactStates.Values.Any())
             {
-                var links = _linkStates.Values.Select(s => s as ContactState).ToList();
-                linkCollection.InsertMany(links);
-                _linkStates.Clear();
+                var contacts = _contactStates.Values.Select(s => s as ContactState).ToList();
+                contactCollection.InsertMany(contacts);
+                _contactStates.Clear();
             }
 
             // todo: can these be batched?
             // updates
             if (_updatedContactStates.Values.Any())
             {
-                var links = _updatedContactStates.Values.Select(s => s as ContactState).ToList();
-                foreach (var state in links)
+                var contacts = _updatedContactStates.Values.Select(s => s as ContactState).ToList();
+                foreach (var state in contacts)
                 {
                     var filter = Builders<ContactState>.Filter.Eq("Guid", state.Guid);
-                    linkCollection.ReplaceOne(filter, state);
+                    contactCollection.ReplaceOne(filter, state);
                 }
                 _updatedContactStates.Clear();
             }
@@ -1015,7 +1018,8 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             var state = new LinkState()
             {
-                Guid = guid
+                Guid = guid,
+                Name = name
             };
             _linkStates.Add(state.Guid, state);
             return state;
@@ -1045,6 +1049,16 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             return states?.ToList();
         }
+
+        public IEnumerable<ILinkState> GetLinkStatesForGuid(Guid forGuid)
+        {
+            var collection = _database.GetCollection<LinkState>(LinkStatesCollection);
+            var filter = Builders<LinkState>.Filter.Eq("ForGuid", forGuid);
+            var states = collection.Find(filter);
+
+            return states?.ToList();
+        }
+
 
         public void DeleteLinkState(Guid guid)
         {

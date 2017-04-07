@@ -9,7 +9,12 @@
     <Import_RootNamespace>LinksShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)IImageLink.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ILinkDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ILinkDetailsProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinkCommands.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LinkDetailsParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Links.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UrlImageHeaderParser.cs" />
   </ItemGroup>
 </Project>

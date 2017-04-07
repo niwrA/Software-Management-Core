@@ -93,6 +93,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<ICompanyStateRepository, MainRepository>();
             services.AddTransient<ICompanyService, CompanyService>();
 
+            services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
             services.AddTransient<ILinkStateRepository, MainRepository>();
             services.AddTransient<ILinkService, LinkService>();
 
