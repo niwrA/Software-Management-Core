@@ -17,7 +17,7 @@ namespace SoftwareManagementCoreApi.Controllers
             _state = state;
         }
         public Guid Guid { get { return _state.Guid; } }
-        public Guid LinkForGuid { get { return _state.ForGuid; } }
+        public Guid ForGuid { get { return _state.ForGuid; } }
         public string Name { get { return _state.Name; } }
         public string Url { get { return _state.Url; } }
 

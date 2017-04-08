@@ -16,7 +16,7 @@ namespace SoftwareManagementCoreApiTests.Links
             Assert.Equal(fakeState.CreatedOn.ToString("yyyy-MM-dd"), sut.CreatedOn);
             Assert.Equal(fakeState.Description, sut.Description);
             Assert.Equal(fakeState.EntityGuid, sut.EntityGuid);
-            Assert.Equal(fakeState.ForGuid, sut.LinkForGuid);
+            Assert.Equal(fakeState.ForGuid, sut.ForGuid);
             Assert.Equal(fakeState.Guid, sut.Guid);
             Assert.Equal(fakeState.ImageUrl, sut.ImageUrl);
             Assert.Equal(fakeState.Name, sut.Name);
