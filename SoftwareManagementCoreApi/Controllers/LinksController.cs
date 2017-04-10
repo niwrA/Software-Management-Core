@@ -21,10 +21,10 @@ namespace SoftwareManagementCoreApi.Controllers
         public string Name { get { return _state.Name; } }
         public string Url { get { return _state.Url; } }
 
-        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
         public string Description { get { return _state.Description; } }
         public Guid EntityGuid { get { return _state.EntityGuid; } }
         public string ImageUrl { get { return _state.ImageUrl; } }
+        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
         public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
     }
 

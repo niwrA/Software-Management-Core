@@ -17,6 +17,7 @@ using CompaniesShared;
 using EmploymentsShared;
 using ProjectRoleAssignmentsShared;
 using LinksShared;
+using DesignsShared;
 
 namespace SoftwareManagementCoreApiTests
 {
@@ -32,6 +33,7 @@ namespace SoftwareManagementCoreApiTests
 
             var projectsService = new Mock<IProjectService>();
             var productsService = new Mock<IProductService>();
+            var designsService = new Mock<IDesignService>();
             var contactsService = new Mock<IContactService>();
             var companiesService = new Mock<ICompanyService>();
             var employmentsService = new Mock<IEmploymentService>();
@@ -49,7 +51,7 @@ namespace SoftwareManagementCoreApiTests
             commandManager.Setup(s => s.ProcessCommand(projectCommandDto)).Returns(projectCommand);
             commandManager.Setup(s => s.ProcessCommand(productCommandDto)).Returns(productCommand);
 
-            var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object, employmentsService.Object, companiesService.Object, projectRoleAssignmentsService.Object, linksService.Object);
+            var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object, employmentsService.Object, companiesService.Object, projectRoleAssignmentsService.Object, linksService.Object, designsService.Object);
             var sutResult = sut.Post(new List<CommandDto> { projectCommandDto, productCommandDto });
 
             Assert.True(sutResult.Success);

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementCore", "SoftwareManagementCore\SoftwareManagementCore.csproj", "{201FF2B7-DF85-414E-8CCB-A76FFC261D6B}"
 EndProject
@@ -71,8 +71,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Links", "Links", "{E3DE2F3E
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LinksShared", "LinksShared\LinksShared.shproj", "{E497D6C4-60EF-4768-B0C7-41C11820BFD7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Designs", "Designs", "{C711E5A7-6CCF-4D7E-BA84-8DC5176BF848}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DesignsShared", "DesignsShared\DesignsShared.shproj", "{2A15930F-C1A9-4D21-9A16-9D41DAE78B87}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DesignsShared\DesignsShared.projitems*{2a15930f-c1a9-4d21-9a16-9d41dae78b87}*SharedItemsImports = 13
 		EmploymentShared\EmploymentShared.projitems*{3ef38306-ddc8-42f9-923b-3dc288df5bf5}*SharedItemsImports = 13
 		ProductsShared\ProductsShared.projitems*{51dadd10-16bc-435e-a8ff-79d03f757bb7}*SharedItemsImports = 13
 		CompaniesShared\CompaniesShared.projitems*{61341421-bcc5-44ee-9fff-656e1e78e0e9}*SharedItemsImports = 13
@@ -236,5 +241,7 @@ Global
 		{996CE0C6-45CA-4803-A601-6012D601C2E2} = {B7E86F53-7178-4866-8812-7B6AFFB88D71}
 		{E3DE2F3E-AF1E-447C-BD04-020848375785} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{E497D6C4-60EF-4768-B0C7-41C11820BFD7} = {E3DE2F3E-AF1E-447C-BD04-020848375785}
+		{C711E5A7-6CCF-4D7E-BA84-8DC5176BF848} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{2A15930F-C1A9-4D21-9A16-9D41DAE78B87} = {C711E5A7-6CCF-4D7E-BA84-8DC5176BF848}
 	EndGlobalSection
 EndGlobal

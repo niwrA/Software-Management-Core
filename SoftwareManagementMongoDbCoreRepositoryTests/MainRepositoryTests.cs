@@ -282,6 +282,7 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public Mock<IMongoDatabase> Database { get { return _databaseMock; } }
         public Mock<IMongoClient> Client { get { return _clientMock; } }
         public Mock<IMongoCollection<ProductState>> ProductStateCollection { get; private set; }
+        public Mock<IMongoCollection<DesignState>> DesignStateCollection { get; private set; }
         public Mock<IMongoCollection<CompanyState>> CompanyStateCollection { get; private set; }
         public Mock<IMongoCollection<ProjectRoleAssignmentState>> ProjectRoleAssignmentStateCollection { get; private set; }
         public Mock<IMongoCollection<LinkState>> LinkStateCollection { get; private set; }
@@ -302,6 +303,10 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             if (ProductStateCollection != null)
             {
                 _databaseMock.Setup(s => s.GetCollection<ProductState>("ProductStates", null)).Returns(ProductStateCollection.Object);
+            }
+            if (DesignStateCollection != null)
+            {
+                _databaseMock.Setup(s => s.GetCollection<DesignState>("DesignStates", null)).Returns(DesignStateCollection.Object);
             }
             if (CompanyStateCollection != null)
             {
@@ -326,6 +331,12 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         public SutBuilder WithProductCollection()
         {
             ProductStateCollection = new Mock<IMongoCollection<ProductState>>();
+            return this;
+        }
+
+        public SutBuilder WithDesignCollection()
+        {
+            DesignStateCollection = new Mock<IMongoCollection<DesignState>>();
             return this;
         }
 

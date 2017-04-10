@@ -1,6 +1,7 @@
 ﻿using CommandsShared;
 using CompaniesShared;
 using ContactsShared;
+using DesignsShared;
 using EmploymentsShared;
 using LinksShared;
 using MongoDB.Bson;
@@ -50,6 +51,18 @@ namespace SoftwareManagementMongoDbCoreRepository
         public DateTime UpdatedOn { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     }
+    [BsonIgnoreExtraElements]
+    public class DesignState : IDesignState
+    {
+
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public string Description { get; set; }
+        public string Name { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+
     [BsonIgnoreExtraElements]
     public class ProjectState : IProjectState
     {
@@ -184,7 +197,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
     }
-    public interface IMainRepository : IProductStateRepository, IContactStateRepository,
+    public interface IMainRepository : IProductStateRepository, IDesignStateRepository, IContactStateRepository,
         IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository,
         IProjectRoleAssignmentStateRepository, ILinkStateRepository
     { };
@@ -192,6 +205,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     {
         private const string CommandStatesCollection = "CommandStates";
         private const string ProductStatesCollection = "ProductStates";
+        private const string DesignStatesCollection = "DesignStates";
         private const string ProjectStatesCollection = "ProjectStates";
         private const string ContactStatesCollection = "ContactStates";
         private const string CompanyStatesCollection = "CompanyStates";
@@ -205,6 +219,10 @@ namespace SoftwareManagementMongoDbCoreRepository
         private Dictionary<Guid, IProductState> _productStates;
         private List<Guid> _deletedProductStates;
         private Dictionary<Guid, IProductState> _updatedProductStates;
+
+        private Dictionary<Guid, IDesignState> _designStates;
+        private List<Guid> _deletedDesignStates;
+        private Dictionary<Guid, IDesignState> _updatedDesignStates;
 
         private Dictionary<Guid, IProjectState> _projectStates;
         private List<Guid> _deletedProjectStates;
@@ -240,6 +258,10 @@ namespace SoftwareManagementMongoDbCoreRepository
             _productStates = new Dictionary<Guid, IProductState>();
             _deletedProductStates = new List<Guid>();
             _updatedProductStates = new Dictionary<Guid, IProductState>();
+
+            _designStates = new Dictionary<Guid, IDesignState>();
+            _deletedDesignStates = new List<Guid>();
+            _updatedDesignStates = new Dictionary<Guid, IDesignState>();
 
             _projectStates = new Dictionary<Guid, IProjectState>();
             _deletedProjectStates = new List<Guid>();
@@ -544,6 +566,13 @@ namespace SoftwareManagementMongoDbCoreRepository
                 _updatedProductStates.Add(state.Guid, state);
             }
         }
+        private void TrackDesignState(IDesignState state)
+        {
+            if (state != null && !_updatedDesignStates.ContainsKey(state.Guid))
+            {
+                _updatedDesignStates.Add(state.Guid, state);
+            }
+        }
 
         public IProjectState GetProjectState(Guid guid)
         {
@@ -618,6 +647,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             PersistLinks();
             PersistContacts();
             PersistProducts();
+            PersistDesigns();
             PersistProjects();
             PersistCompanies();
             PersistEmployments();
@@ -670,6 +700,44 @@ namespace SoftwareManagementMongoDbCoreRepository
                 _deletedProductStates.Clear();
             }
         }
+
+        private void PersistDesigns()
+        {
+            var designCollection = _database.GetCollection<DesignState>(DesignStatesCollection);
+            // inserts
+            if (_designStates.Values.Any())
+            {
+                var designs = _designStates.Values.Select(s => s as DesignState).ToList();
+                designCollection.InsertMany(designs);
+                _designStates.Clear();
+            }
+
+            // todo: can these be batched?
+            // updates
+            if (_updatedDesignStates.Values.Any())
+            {
+                var designs = _updatedDesignStates.Values.Select(s => s as DesignState).ToList();
+                foreach (var state in designs)
+                {
+                    var filter = Builders<DesignState>.Filter.Eq("Guid", state.Guid);
+                    designCollection.ReplaceOne(filter, state);
+                }
+                _updatedDesignStates.Clear();
+            }
+
+            // deletes
+            if (_deletedDesignStates.Any())
+            {
+                var collection = _database.GetCollection<DesignState>(DesignStatesCollection);
+                foreach (var guid in _deletedDesignStates)
+                {
+                    var filter = Builders<DesignState>.Filter.Eq("Guid", guid);
+                    collection.DeleteOne(filter);
+                }
+                _deletedDesignStates.Clear();
+            }
+        }
+
 
         private void PersistProjects()
         {
@@ -1069,6 +1137,49 @@ namespace SoftwareManagementMongoDbCoreRepository
         public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid)
         {
             throw new NotImplementedException();
+        }
+
+        public IDesignState CreateDesignState(Guid guid, string name)
+        {
+            var state = new DesignState()
+            {
+                Guid = guid,
+                Name = name
+            };
+            _designStates.Add(state.Guid, state);
+            return state;
+        }
+
+        public IDesignState GetDesignState(Guid guid)
+        {
+            if (!_designStates.TryGetValue(guid, out IDesignState state))
+            {
+                if (!_updatedDesignStates.TryGetValue(guid, out state))
+                {
+
+                    var collection = _database.GetCollection<DesignState>(DesignStatesCollection);
+                    var filter = Builders<DesignState>.Filter.Eq("Guid", guid);
+
+                    state = collection.Find(filter).FirstOrDefault();
+
+                    TrackDesignState(state);
+                }
+            }
+            return state;
+        }
+
+        public IEnumerable<IDesignState> GetDesignStates()
+        {
+            var collection = _database.GetCollection<DesignState>(DesignStatesCollection);
+            var filter = new BsonDocument();
+            var states = collection.Find(filter);
+
+            return states?.ToList();
+        }
+
+        public void DeleteDesignState(Guid guid)
+        {
+            _deletedDesignStates.Add(guid);
         }
     }
 }

@@ -22,6 +22,7 @@ using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using ProjectRoleAssignmentsShared;
 using LinksShared;
+using DesignsShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -83,6 +84,9 @@ namespace SoftwareManagementCoreApi
             // note that I've used the same repo here for all, but that's just one of the options
             services.AddTransient<IProductStateRepository, MainRepository>();
             services.AddTransient<IProductService, ProductService>();
+
+            services.AddTransient<IDesignStateRepository, MainRepository>();
+            services.AddTransient<IDesignService, DesignService>();
 
             services.AddTransient<IProjectStateRepository, MainRepository>();
             services.AddTransient<IProjectService, ProjectService>();

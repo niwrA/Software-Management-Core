@@ -13,6 +13,7 @@ using CompaniesShared;
 using EmploymentsShared;
 using ProjectRoleAssignmentsShared;
 using LinksShared;
+using DesignsShared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,6 +32,7 @@ namespace SoftwareManagementCoreWeb.Controllers
     public class CommandsController : Controller
     {
         private IProductService _productService;
+        private IDesignService _designService;
         private IProjectService _projectService;
         private IContactService _contactService;
         private ICompanyService _companyService;
@@ -41,11 +43,12 @@ namespace SoftwareManagementCoreWeb.Controllers
 
         private ICommandService _commandManager;
 
-        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService)
+        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService, IDesignService designService)
         {
             _commandManager = commandManager;
 
             _productService = productService;
+            _designService = designService;
             _projectService = projectService;
             _contactService = contactService;
             _companyService = companyService;
@@ -61,6 +64,7 @@ namespace SoftwareManagementCoreWeb.Controllers
         {
             var projectsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService };
             var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
+            var designsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "Design", Processor = _designService };
             var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
             var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
             var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Environment", Processor = _companyService };
@@ -71,6 +75,7 @@ namespace SoftwareManagementCoreWeb.Controllers
 
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
+            _commandManager.AddConfig(designsConfig);
             _commandManager.AddConfig(contactsConfig);
             _commandManager.AddConfig(companiesConfig);
             _commandManager.AddConfig(environmentsConfig);
@@ -104,6 +109,7 @@ namespace SoftwareManagementCoreWeb.Controllers
 
                 // these can be all the same contexts, but may also be different
                 _productService.PersistChanges();
+                _designService.PersistChanges();
                 _projectService.PersistChanges();
                 _contactService.PersistChanges();
                 _companyService.PersistChanges();
