@@ -1181,5 +1181,25 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             _deletedDesignStates.Add(guid);
         }
+
+        public IEpicElementState CreateEpicElementState(Guid designGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDesignState CreateEntityElementState(Guid parentGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDesignState CreatePropertyElementState(Guid parentGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDesignState CreateCommandElementState(Guid parentGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

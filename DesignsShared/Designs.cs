@@ -10,21 +10,59 @@ namespace DesignsShared
     {
         string Description { get; set; }
     }
+    public interface IDesignElementState : INamedEntityState
+    {
+        Guid ParentGuid { get; set; }
+        ICollection<IDesignElementState> Children { get; set; }
+    }
+    public interface IEpicElementState : IDesignElementState
+    {
+    }
+    public interface IEntityElementState : IDesignElementState
+    {
+
+    }
+    public interface IChildEntityElementState : IDesignElementState
+    {
+
+    }
+    public interface IPropertyElementState : IDesignElementState
+    {
+
+    }
+    public interface ICommandElementState : IDesignElementState
+    {
+
+    }
+    public interface IQueryElementState : IDesignElementState
+    {
+
+    }
+
     public interface IDesignStateRepository : IEntityRepository
     {
         IDesignState CreateDesignState(Guid guid, string name);
+        IEpicElementState CreateEpicElementState(Guid designGuid, Guid guid, string name);
+        IDesignState CreateEntityElementState(Guid parentGuid, Guid guid, string name);
+        IDesignState CreatePropertyElementState(Guid parentGuid, Guid guid, string name);
+        IDesignState CreateCommandElementState(Guid parentGuid, Guid guid, string name);
         IDesignState GetDesignState(Guid guid);
         IEnumerable<IDesignState> GetDesignStates();
         void DeleteDesignState(Guid guid);
+    }
+    public interface IEpicElement
+    {
+        Guid Guid { get; }
+        string Name { get; }
     }
     public interface IDesign
     {
         DateTime CreatedOn { get; }
         Guid Guid { get; }
         string Name { get; }
-
         void Rename(string name, string original);
         void ChangeDescription(string description);
+        IEpicElement AddEpic(Guid guid, string name);
     }
     public class Design : IDesign
     {
@@ -41,8 +79,6 @@ namespace DesignsShared
         public string Name { get { return _state.Name; } }
         public string Description { get { return _state.Description; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
-
-
         public void Rename(string name, string originalName)
         {
             if (_state.Name == originalName)
@@ -58,6 +94,39 @@ namespace DesignsShared
         public void ChangeDescription(string description)
         {
             _state.Description = description;
+        }
+
+        public IEpicElement AddEpic(Guid guid, string name)
+        {
+            var state = _repo.CreateEpicElementState(this.Guid, guid, name);
+            state.ParentGuid = this.Guid;
+            return new EpicElement(state, _repo);
+        }
+    }
+    public class EpicElement : IEpicElement
+    {
+        private IEpicElementState _state;
+        private IDesignStateRepository _repo;
+
+        public EpicElement(IEpicElementState state, IDesignStateRepository repo)
+        {
+            _state = state;
+            _repo = repo;
+        }
+
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public DateTime CreatedOn { get { return _state.CreatedOn; } }
+        public void Rename(string name, string originalName)
+        {
+            if (_state.Name == originalName)
+            {
+                _state.Name = name;
+            }
+            else
+            {
+                // todo: concurrency policy implementation
+            }
         }
     }
 

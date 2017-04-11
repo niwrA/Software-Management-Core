@@ -59,5 +59,26 @@ namespace SoftwareManagementCoreTests
             sut.Rename("new", "old");
             stateMock.VerifySet(t => t.Name = "new");
         }
+
+        [Fact(DisplayName = "AddEpic Implements IRepository")]
+        public void CanAddRootElement()
+        {
+            var repoMock = new Mock<IDesignStateRepository>();
+            var designStateMock = new Mock<IDesignState>();
+            var sut = new Design(designStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IEpicElementState>();
+            const string name = "new";
+
+            var guid = Guid.NewGuid();
+            var designGuid = Guid.NewGuid();
+
+            designStateMock.Setup(s => s.Guid).Returns(designGuid);
+            repoMock.Setup(t => t.CreateEpicElementState(designGuid, guid, name)).Returns(stateMock.Object);
+
+            var result = sut.AddEpic(guid, name);
+
+            stateMock.VerifySet(t => t.ParentGuid = designGuid);
+        }
+
     }
 }

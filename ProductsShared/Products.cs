@@ -45,12 +45,10 @@ namespace ProductsShared
         DateTime CreatedOn { get; }
         Guid Guid { get; }
         string Name { get; }
-
         void Rename(string name, string original);
         void ChangeDescription(string description);
         void ChangeBusinessCase(string businessCase);
         IProductVersion AddVersion(Guid guid, string name, int major, int minor, int revision, int build);
-        IReadOnlyCollection<IProductVersion> ProductVersions { get; }
     }
     public class Product : IProduct
     {
@@ -68,9 +66,6 @@ namespace ProductsShared
         public string Description { get { return _state.Description; } }
         public string BusinessCase { get { return _state.BusinessCase; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
-
-        public IReadOnlyCollection<IProductVersion> ProductVersions => throw new NotImplementedException();
-
         public void Rename(string name, string originalName)
         {
             if (_state.Name == originalName)
