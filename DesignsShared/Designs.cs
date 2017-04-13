@@ -9,22 +9,22 @@ namespace DesignsShared
     public interface IDesignState : INamedEntityState
     {
         string Description { get; set; }
+        ICollection<IEpicElementState> EpicElementStates { get; set; }
+
     }
     public interface IDesignElementState : INamedEntityState
     {
+        string Description { get; set; }
         Guid ParentGuid { get; set; }
-        ICollection<IDesignElementState> Children { get; set; }
     }
     public interface IEpicElementState : IDesignElementState
     {
+        ICollection<IEntityElementState> EntityElementStates { get; set; }
     }
     public interface IEntityElementState : IDesignElementState
     {
-
-    }
-    public interface IChildEntityElementState : IDesignElementState
-    {
-
+        ICollection<IPropertyElementState> PropertyElementStates { get; set; }
+        ICollection<ICommandElementState> CommandElementStates { get; set; }
     }
     public interface IPropertyElementState : IDesignElementState
     {
@@ -43,17 +43,21 @@ namespace DesignsShared
     {
         IDesignState CreateDesignState(Guid guid, string name);
         IEpicElementState CreateEpicElementState(Guid designGuid, Guid guid, string name);
-        IDesignState CreateEntityElementState(Guid parentGuid, Guid guid, string name);
-        IDesignState CreatePropertyElementState(Guid parentGuid, Guid guid, string name);
-        IDesignState CreateCommandElementState(Guid parentGuid, Guid guid, string name);
+        //IDesignState CreateEntityElementState(Guid parentGuid, Guid guid, string name);
+        //IDesignState CreatePropertyElementState(Guid parentGuid, Guid guid, string name);
+        //IDesignState CreateCommandElementState(Guid parentGuid, Guid guid, string name);
         IDesignState GetDesignState(Guid guid);
         IEnumerable<IDesignState> GetDesignStates();
         void DeleteDesignState(Guid guid);
+        IEpicElementState GetEpicElementState(Guid designGuid, Guid epicGuid);
     }
     public interface IEpicElement
     {
         Guid Guid { get; }
         string Name { get; }
+
+        void Rename(string name, string originalName);
+        void ChangeDescription(string description);
     }
     public interface IDesign
     {
@@ -62,7 +66,9 @@ namespace DesignsShared
         string Name { get; }
         void Rename(string name, string original);
         void ChangeDescription(string description);
-        IEpicElement AddEpic(Guid guid, string name);
+        IEpicElement AddEpicElement(Guid guid, string name);
+        void DeleteEpicElement(Guid entityGuid);
+        IEpicElement GetEpicElement(Guid entityGuid);
     }
     public class Design : IDesign
     {
@@ -96,10 +102,21 @@ namespace DesignsShared
             _state.Description = description;
         }
 
-        public IEpicElement AddEpic(Guid guid, string name)
+        public IEpicElement AddEpicElement(Guid guid, string name)
         {
             var state = _repo.CreateEpicElementState(this.Guid, guid, name);
             state.ParentGuid = this.Guid;
+            return new EpicElement(state, _repo);
+        }
+
+        public void DeleteEpicElement(Guid entityGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEpicElement GetEpicElement(Guid entityGuid)
+        {
+            var state = _repo.GetEpicElementState(entityGuid, this.Guid);
             return new EpicElement(state, _repo);
         }
     }
@@ -117,6 +134,12 @@ namespace DesignsShared
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+        public void ChangeDescription(string description)
+        {
+            _state.Description = description;
+        }
+
         public void Rename(string name, string originalName)
         {
             if (_state.Name == originalName)

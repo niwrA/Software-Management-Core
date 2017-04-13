@@ -61,6 +61,23 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public ICollection<IEpicElementState> EpicElementStates { get; set; } = new List<IEpicElementState>() as ICollection<IEpicElementState>;
+    }
+    [BsonIgnoreExtraElements]
+    public class EpicElementState : IEpicElementState
+    {
+        public EpicElementState()
+        {
+            EntityElementStates = new List<IEntityElementState>() as ICollection<IEntityElementState>;
+        }
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public Guid ParentGuid { get; set; }
+        public string Description { get; set; }
+        public string Name { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public ICollection<IEntityElementState> EntityElementStates { get; set; }
     }
 
     [BsonIgnoreExtraElements]
@@ -1184,7 +1201,15 @@ namespace SoftwareManagementMongoDbCoreRepository
 
         public IEpicElementState CreateEpicElementState(Guid designGuid, Guid guid, string name)
         {
-            throw new NotImplementedException();
+            var state= GetDesignState(designGuid);
+
+            var epicElementState = new EpicElementState()
+            {
+                Guid = guid,
+                Name = name
+            };
+            state.EpicElementStates.Add(epicElementState);
+            return epicElementState;
         }
 
         public IDesignState CreateEntityElementState(Guid parentGuid, Guid guid, string name)
@@ -1198,6 +1223,11 @@ namespace SoftwareManagementMongoDbCoreRepository
         }
 
         public IDesignState CreateCommandElementState(Guid parentGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEpicElementState GetEpicElementState(Guid designGuid, Guid epicGuid)
         {
             throw new NotImplementedException();
         }

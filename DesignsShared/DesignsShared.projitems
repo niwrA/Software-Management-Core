@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DesignCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Designs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EpicElementCommands.cs" />
   </ItemGroup>
 </Project>

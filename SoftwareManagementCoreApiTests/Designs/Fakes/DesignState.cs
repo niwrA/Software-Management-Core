@@ -20,5 +20,6 @@ namespace SoftwareManagementCoreApiTests.Fakes
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string Description { get; set; }
+        public ICollection<IEpicElementState> EpicElementStates { get; set; }
     }
 }

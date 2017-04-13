@@ -61,7 +61,7 @@ namespace SoftwareManagementCoreTests
         }
 
         [Fact(DisplayName = "AddEpic Implements IRepository")]
-        public void CanAddRootElement()
+        public void CanAddEpicElement()
         {
             var repoMock = new Mock<IDesignStateRepository>();
             var designStateMock = new Mock<IDesignState>();
@@ -75,7 +75,7 @@ namespace SoftwareManagementCoreTests
             designStateMock.Setup(s => s.Guid).Returns(designGuid);
             repoMock.Setup(t => t.CreateEpicElementState(designGuid, guid, name)).Returns(stateMock.Object);
 
-            var result = sut.AddEpic(guid, name);
+            var result = sut.AddEpicElement(guid, name);
 
             stateMock.VerifySet(t => t.ParentGuid = designGuid);
         }
