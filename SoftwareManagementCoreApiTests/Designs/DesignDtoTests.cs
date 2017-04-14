@@ -1,6 +1,7 @@
 ﻿using SoftwareManagementCoreApi.Controllers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -20,6 +21,10 @@ namespace SoftwareManagementCoreApiTests.Designs
             Assert.Equal(fakeState.Description, sut.Description);
             Assert.Equal(fakeState.CreatedOn.ToString("yyyy-MM-dd"), sut.CreatedOn);
             Assert.Equal(fakeState.UpdatedOn.ToString("yyyy-MM-dd"), sut.UpdatedOn);
+            Assert.Equal(fakeState.EpicElementStates.Count, sut.EpicElements.Count);
+            Assert.Equal(fakeState.EpicElementStates.First().EntityElementStates.Count, sut.EpicElements.First().EntityElements.Count);
+            Assert.Equal(fakeState.EpicElementStates.First().EntityElementStates.First().PropertyElementStates.Count, sut.EpicElements.First().EntityElements.First().PropertyElements.Count);
+            Assert.Equal(fakeState.EpicElementStates.First().EntityElementStates.First().CommandElementStates.Count, sut.EpicElements.First().EntityElements.First().CommandElements.Count);
         }
     }
 

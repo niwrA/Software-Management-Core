@@ -46,7 +46,7 @@ namespace SoftwareManagementCoreTests
             repoMock.Verify(t => t.GetDesignState(altStateGuid));
         }
 
-        [Fact(DisplayName = "Get Implements IRepository")]
+        [Fact(DisplayName = "Can Rename Design")]
         public void CanRenameDesign()
         {
             var stateMock = new Mock<IDesignState>();

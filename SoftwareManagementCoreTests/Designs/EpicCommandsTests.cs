@@ -33,7 +33,7 @@ namespace SoftwareManagementCoreTests.EpicElements
         public void DeleteCommand()
         {
             var designServiceMock = new Mock<IDesignService>();
-            var sut = new CommandBuilder<CreateEpicElementCommand>().Build(designServiceMock.Object) as CreateEpicElementCommand;
+            var sut = new CommandBuilder<DeleteEpicElementCommand>().Build(designServiceMock.Object) as DeleteEpicElementCommand;
             var designMock = new Mock<IDesign>();
 
             designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);

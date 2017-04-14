@@ -65,6 +65,10 @@ namespace SoftwareManagementCoreWeb.Controllers
             var projectsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService };
             var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
             var designsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "Design", Processor = _designService };
+            var epicElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EpicElement", Processor = _designService };
+            var entityElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EntityElement", Processor = _designService };
+            var commandElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "CommandElement", Processor = _designService };
+            var propertyElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "PropertyElement", Processor = _designService };
             var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
             var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
             var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Environment", Processor = _companyService };
@@ -76,6 +80,10 @@ namespace SoftwareManagementCoreWeb.Controllers
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
             _commandManager.AddConfig(designsConfig);
+            _commandManager.AddConfig(epicElementConfig);
+            _commandManager.AddConfig(entityElementConfig);
+            _commandManager.AddConfig(commandElementConfig);
+            _commandManager.AddConfig(propertyElementConfig);
             _commandManager.AddConfig(contactsConfig);
             _commandManager.AddConfig(companiesConfig);
             _commandManager.AddConfig(environmentsConfig);

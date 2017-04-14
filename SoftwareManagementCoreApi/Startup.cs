@@ -75,6 +75,10 @@ namespace SoftwareManagementCoreApi
             BsonClassMap.RegisterClassMap<ProjectRoleState>();
             BsonClassMap.RegisterClassMap<ProductVersionState>();
             BsonClassMap.RegisterClassMap<CompanyEnvironmentState>();
+            BsonClassMap.RegisterClassMap<EpicElementState>();
+            BsonClassMap.RegisterClassMap<EntityElementState>();
+            BsonClassMap.RegisterClassMap<PropertyElementState>();
+            BsonClassMap.RegisterClassMap<CommandElementState>();
             #endregion
 
             // helpers
@@ -85,7 +89,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IProductStateRepository, MainRepository>();
             services.AddTransient<IProductService, ProductService>();
 
-            services.AddTransient<IDesignStateRepository, MainRepository>();
+            services.AddTransient<IDesignStateRepository, DesignStateRepository>();
             services.AddTransient<IDesignService, DesignService>();
 
             services.AddTransient<IProjectStateRepository, MainRepository>();

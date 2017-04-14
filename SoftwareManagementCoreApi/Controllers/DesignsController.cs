@@ -9,19 +9,83 @@ using DesignsShared;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
+    public class CommandElementDto
+    {
+        private ICommandElementState _state;
+        public CommandElementDto(ICommandElementState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public string Description { get { return _state.Description; } }
+        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
+        public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
+    }
+    public class PropertyElementDto
+    {
+        private IPropertyElementState _state;
+        public PropertyElementDto(IPropertyElementState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public string Description { get { return _state.Description; } }
+        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
+        public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
+    }
+    public class EntityElementDto
+    {
+        private IEntityElementState _state;
+        public EntityElementDto(IEntityElementState state)
+        {
+            _state = state;
+            PropertyElements = state.PropertyElementStates.Select(s => new PropertyElementDto(s)).ToList();
+            CommandElements = state.CommandElementStates.Select(s => new CommandElementDto(s)).ToList();
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public string Description { get { return _state.Description; } }
+        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
+        public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
+
+        public ICollection<CommandElementDto> CommandElements { get; set; }
+        public ICollection<PropertyElementDto> PropertyElements { get; set; }
+    }
+
+    public class EpicElementDto
+    {
+        private IEpicElementState _state;
+        public EpicElementDto(IEpicElementState state)
+        {
+            _state = state;
+            EntityElements = state.EntityElementStates.Select(s => new EntityElementDto(s)).ToList();
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public string Description { get { return _state.Description; } }
+        public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
+        public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
+
+        public ICollection<EntityElementDto> EntityElements { get; set; }
+    }
+
     public class DesignDto
     {
         private IDesignState _state;
         public DesignDto(IDesignState state)
         {
             _state = state;
+            EpicElements = state.EpicElementStates.Select(s => new EpicElementDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
-        public string Description {  get { return _state.Description; } }
+        public string Description { get { return _state.Description; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
         public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
 
+        public ICollection<EpicElementDto> EpicElements { get; set; }
     }
 
     [Route("api/[controller]")]
