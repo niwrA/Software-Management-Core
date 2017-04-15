@@ -2,6 +2,7 @@
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DesignsShared
@@ -15,7 +16,7 @@ namespace DesignsShared
     public interface IDesignElementState : INamedEntityState
     {
         string Description { get; set; }
-        Guid ParentGuid { get; set; }
+        Guid DesignGuid { get; set; }
     }
     public interface IEpicElementState : IDesignElementState
     {
@@ -25,14 +26,17 @@ namespace DesignsShared
     {
         ICollection<IPropertyElementState> PropertyElementStates { get; set; }
         ICollection<ICommandElementState> CommandElementStates { get; set; }
+        Guid EpicGuid { get; set; }
     }
     public interface IPropertyElementState : IDesignElementState
     {
-
+        Guid EpicGuid { get; set; }
+        Guid EntityGuid { get; set; }
     }
     public interface ICommandElementState : IDesignElementState
     {
-
+        Guid EpicGuid { get; set; }
+        Guid EntityGuid { get; set; }
     }
     public interface IQueryElementState : IDesignElementState
     {
@@ -50,14 +54,43 @@ namespace DesignsShared
         IEnumerable<IDesignState> GetDesignStates();
         void DeleteDesignState(Guid guid);
         IEpicElementState GetEpicElementState(Guid designGuid, Guid epicGuid);
+        IEntityElementState CreateEntityElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, string name);
+        IPropertyElementState CreatePropertyElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name);
+        ICommandElementState CreateCommandElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name);
     }
-    public interface IEpicElement
+    public interface IElement
     {
         Guid Guid { get; }
         string Name { get; }
-
+        Guid DesignGuid { get; }
         void Rename(string name, string originalName);
         void ChangeDescription(string description);
+    }
+    public interface IPropertyElement : IElement
+    {
+        Guid EpicGuid { get; }
+        Guid EntityGuid { get; }
+    }
+    public interface ICommandElement : IElement
+    {
+        Guid EpicGuid { get; }
+        Guid EntityGuid { get; }
+    }
+    public interface IEntityElement : IElement
+    {
+        Guid EpicGuid { get; }
+        ICommandElement AddCommandElement(Guid guid, string name);
+        IPropertyElement AddPropertyElement(Guid guid, string name);
+        IPropertyElement GetPropertyElement(Guid entityGuid);
+        void DeleteCommandElement(Guid entityGuid);
+        void DeletePropertyElement(Guid entityGuid);
+        ICommandElement GetCommandElement(Guid entityGuid);
+    }
+    public interface IEpicElement : IElement
+    {
+        IEntityElement AddEntityElement(Guid entityGuid, string name);
+        IEntityElement GetEntityElement(Guid entityGuid);
+        void DeleteEntityElement(Guid entityGuid);
     }
     public interface IDesign
     {
@@ -75,7 +108,7 @@ namespace DesignsShared
         private IDesignState _state;
         private IDesignStateRepository _repo;
 
-        public Design(IDesignState state, IDesignStateRepository repo) 
+        public Design(IDesignState state, IDesignStateRepository repo)
         {
             _state = state;
             _repo = repo;
@@ -105,7 +138,7 @@ namespace DesignsShared
         public IEpicElement AddEpicElement(Guid guid, string name)
         {
             var state = _repo.CreateEpicElementState(this.Guid, guid, name);
-            state.ParentGuid = this.Guid;
+            state.DesignGuid = this.Guid;
             return new EpicElement(state, _repo);
         }
 
@@ -120,21 +153,19 @@ namespace DesignsShared
             return new EpicElement(state, _repo);
         }
     }
-    public class EpicElement : IEpicElement
+    public class ElementBase: IElement
     {
-        private IEpicElementState _state;
-        private IDesignStateRepository _repo;
-
-        public EpicElement(IEpicElementState state, IDesignStateRepository repo)
+        private IDesignElementState _state;
+        public ElementBase(IDesignElementState state)
         {
             _state = state;
-            _repo = repo;
-        }
 
+        }
+        public Guid DesignGuid { get { return _state.DesignGuid; } }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
-
+        public DateTime UpdatedOn { get { return _state.CreatedOn; } }
         public void ChangeDescription(string description)
         {
             _state.Description = description;
@@ -151,7 +182,117 @@ namespace DesignsShared
                 // todo: concurrency policy implementation
             }
         }
+
     }
+    public class EpicElement : ElementBase, IEpicElement
+    {
+        private IEpicElementState _state;
+        private IDesignStateRepository _repo;
+
+        public EpicElement(IEpicElementState state, IDesignStateRepository repo): base(state)
+        {
+            _state = state;
+            _repo = repo;
+        }
+
+        public IEntityElement AddEntityElement(Guid guid, string name)
+        {
+            var state = _repo.CreateEntityElementState(DesignGuid, Guid, guid, name);
+            var entityElement = new EntityElement(state, _repo);
+            return entityElement;
+        }
+
+        public void DeleteEntityElement(Guid entityGuid)
+        {
+            var state = _state.EntityElementStates.Single(s => s.Guid == entityGuid);
+            _state.EntityElementStates.Remove(state);
+        }
+
+        public IEntityElement GetEntityElement(Guid entityGuid)
+        {
+            var state = _state.EntityElementStates.Single(s => s.Guid == entityGuid);
+            return new EntityElement(state, _repo);
+        }
+
+    }
+
+    public class EntityElement : ElementBase, IEntityElement
+    {
+        private IEntityElementState _state;
+        private IDesignStateRepository _repo;
+        public Guid EpicGuid { get { return _state.EpicGuid; } }
+
+        public EntityElement(IEntityElementState state, IDesignStateRepository repo) : base(state)
+        {
+            _state = state;
+            _repo = repo;
+        }
+
+        public IPropertyElement AddPropertyElement(Guid guid, string name)
+        {
+            var state = _repo.CreatePropertyElementState(DesignGuid, EpicGuid, Guid, guid, name);
+            var propertyElement = new PropertyElement(state, _repo);
+            return propertyElement;
+        }
+        public ICommandElement AddCommandElement(Guid guid, string name)
+        {
+            var state = _repo.CreateCommandElementState(DesignGuid, EpicGuid, Guid, guid, name);
+            var commandElement = new CommandElement(state, _repo);
+            return commandElement;
+        }
+
+        public IPropertyElement GetPropertyElement(Guid entityGuid)
+        {            
+            var state =_state.PropertyElementStates.Single(s => s.Guid == entityGuid);
+            return new PropertyElement(state, _repo);
+        }
+
+        public void DeletePropertyElement(Guid entityGuid)
+        {
+            var state = _state.PropertyElementStates.Single(s => s.Guid == entityGuid);
+            _state.PropertyElementStates.Remove(state);
+        }
+
+        public ICommandElement GetCommandElement(Guid entityGuid)
+        {
+            var state = _state.CommandElementStates.Single(s => s.Guid == entityGuid);
+            return new CommandElement(state, _repo);
+        }
+
+        public void DeleteCommandElement(Guid entityGuid)
+        {
+            var state = _state.CommandElementStates.Single(s => s.Guid == entityGuid);
+            _state.CommandElementStates.Remove(state);
+        }
+    }
+    public class PropertyElement : ElementBase, IPropertyElement
+    {
+        private IPropertyElementState _state;
+        private IDesignStateRepository _repo;
+        public Guid EpicGuid { get { return _state.EpicGuid; } }
+        public Guid EntityGuid { get { return _state.EntityGuid; } }
+
+        public PropertyElement(IPropertyElementState state, IDesignStateRepository repo) : base(state)
+        {
+            _state = state;
+            _repo = repo;
+        }
+    }
+    public class CommandElement : ElementBase, ICommandElement
+    {
+        private ICommandElementState _state;
+        private IDesignStateRepository _repo;
+        public Guid EpicGuid { get { return _state.EpicGuid; } }
+        public Guid EntityGuid { get { return _state.EntityGuid; } }
+
+        public CommandElement(ICommandElementState state, IDesignStateRepository repo) : base(state)
+        {
+            _state = state;
+            _repo = repo;
+        }
+
+    }
+
 
     public interface IDesignService : ICommandProcessor
     {

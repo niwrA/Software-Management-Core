@@ -41,7 +41,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         }
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -58,7 +58,8 @@ namespace SoftwareManagementMongoDbCoreRepository
         }
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
+        public Guid EpicGuid { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -71,7 +72,9 @@ namespace SoftwareManagementMongoDbCoreRepository
     {
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
+        public Guid EpicGuid { get; set; }
+        public Guid EntityGuid { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -82,7 +85,9 @@ namespace SoftwareManagementMongoDbCoreRepository
     {
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
+        public Guid EpicGuid { get; set; }
+        public Guid EntityGuid { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -226,6 +231,8 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             var entityElementState = new EntityElementState()
             {
+                DesignGuid = designGuid,
+                EpicGuid = epicGuid,
                 Guid = guid,
                 Name = name
             };
@@ -241,6 +248,9 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             var propertyElementState = new PropertyElementState()
             {
+                DesignGuid = designGuid,
+                EpicGuid = epicGuid,
+                EntityGuid = entityGuid,
                 Guid = guid,
                 Name = name
             };
@@ -256,6 +266,9 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             var commandElementState = new CommandElementState()
             {
+                DesignGuid = designGuid,
+                EpicGuid = epicGuid,
+                EntityGuid = entityGuid,
                 Guid = guid,
                 Name = name
             };

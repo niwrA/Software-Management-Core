@@ -9,8 +9,11 @@
     <Import_RootNamespace>DesignsShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CommandElementCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DesignCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Designs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityElementCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EpicElementCommands.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyElementCommands.cs" />
   </ItemGroup>
 </Project>

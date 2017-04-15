@@ -77,7 +77,7 @@ namespace SoftwareManagementCoreTests
 
             var result = sut.AddEpicElement(guid, name);
 
-            stateMock.VerifySet(t => t.ParentGuid = designGuid);
+            stateMock.VerifySet(t => t.DesignGuid = designGuid);
         }
 
     }

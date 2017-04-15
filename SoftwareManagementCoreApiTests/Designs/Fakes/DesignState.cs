@@ -15,13 +15,13 @@ namespace SoftwareManagementCoreApiTests.Fakes
     public class PropertyElementState : StateBase, IPropertyElementState
     {
         public string Description { get; set; } = "Property element Description";
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
         public string Name { get; set; } = "Property element Name";
     }
     public class CommandElementState : StateBase, ICommandElementState
     {
         public string Description { get; set; } = "Command element Description";
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
         public string Name { get; set; } = "Command element Name";
     }
     public class EntityElementState : StateBase, IEntityElementState
@@ -36,7 +36,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
             CommandElementStates.Add(commandState);
         }
         public string Description { get; set; } = "Entity element description";
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
         public string Name { get; set; } = "Entity element Name";
         public ICollection<IPropertyElementState> PropertyElementStates { get; set; }
         public ICollection<ICommandElementState> CommandElementStates { get; set; }
@@ -51,7 +51,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
         }
         public ICollection<IEntityElementState> EntityElementStates { get; set; }
         public string Description { get; set; }
-        public Guid ParentGuid { get; set; }
+        public Guid DesignGuid { get; set; }
         public string Name { get; set; }
     }
     public class DesignState : StateBase, IDesignState
