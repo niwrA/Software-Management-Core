@@ -53,11 +53,11 @@ namespace SoftwareManagementCoreTests.Designs
 
             stateMock.Setup(s => s.Guid).Returns(entityGuid);
             stateMock.Setup(s => s.DesignGuid).Returns(designGuid);
-            stateMock.Setup(s => s.EpicGuid).Returns(epicGuid);
+            stateMock.Setup(s => s.EpicElementGuid).Returns(epicGuid);
 
             commandStateMock.Setup(s => s.Guid).Returns(commandGuid);
-            commandStateMock.Setup(s => s.EntityGuid).Returns(entityGuid);
-            commandStateMock.Setup(s => s.EpicGuid).Returns(epicGuid);
+            commandStateMock.Setup(s => s.EntityElementGuid).Returns(entityGuid);
+            commandStateMock.Setup(s => s.EpicElementGuid).Returns(epicGuid);
             commandStateMock.Setup(s => s.DesignGuid).Returns(designGuid);
             commandStateMock.Setup(s => s.Name).Returns(name);
 
@@ -89,11 +89,11 @@ namespace SoftwareManagementCoreTests.Designs
 
             stateMock.Setup(s => s.Guid).Returns(entityGuid);
             stateMock.Setup(s => s.DesignGuid).Returns(designGuid);
-            stateMock.Setup(s => s.EpicGuid).Returns(epicGuid);
+            stateMock.Setup(s => s.EpicElementGuid).Returns(epicGuid);
 
             propertyStateMock.Setup(s => s.Guid).Returns(propertyGuid);
-            propertyStateMock.Setup(s => s.EntityGuid).Returns(entityGuid);
-            propertyStateMock.Setup(s => s.EpicGuid).Returns(epicGuid);
+            propertyStateMock.Setup(s => s.EntityElementGuid).Returns(entityGuid);
+            propertyStateMock.Setup(s => s.EpicElementGuid).Returns(epicGuid);
             propertyStateMock.Setup(s => s.DesignGuid).Returns(designGuid);
             propertyStateMock.Setup(s => s.Name).Returns(name);
 

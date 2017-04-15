@@ -17,6 +17,9 @@ namespace SoftwareManagementCoreApi.Controllers
             _state = state;
         }
         public Guid Guid { get { return _state.Guid; } }
+        public Guid DesignGuid { get { return _state.DesignGuid; } }
+        public Guid EpicElementGuid { get { return _state.EpicElementGuid; } }
+        public Guid EntityElementGuid { get { return _state.EntityElementGuid; } }
         public string Name { get { return _state.Name; } }
         public string Description { get { return _state.Description; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
@@ -30,6 +33,9 @@ namespace SoftwareManagementCoreApi.Controllers
             _state = state;
         }
         public Guid Guid { get { return _state.Guid; } }
+        public Guid DesignGuid { get { return _state.DesignGuid; } }
+        public Guid EpicElementGuid { get { return _state.EpicElementGuid; } }
+        public Guid EntityElementGuid { get { return _state.EntityElementGuid; } }
         public string Name { get { return _state.Name; } }
         public string Description { get { return _state.Description; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
@@ -45,6 +51,8 @@ namespace SoftwareManagementCoreApi.Controllers
             CommandElements = state.CommandElementStates.Select(s => new CommandElementDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
+        public Guid DesignGuid { get { return _state.DesignGuid; } }
+        public Guid EpicElementGuid { get { return _state.EpicElementGuid; } }
         public string Name { get { return _state.Name; } }
         public string Description { get { return _state.Description; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
@@ -63,6 +71,7 @@ namespace SoftwareManagementCoreApi.Controllers
             EntityElements = state.EntityElementStates.Select(s => new EntityElementDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
+        public Guid DesignGuid { get { return _state.DesignGuid; } }
         public string Name { get { return _state.Name; } }
         public string Description { get { return _state.Description; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }

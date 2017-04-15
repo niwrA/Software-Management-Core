@@ -53,7 +53,7 @@ namespace SoftwareManagementCoreTests.Designs
             stateMock.Setup(s => s.DesignGuid).Returns(designGuid);
 
             entityStateMock.Setup(s => s.Guid).Returns(entityGuid);
-            entityStateMock.Setup(s => s.EpicGuid).Returns(epicGuid);
+            entityStateMock.Setup(s => s.EpicElementGuid).Returns(epicGuid);
             entityStateMock.Setup(s => s.DesignGuid).Returns(designGuid);
             entityStateMock.Setup(s => s.Name).Returns(name);
 

@@ -10,6 +10,7 @@ namespace SoftwareManagementCoreApiTests.Designs
     [Trait("Entity", "DesignDto")]
     public class DesignDtoTests
     {
+        // todo: assert 'foreign keys'
         [Fact(DisplayName = "DesignDtoMapsState")]
         public void DesignDtoMapsDesignState()
         {

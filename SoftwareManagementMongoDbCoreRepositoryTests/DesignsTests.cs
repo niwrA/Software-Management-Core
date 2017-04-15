@@ -82,9 +82,14 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             var guid = Guid.NewGuid();
             var epicGuid = Guid.NewGuid();
             var designState = (DesignState)sut.CreateDesignState(guid, "testdesignstate");
-            var state = sut.CreateEpicElementState(guid, epicGuid, "testepicstate");
+            const string name = "testepicstate";
+            var state = sut.CreateEpicElementState(guid, epicGuid, name);
 
             sut.PersistChanges();
+
+            Assert.Equal(guid, state.DesignGuid);
+            Assert.Equal(epicGuid, state.Guid);
+            Assert.Equal(name, state.Name);
 
             sutBuilder.DesignStateCollection.Verify(s => s.InsertMany(
                 It.Is<ICollection<DesignState>>(
