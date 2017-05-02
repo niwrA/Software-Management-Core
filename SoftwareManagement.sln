@@ -75,8 +75,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Designs", "Designs", "{C711
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DesignsShared", "DesignsShared\DesignsShared.shproj", "{2A15930F-C1A9-4D21-9A16-9D41DAE78B87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{64DDC586-FACB-44BD-B52C-A67FDA0CD042}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CodeGenShared", "CodeGenShared\CodeGenShared.shproj", "{1BF33FC4-5819-4D02-9767-DFB67C976284}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenCSharpUpdaterCore", "CodeGenCSharpUpdaterCore\CodeGenCSharpUpdaterCore.csproj", "{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CodeGenShared\CodeGenShared.projitems*{1bf33fc4-5819-4d02-9767-dfb67c976284}*SharedItemsImports = 13
 		DesignsShared\DesignsShared.projitems*{2a15930f-c1a9-4d21-9a16-9d41dae78b87}*SharedItemsImports = 13
 		EmploymentShared\EmploymentShared.projitems*{3ef38306-ddc8-42f9-923b-3dc288df5bf5}*SharedItemsImports = 13
 		ProductsShared\ProductsShared.projitems*{51dadd10-16bc-435e-a8ff-79d03f757bb7}*SharedItemsImports = 13
@@ -206,6 +213,18 @@ Global
 		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x64.Build.0 = Release|Any CPU
 		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x86.ActiveCfg = Release|Any CPU
 		{5949935B-9EC1-4C47-87BE-1A8A5D56C127}.Release|x86.Build.0 = Release|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Debug|x64.Build.0 = Debug|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Release|x64.Build.0 = Release|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -243,5 +262,8 @@ Global
 		{E497D6C4-60EF-4768-B0C7-41C11820BFD7} = {E3DE2F3E-AF1E-447C-BD04-020848375785}
 		{C711E5A7-6CCF-4D7E-BA84-8DC5176BF848} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{2A15930F-C1A9-4D21-9A16-9D41DAE78B87} = {C711E5A7-6CCF-4D7E-BA84-8DC5176BF848}
+		{64DDC586-FACB-44BD-B52C-A67FDA0CD042} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{1BF33FC4-5819-4D02-9767-DFB67C976284} = {64DDC586-FACB-44BD-B52C-A67FDA0CD042}
+		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA} = {221A9CE4-63E7-4222-8776-3F4E7226A92F}
 	EndGlobalSection
 EndGlobal

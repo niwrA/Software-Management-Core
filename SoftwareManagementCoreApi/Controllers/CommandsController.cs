@@ -14,6 +14,7 @@ using EmploymentsShared;
 using ProjectRoleAssignmentsShared;
 using LinksShared;
 using DesignsShared;
+using CodeGenShared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -42,8 +43,9 @@ namespace SoftwareManagementCoreWeb.Controllers
         private IProjectRoleAssignmentService _projectRoleAssignmentService;
 
         private ICommandService _commandManager;
+        private ICodeGenService _codeGenService;
 
-        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService, IDesignService designService)
+        public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService, IDesignService designService, ICodeGenService codeGenService)
         {
             _commandManager = commandManager;
 
@@ -53,6 +55,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _contactService = contactService;
             _companyService = companyService;
             _linkService = linkService;
+            _codeGenService = codeGenService;
 
             _employmentService = employmentService;
             _projectRoleAssignmentService = projectRoleAssignmentService;
@@ -73,6 +76,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
             var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Environment", Processor = _companyService };
             var linksConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "LinksShared", Entity = "Link", Processor = _linkService };
+            var codeGenConfig = new ProcessorConfig { Assembly = "CodeGenCSharpUpdaterCore", NameSpace = "CodeGenShared", Entity = "CodeGen", Processor = _codeGenService };
 
             var employmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService };
             var projectRoleAssignmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectRoleAssignmentsShared", Entity = "ProjectRoleAssignment", Processor = _projectRoleAssignmentService };
@@ -90,6 +94,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _commandManager.AddConfig(employmentsConfig);
             _commandManager.AddConfig(projectRoleAssignmentsConfig);
             _commandManager.AddConfig(linksConfig);
+            _commandManager.AddConfig(codeGenConfig);
         }
 
         // GET: api/commands
@@ -125,6 +130,7 @@ namespace SoftwareManagementCoreWeb.Controllers
                 _projectRoleAssignmentService.PersistChanges();
                 _linkService.PersistChanges();
                 _commandManager.PersistChanges();
+                // todo: add persistchanges to codegen if possible
 
                 result.ExecutedCommands = commands;
                 result.Success = true;

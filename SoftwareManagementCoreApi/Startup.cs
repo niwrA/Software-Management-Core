@@ -23,6 +23,8 @@ using MongoDB.Bson.Serialization;
 using ProjectRoleAssignmentsShared;
 using LinksShared;
 using DesignsShared;
+using CodeGenShared;
+using CodeGen;
 
 namespace SoftwareManagementCoreApi
 {
@@ -110,6 +112,8 @@ namespace SoftwareManagementCoreApi
 
             services.AddTransient<IProjectRoleAssignmentStateRepository, MainRepository>();
             services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
+
+            services.AddTransient<ICodeGenService, CSharpUpdater>();
 
             services.AddTransient<ICommandStateRepository, MainRepository>();
             services.AddTransient<ICommandService, CommandService>();
