@@ -21,119 +21,90 @@ using System.Threading.Tasks;
 namespace SoftwareManagementMongoDbCoreRepository
 {
     [BsonIgnoreExtraElements]
-    public class ProductVersionState : IProductVersionState
+    public class ProductVersionState : NamedEntityState, IProductVersionState
     {
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
         public int Major { get; set; }
         public int Minor { get; set; }
         public int Revision { get; set; }
         public int Build { get; set; }
         public Guid ProductGuid { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
     }
     [BsonIgnoreExtraElements]
-    public class ProductState : IProductState
+    public class ProductState : NamedEntityState, IProductState
     {
         public ProductState()
         {
             ProductVersionStates = new List<IProductVersionState>() as ICollection<IProductVersionState>;
         }
 
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
         public string Description { get; set; }
         public string BusinessCase { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     }
     [BsonIgnoreExtraElements]
-    public class ProjectState : IProjectState
+    public class ProjectState : NamedEntityState, IProjectState
     {
         public ProjectState()
         {
             ProjectRoleStates = new List<IProjectRoleState>() as ICollection<IProjectRoleState>;
         }
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public ICollection<IProjectRoleState> ProjectRoleStates { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
     }
 
     [BsonIgnoreExtraElements]
-    public class ProjectRoleState : IProjectRoleState
+    public class ProjectRoleState : NamedEntityState, IProjectRoleState
+    {
+    }
+    [BsonIgnoreExtraElements]
+    public class EntityState : IEntityState
     {
         [BsonId(IdGenerator = typeof(GuidGenerator))]
         public Guid Guid { get; set; }
-        public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
 
     [BsonIgnoreExtraElements]
-    public class ContactState : IContactState
+    public class NamedEntityState : EntityState, IEntityState
+    {
+        public string Name { get; set; }
+    }
+
+    [BsonIgnoreExtraElements]
+    public class ContactState : NamedEntityState, IContactState
     {
         public DateTime? BirthDate { get; set; }
         public string Email { get; set; }
-        public string Name { get; set; }
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
     }
 
     [BsonIgnoreExtraElements]
-    public class CompanyState : ICompanyState
+    public class CompanyState : NamedEntityState, ICompanyState
     {
         public CompanyState()
         {
             CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
             CompanyEnvironmentStates = new List<ICompanyEnvironmentState>() as ICollection<ICompanyEnvironmentState>;
         }
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
         public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
         public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     }
 
     [BsonIgnoreExtraElements]
-    public class CompanyRoleState : ICompanyRoleState
+    public class CompanyRoleState :NamedEntityState, ICompanyRoleState
     {
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
     }
+
     [BsonIgnoreExtraElements]
-    public class CompanyEnvironmentState : ICompanyEnvironmentState
+    public class CompanyEnvironmentState : NamedEntityState, ICompanyEnvironmentState
     {
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
         public string Url { get; set; }
     }
 
     [BsonIgnoreExtraElements]
-    public class EmploymentState : IEmploymentState
+    public class EmploymentState :EntityState, IEmploymentState
     {
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
         public Guid ContactGuid { get; set; }
         public Guid CompanyRoleGuid { get; set; }
         public DateTime? StartDate { get; set; }
@@ -142,12 +113,8 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
 
     [BsonIgnoreExtraElements]
-    public class ProjectRoleAssignmentState : IProjectRoleAssignmentState
+    public class ProjectRoleAssignmentState : EntityState, IProjectRoleAssignmentState
     {
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
         public Guid ContactGuid { get; set; }
         public Guid ProjectRoleGuid { get; set; }
         public DateTime? StartDate { get; set; }
@@ -156,33 +123,25 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
 
     [BsonIgnoreExtraElements]
-    public class LinkState : ILinkState
+    public class LinkState : NamedEntityState, ILinkState
     {
         public DateTime? BirthDate { get; set; }
         public string Url { get; set; }
-        public string Name { get; set; }
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
         public Guid EntityGuid { get; set; }
         public Guid ForGuid { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public string SiteName { get; set; }
     }
 
     [BsonIgnoreExtraElements]
-    public class CommandState : ICommandState
+    public class CommandState : EntityState, ICommandState
     {
-        [BsonId(IdGenerator = typeof(GuidGenerator))]
-        public Guid Guid { get; set; }
         public Guid EntityGuid { get; set; }
         public string CommandTypeId { get; set; }
         public string ParametersJson { get; set; }
         public DateTime? ExecutedOn { get; set; }
         public DateTime? ReceivedOn { get; set; }
-        public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
     }
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
