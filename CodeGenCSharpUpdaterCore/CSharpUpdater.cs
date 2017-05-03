@@ -132,10 +132,13 @@ namespace CodeGen
                 //                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
                 using (var stream = doc.GetStream(solutionRoot))
                 {
-                    var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
-                    newRoot = syntaxTree.GetRoot();
-                    newRoot = AddPropertyToInterfaces(_settings.Interfaces, name, typeName, newRoot, doc.HasChanged);
-                    newRoot = AddPropertyToClasses(_settings.Classes, name, typeName, newRoot, doc.HasChanged);
+                    if (stream != null)
+                    {
+                        var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
+                        newRoot = syntaxTree.GetRoot();
+                        newRoot = AddPropertyToInterfaces(_settings.Interfaces, name, typeName, newRoot, doc.HasChanged);
+                        newRoot = AddPropertyToClasses(_settings.Classes, name, typeName, newRoot, doc.HasChanged);
+                    }
                 }
                 // todo: move save to document class?
                 if (newRoot != null && doc.HasChanged)
@@ -155,10 +158,13 @@ namespace CodeGen
                 doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
                 using (var stream = doc.GetStream(solutionRoot))
                 {
-                    var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
-                    newRoot = syntaxTree.GetRoot();
-                    newRoot = AddMethodToInterfaces(_settings.Interfaces, name, typeName, customParameters, newRoot, doc.HasChanged);
-                    newRoot = AddMethodToClasses(_settings.Classes, name, typeName, customParameters, newRoot, doc.HasChanged);
+                    if (stream != null)
+                    {
+                        var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
+                        newRoot = syntaxTree.GetRoot();
+                        newRoot = AddMethodToInterfaces(_settings.Interfaces, name, typeName, customParameters, newRoot, doc.HasChanged);
+                        newRoot = AddMethodToClasses(_settings.Classes, name, typeName, customParameters, newRoot, doc.HasChanged);
+                    }
                 }
                 if (newRoot != null && doc.HasChanged)
                 {

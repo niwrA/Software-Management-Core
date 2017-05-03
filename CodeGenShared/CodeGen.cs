@@ -217,8 +217,10 @@ namespace CodeGenShared
             Classes.Add(new CustomClass { Name = $"{entityName}State" });
             Classes.Add(new CustomClass { Name = $"{entityName}Dto" });
         }
-
-        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
+        // todo: this is user and machine specific! either update in repository or neatly find on this machine
+        // somehow. Or perhaps a command line needs to update the solution from the solution folder?
+//        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
+        public string SolutionRoot = @"C:\Users\Arwin\Documents\GitHub\Software-Management-Core";
         public string TemplateEntityName = "Company";
         public string TemplateEntitiesName = "Companies";
         public IList<ICustomDocument> Documents { get; set; }
