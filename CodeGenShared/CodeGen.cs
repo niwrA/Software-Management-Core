@@ -106,9 +106,9 @@ namespace CodeGenShared
             Interfaces.Add(new CustomInterface { Name = $"I{entityName}State" });
 
             Classes = new List<CustomClass>();
-            Classes.Add(new CustomClass { Name = $"I{entityName}" });
-            Classes.Add(new CustomClass { Name = $"I{entityName}State" });
-            Classes.Add(new CustomClass { Name = $"I{entityName}Dto" });
+            Classes.Add(new CustomClass { Name = $"{entityName}" });
+            Classes.Add(new CustomClass { Name = $"{entityName}State" });
+            Classes.Add(new CustomClass { Name = $"{entityName}Dto" });
         }
 
         public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";

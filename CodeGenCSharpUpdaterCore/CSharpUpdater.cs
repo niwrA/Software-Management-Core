@@ -176,11 +176,14 @@ namespace CodeGen
             foreach (var customClass in customClasses)
             {
                 var updateClass = GetClass(customClass.Name, ref newRoot);
-                var updatedClass = AddPropertyToClass(updateClass, name, typeName, customClass.IsState);
-                if (updatedClass != null)
+                if (updateClass != null)
                 {
-                    newRoot = newRoot.ReplaceNode(updateClass, updatedClass);
-                    updateClass = updatedClass;
+                    var updatedClass = AddPropertyToClass(updateClass, name, typeName, customClass.IsState);
+                    if (updatedClass != null)
+                    {
+                        newRoot = newRoot.ReplaceNode(updateClass, updatedClass);
+                        updateClass = updatedClass;
+                    }
                 }
             }
 
@@ -192,11 +195,14 @@ namespace CodeGen
             foreach (var customInterface in customInterfaces)
             {
                 var updateInterface = GetInterface(customInterface.Name, ref newRoot);
-                var updatedInterface = AddPropertyToInterface(updateInterface, name, typeName, customInterface.IsState);
-                if (updatedInterface != null)
+                if (updateInterface != null)
                 {
-                    newRoot = newRoot.ReplaceNode(updateInterface, updatedInterface);
-                    updateInterface = updatedInterface;
+                    var updatedInterface = AddPropertyToInterface(updateInterface, name, typeName, customInterface.IsState);
+                    if (updatedInterface != null)
+                    {
+                        newRoot = newRoot.ReplaceNode(updateInterface, updatedInterface);
+                        updateInterface = updatedInterface;
+                    }
                 }
             }
 
