@@ -99,14 +99,14 @@ namespace CommandsShared
             if (_state == null && _repository != null)
             {
                 this._state = _repository.CreateCommandState();
-                if (_state.Guid == null || _state.Guid == Guid.Empty)
-                {
-                    _state.Guid = Guid.NewGuid();
-                }
             }
             if (_state != null)
             {
                 this._state.CommandTypeId = this.GetType().Name;
+                if (_state.Guid == null || _state.Guid == Guid.Empty)
+                {
+                    _state.Guid = Guid.NewGuid();
+                }
             }
         }
 
