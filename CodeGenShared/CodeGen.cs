@@ -76,13 +76,19 @@ namespace CodeGenShared
     {
         public CustomMethod()
         {
-            Parameters = new List<CustomParameter>();
+            Parameters = new List<ICustomParameter>();
         }
         public string Name { get; set; }
         public string ReturnType { get; set; }
-        public IList<CustomParameter> Parameters { get; set; }
+        public IList<ICustomParameter> Parameters { get; set; }
     }
-    public class CustomParameter
+    public interface ICustomParameter
+    {
+        string Name { get; set; }
+        string ValueType { get; set; }
+        string InputType { get; set; }
+    }
+    public class CustomParameter: ICustomParameter
     {
         public string Name { get; set; }
         public string ValueType { get; set; }
@@ -98,6 +104,7 @@ namespace CodeGenShared
         Stream GetStream(string solutionRoot);
         void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot);
         void Update(string solutionRoot, string content);
+        string UpdatedContent { get; set; }
     }
     public class CustomDocument : ICustomDocument
     {
@@ -140,6 +147,7 @@ namespace CodeGenShared
                             Console.WriteLine($"Replaced {TemplateEntityName} with {entityName}");
                         }
                     }
+                    // todo: move to 'PersistChanges()'?
                     if (!string.IsNullOrWhiteSpace(textReplaced))
                     {
                         try
@@ -167,9 +175,12 @@ namespace CodeGenShared
 
         public void Update(string solutionRoot, string content)
         {
+            UpdatedContent = content;
+            // todo: move to 'PersistChanges()'?
             var path = Path.Combine(solutionRoot, Name);
             File.WriteAllText(path, content, Encoding.UTF8); // todo: use original encoding?
         }
+        public string UpdatedContent { get; set; }
     }
     public class CodeGenSettings
     {

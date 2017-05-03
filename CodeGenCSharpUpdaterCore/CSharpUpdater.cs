@@ -129,7 +129,7 @@ namespace CodeGen
                 SyntaxNode newRoot = null;
                 string path = Path.Combine(solutionRoot, doc.Name);
                 doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
-//                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
+                //                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
                 using (var stream = doc.GetStream(solutionRoot))
                 {
                     var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
@@ -145,28 +145,25 @@ namespace CodeGen
             }
         }
 
-        public void AddMethod(string name, string typeName, IList<CustomParameter> customParameters, string entityName, string entitiesName)
+        public void AddMethod(string name, string typeName, IList<ICustomParameter> customParameters, string entityName, string entitiesName)
         {
             var solutionRoot = _settings.SolutionRoot;
             foreach (var doc in _settings.Documents)
             {
                 SyntaxNode newRoot = null;
                 string path = Path.Combine(solutionRoot, doc.Name);
-                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
-                if (File.Exists(path))
+                doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
+                using (var stream = doc.GetStream(solutionRoot))
                 {
-                    using (var stream = File.OpenRead(path))
-                    {
-                        var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
-                        newRoot = syntaxTree.GetRoot();
-                        newRoot = AddMethodToInterfaces(_settings.Interfaces, name, typeName, customParameters, newRoot, doc.HasChanged);
-                        newRoot = AddMethodToClasses(_settings.Classes, name, typeName, customParameters, newRoot, doc.HasChanged);
-                    }
+                    var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
+                    newRoot = syntaxTree.GetRoot();
+                    newRoot = AddMethodToInterfaces(_settings.Interfaces, name, typeName, customParameters, newRoot, doc.HasChanged);
+                    newRoot = AddMethodToClasses(_settings.Classes, name, typeName, customParameters, newRoot, doc.HasChanged);
                 }
                 if (newRoot != null && doc.HasChanged)
                 {
-                    File.WriteAllText(path, newRoot.ToFullString());
-                    doc.HasChanged = false;
+                    string content = newRoot.ToFullString();
+                    doc.Update(solutionRoot, content);
                 }
             }
         }
@@ -211,7 +208,7 @@ namespace CodeGen
 
             return newRoot;
         }
-        private SyntaxNode AddMethodToClasses(IEnumerable<ICustomClass> customClasses, string name, string typeName, IList<CustomParameter> customParameters, SyntaxNode newRoot, bool hasChanged)
+        private SyntaxNode AddMethodToClasses(IEnumerable<ICustomClass> customClasses, string name, string typeName, IList<ICustomParameter> customParameters, SyntaxNode newRoot, bool hasChanged)
         {
             var updateMethod = new UpdateMethod { CustomMethod = new CustomMethod { Name = name, ReturnType = typeName, Parameters = customParameters } };
             foreach (var customClass in customClasses)
@@ -228,7 +225,7 @@ namespace CodeGen
 
             return newRoot;
         }
-        private SyntaxNode AddMethodToInterfaces(IEnumerable<ICustomInterface> customInterfaces, string name, string returnType, IList<CustomParameter> parameters, SyntaxNode newRoot, bool hasChanged)
+        private SyntaxNode AddMethodToInterfaces(IEnumerable<ICustomInterface> customInterfaces, string name, string returnType, IList<ICustomParameter> parameters, SyntaxNode newRoot, bool hasChanged)
         {
             var updateMethod = new UpdateMethod { CustomMethod = new CustomMethod { Name = name, Parameters = parameters, ReturnType = returnType } };
             foreach (var customInterface in customInterfaces)
@@ -378,7 +375,7 @@ namespace CodeGen
 
             if (methodToUpdate == null)
             {
-                var methodToInsert = GetMethodDeclarationSyntax(returnTypeName: "void",
+                var methodToInsert = GetMethodDeclarationSyntax(returnTypeName: updateMethod.CustomMethod.ReturnType,
                   methodName: methodName,
                   parameterTypes: parameterTypes.ToArray(),
                   parameterNames: parameterNames.ToArray());
@@ -400,7 +397,7 @@ namespace CodeGen
 
             if (methodToUpdate == null)
             {
-                var methodToInsert = GetMethodDeclarationSyntax(returnTypeName: "void",
+                var methodToInsert = GetMethodDeclarationSyntax(returnTypeName: updateMethod.CustomMethod.ReturnType,
                   methodName: methodName,
                   parameterTypes: parameterTypes.ToArray(),
                   parameterNames: parameterNames.ToArray());
