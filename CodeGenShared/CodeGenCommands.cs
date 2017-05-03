@@ -24,7 +24,7 @@ namespace CodeGenShared
         {
             ICodeGenService codeGenService = ((ICodeGenService)base.CommandProcessor);
             // todo: configurable externally?
-            codeGenService.loadSettings(new Settings(this.EntityName, this.EntitiesName));
+            codeGenService.loadSettings(new CodeGenSettings(this.EntityName, this.EntitiesName));
             codeGenService.AddProperty(this.Name, this.TypeName, this.EntityName, this.EntitiesName);
             base.Execute();
         }

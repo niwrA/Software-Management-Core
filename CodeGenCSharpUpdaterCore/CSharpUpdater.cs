@@ -14,9 +14,9 @@ namespace CodeGen
 {
     public class CSharpUpdater : ICodeGenService
     {
-        private Settings _settings;
+        private CodeGenSettings _settings;
         // todo: load settings
-        public void loadSettings(Settings settings)
+        public void loadSettings(CodeGenSettings settings)
         {
             _settings = settings;
         }
@@ -26,7 +26,7 @@ namespace CodeGen
             var solutionRoot = _settings.SolutionRoot;
             if (_settings == null)
             {
-                _settings = new Settings(updateActions.First().EntityName, updateActions.First().EntitiesName);
+                _settings = new CodeGenSettings(updateActions.First().EntityName, updateActions.First().EntitiesName);
             }
             foreach (var doc in _settings.Documents)
             {
@@ -38,6 +38,7 @@ namespace CodeGen
             }
         }
 
+        // todo: extract file-io to interface
         private void UpdateAndSave(IEnumerable<IUpdateAction> updateActions, string path)
         {
             SyntaxNode newRoot;
@@ -57,7 +58,7 @@ namespace CodeGen
             }
         }
 
-        private void CreateIfNecessary(string entityName, string entitiesName, string solutionRoot, CustomDocument doc, string path)
+        private void CreateIfNecessary(string entityName, string entitiesName, string solutionRoot, ICustomDocument doc, string path)
         {
             if (!File.Exists(path))
             {
@@ -105,14 +106,14 @@ namespace CodeGen
             }
         }
 
-        private string GetDocumentPath(IEnumerable<IUpdateAction> updateActions, string solutionRoot, CustomDocument doc)
+        private string GetDocumentPath(IEnumerable<IUpdateAction> updateActions, string solutionRoot, ICustomDocument doc)
         {
             var document = doc.Name.Replace(@"{EntityName}", updateActions.First().EntityName);
             document = document.Replace(@"{EntitiesName}", updateActions.First().EntitiesName);
             var path = Path.Combine(solutionRoot, document);
             return path;
         }
-        private string GetDocumentTemplatePath(string solutionRoot, CustomDocument doc, string templateEntityName, string templateEntitiesName)
+        private string GetDocumentTemplatePath(string solutionRoot, ICustomDocument doc, string templateEntityName, string templateEntitiesName)
         {
             var document = doc.Name.Replace(@"{EntityName}", templateEntityName);
             document = document.Replace(@"{EntitiesName}", templateEntitiesName);
@@ -127,20 +128,19 @@ namespace CodeGen
             {
                 SyntaxNode newRoot = null;
                 string path = Path.Combine(solutionRoot, doc.Name);
-                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
-                if (File.Exists(path))
+                doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
+//                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
+                using (var stream = doc.GetStream(solutionRoot))
                 {
-                    using (var stream = File.OpenRead(path))
-                    {
-                        var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
-                        newRoot = syntaxTree.GetRoot();
-                        newRoot = AddPropertyToInterfaces(_settings.Interfaces, name, typeName, newRoot);
-                        newRoot = AddPropertyToClasses(_settings.Classes, name, typeName, newRoot);
-                    }
+                    var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
+                    newRoot = syntaxTree.GetRoot();
+                    newRoot = AddPropertyToInterfaces(_settings.Interfaces, name, typeName, newRoot, doc.HasChanged);
+                    newRoot = AddPropertyToClasses(_settings.Classes, name, typeName, newRoot, doc.HasChanged);
                 }
-                if (newRoot != null)
+                // todo: move save to document class?
+                if (newRoot != null && doc.HasChanged)
                 {
-                    File.WriteAllText(path, newRoot.ToFullString());
+                    doc.Update(solutionRoot, newRoot.ToFullString());
                 }
             }
         }
@@ -159,19 +159,20 @@ namespace CodeGen
                     {
                         var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(stream), path: path);
                         newRoot = syntaxTree.GetRoot();
-                        newRoot = AddMethodToInterfaces(_settings.Interfaces, name, typeName, customParameters, newRoot);
-                        newRoot = AddMethodToClasses(_settings.Classes, name, typeName, customParameters, newRoot);
+                        newRoot = AddMethodToInterfaces(_settings.Interfaces, name, typeName, customParameters, newRoot, doc.HasChanged);
+                        newRoot = AddMethodToClasses(_settings.Classes, name, typeName, customParameters, newRoot, doc.HasChanged);
                     }
                 }
-                if (newRoot != null)
+                if (newRoot != null && doc.HasChanged)
                 {
                     File.WriteAllText(path, newRoot.ToFullString());
+                    doc.HasChanged = false;
                 }
             }
         }
 
 
-        private SyntaxNode AddPropertyToClasses(IEnumerable<CustomClass> customClasses, string name, string typeName, SyntaxNode newRoot)
+        private SyntaxNode AddPropertyToClasses(IEnumerable<ICustomClass> customClasses, string name, string typeName, SyntaxNode newRoot, bool hasChanged)
         {
             foreach (var customClass in customClasses)
             {
@@ -181,6 +182,7 @@ namespace CodeGen
                     var updatedClass = AddPropertyToClass(updateClass, name, typeName, customClass.IsState);
                     if (updatedClass != null)
                     {
+                        hasChanged = true;
                         newRoot = newRoot.ReplaceNode(updateClass, updatedClass);
                         updateClass = updatedClass;
                     }
@@ -190,7 +192,7 @@ namespace CodeGen
             return newRoot;
         }
 
-        private SyntaxNode AddPropertyToInterfaces(IEnumerable<CustomInterface> customInterfaces, string name, string typeName, SyntaxNode newRoot)
+        private SyntaxNode AddPropertyToInterfaces(IEnumerable<ICustomInterface> customInterfaces, string name, string typeName, SyntaxNode newRoot, bool hasChanged)
         {
             foreach (var customInterface in customInterfaces)
             {
@@ -200,6 +202,7 @@ namespace CodeGen
                     var updatedInterface = AddPropertyToInterface(updateInterface, name, typeName, customInterface.IsState);
                     if (updatedInterface != null)
                     {
+                        hasChanged = true;
                         newRoot = newRoot.ReplaceNode(updateInterface, updatedInterface);
                         updateInterface = updatedInterface;
                     }
@@ -208,7 +211,7 @@ namespace CodeGen
 
             return newRoot;
         }
-        private SyntaxNode AddMethodToClasses(IEnumerable<CustomClass> customClasses, string name, string typeName, IList<CustomParameter> customParameters, SyntaxNode newRoot)
+        private SyntaxNode AddMethodToClasses(IEnumerable<ICustomClass> customClasses, string name, string typeName, IList<CustomParameter> customParameters, SyntaxNode newRoot, bool hasChanged)
         {
             var updateMethod = new UpdateMethod { CustomMethod = new CustomMethod { Name = name, ReturnType = typeName, Parameters = customParameters } };
             foreach (var customClass in customClasses)
@@ -217,6 +220,7 @@ namespace CodeGen
                 var updatedClass = AddMethodToClass(updateClass, updateMethod);
                 if (updatedClass != null)
                 {
+                    hasChanged = true;
                     newRoot = newRoot.ReplaceNode(updateClass, updatedClass);
                     updateClass = updatedClass;
                 }
@@ -224,7 +228,7 @@ namespace CodeGen
 
             return newRoot;
         }
-        private SyntaxNode AddMethodToInterfaces(IEnumerable<CustomInterface> customInterfaces, string name, string returnType, IList<CustomParameter> parameters, SyntaxNode newRoot)
+        private SyntaxNode AddMethodToInterfaces(IEnumerable<ICustomInterface> customInterfaces, string name, string returnType, IList<CustomParameter> parameters, SyntaxNode newRoot, bool hasChanged)
         {
             var updateMethod = new UpdateMethod { CustomMethod = new CustomMethod { Name = name, Parameters = parameters, ReturnType = returnType } };
             foreach (var customInterface in customInterfaces)
@@ -233,6 +237,7 @@ namespace CodeGen
                 var updatedInterface = AddMethodToInterface(updateInterface, updateMethod);
                 if (updatedInterface != null)
                 {
+                    hasChanged = true;
                     newRoot = newRoot.ReplaceNode(updateInterface, updatedInterface);
                     updateInterface = updatedInterface;
                 }

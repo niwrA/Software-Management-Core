@@ -18,9 +18,9 @@ namespace CodeGenShared
         string EntityName { get; set; }
         string EntitiesName { get; set; }
     }
-    public interface ICodeGenService: ICommandProcessor
+    public interface ICodeGenService : ICommandProcessor
     {
-        void loadSettings(Settings settings);
+        void loadSettings(CodeGenSettings settings);
         void ProcessActions(IEnumerable<IUpdateAction> updateActions);
         void AddProperty(string name, string typeName, string entityName, string entitiesName);
     }
@@ -54,6 +54,11 @@ namespace CodeGenShared
 
         public string EntitiesName { get; set; }
     }
+    public interface ICustomProperty
+    {
+        string Name { get; set; }
+        string TypeName { get; set; }
+    }
     public class UpdateProperty : UpdateActionBase
     {
         public CustomProperty CustomProperty { get; set; }
@@ -62,7 +67,7 @@ namespace CodeGenShared
     {
         public CustomMethod CustomMethod { get; set; }
     }
-    public class CustomProperty
+    public class CustomProperty : ICustomProperty
     {
         public string Name { get; set; }
         public string TypeName { get; set; }
@@ -83,17 +88,101 @@ namespace CodeGenShared
         public string ValueType { get; set; }
         public string InputType { get; set; }
     }
-    public class CustomDocument
+    public interface ICustomDocument
+    {
+        string Name { get; set; }
+        bool IsCreateIfNotExisting { get; set; }
+        string TemplateEntityName { get; set; }
+        string TemplateEntitiesName { get; set; }
+        bool HasChanged { get; set; }
+        Stream GetStream(string solutionRoot);
+        void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot);
+        void Update(string solutionRoot, string content);
+    }
+    public class CustomDocument : ICustomDocument
     {
         public string Name { get; set; }
-        public bool CreateIfNonExisting { get; set; }
-        public string TemplateName { get; set; }
-    }
-    public class Settings
-    {
-        public Settings(string entityName, string entitiesName)
+        public bool IsCreateIfNotExisting { get; set; }
+        public string TemplateEntityName { get; set; }
+        public string TemplateEntitiesName { get; set; }
+        public bool HasChanged { get; set; }
+
+        public Stream GetStream(string solutionRoot)
         {
-            Documents = new List<CustomDocument>();
+            string path = Path.Combine(solutionRoot, Name);
+            if (File.Exists(path))
+            {
+                return File.OpenRead(path);
+            }
+            return null;
+        }
+        public void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot)
+        {
+            var path = Path.Combine(solutionRoot, Name);
+            if (!File.Exists(path))
+            {
+                Console.WriteLine($"{path} not found.");
+                var templatePath = Path.Combine(solutionRoot, Name);
+                if (File.Exists(templatePath))
+                {
+                    // File.Copy(templatePath, path, false);
+                    var textReplaced = "";
+                    using (var stream = File.OpenRead(templatePath))
+                    {
+                        using (var reader = new StreamReader(stream))
+                        {
+                            var text = reader.ReadToEnd();
+                            //string entitiesName = updateActions.First().EntitiesName;
+                            textReplaced = text.Replace(TemplateEntitiesName, entitiesName);
+                            Console.WriteLine($"Replaced {TemplateEntitiesName} with {entitiesName}");
+                            //string entityName = updateActions.First().EntityName;
+                            textReplaced = textReplaced.Replace(TemplateEntityName, entityName);
+                            Console.WriteLine($"Replaced {TemplateEntityName} with {entityName}");
+                        }
+                    }
+                    if (!string.IsNullOrWhiteSpace(textReplaced))
+                    {
+                        try
+                        {
+                            string fullPath = Path.GetDirectoryName(path);
+                            Directory.CreateDirectory(fullPath);
+                            using (var stream = File.OpenWrite(path))
+                            {
+                                using (var writer = new StreamWriter(stream))
+                                {
+                                    writer.Write(textReplaced);
+                                }
+                            };
+                            Console.WriteLine($"{path} created from {templatePath}.");
+                        }
+                        catch (UnauthorizedAccessException UAEx)
+                        {
+                            Console.WriteLine($"Could not create file at {path}.");
+                            Console.WriteLine(UAEx.Message);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Update(string solutionRoot, string content)
+        {
+            var path = Path.Combine(solutionRoot, Name);
+            File.WriteAllText(path, content, Encoding.UTF8); // todo: use original encoding?
+        }
+    }
+    public class CodeGenSettings
+    {
+        public CodeGenSettings()
+        {
+            Documents = new List<ICustomDocument>();
+            Interfaces = new List<ICustomInterface>();
+            Classes = new List<ICustomClass>();
+        }
+        public CodeGenSettings(string entityName, string entitiesName)
+        {
+            // todo: make settings file. These are development / test settings
+            Documents = new List<ICustomDocument>();
             Documents.Add(new CustomDocument { Name = $@"{entitiesName}Shared\{entitiesName}.cs" });
             Documents.Add(new CustomDocument { Name = $@"SoftwareManagementCoreApi\Controllers\{entitiesName}Controller.cs" });
             Documents.Add(new CustomDocument { Name = $@"SoftwareManagementEventSourcedRepository\MainEventSourceRepository.cs" });
@@ -101,11 +190,18 @@ namespace CodeGenShared
             Documents.Add(new CustomDocument { Name = $@"SoftwareManagementEFCoreRepository\MainRepository.cs" });
             Documents.Add(new CustomDocument { Name = $@"SoftwareManagementCoreTests\{entitiesName}\Fakes\{entityName}State.cs" });
 
-            Interfaces = new List<CustomInterface>();
+            // todo: make 'clean' template entity, or get it from the UI
+            foreach (var document in Documents)
+            {
+                document.TemplateEntityName = "Contact";
+                document.TemplateEntitiesName = "Contact";
+            }
+
+            Interfaces = new List<ICustomInterface>();
             Interfaces.Add(new CustomInterface { Name = $"I{entityName}" });
             Interfaces.Add(new CustomInterface { Name = $"I{entityName}State" });
 
-            Classes = new List<CustomClass>();
+            Classes = new List<ICustomClass>();
             Classes.Add(new CustomClass { Name = $"{entityName}" });
             Classes.Add(new CustomClass { Name = $"{entityName}State" });
             Classes.Add(new CustomClass { Name = $"{entityName}Dto" });
@@ -114,12 +210,16 @@ namespace CodeGenShared
         public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
         public string TemplateEntityName = "Company";
         public string TemplateEntitiesName = "Companies";
-        public List<CustomDocument> Documents { get; set; }
-        public IList<CustomInterface> Interfaces { get; set; }
-        public IList<CustomClass> Classes { get; set; }
+        public IList<ICustomDocument> Documents { get; set; }
+        public IList<ICustomInterface> Interfaces { get; set; }
+        public IList<ICustomClass> Classes { get; set; }
     }
-
-    public class CustomClass
+    public interface ICustomClass
+    {
+        string Name { get; set; }
+        bool IsState { get; }
+    }
+    public class CustomClass : ICustomClass
     {
         public string Name { get; set; }
         public bool IsState
@@ -130,8 +230,12 @@ namespace CodeGenShared
             }
         }
     }
-
-    public class CustomInterface
+    public interface ICustomInterface
+    {
+        string Name { get; set; }
+        bool IsState { get; }
+    }
+    public class CustomInterface : ICustomInterface
     {
         public string Name { get; set; }
         public bool IsState
