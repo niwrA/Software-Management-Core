@@ -13,6 +13,71 @@ using System.Threading.Tasks;
 // todo: warp all CodeAnalysis in an Interface
 namespace CodeGenShared
 {
+    public interface IFileIO
+    {
+        string GetContent(string path);
+        Stream GetStream(string path);
+        void Save(string path, string content);
+        bool Exists(string path);
+    }
+    public class FileIO : IFileIO
+    {
+        public FileIO(string solutionRoot)
+        {
+            SolutionRoot = solutionRoot;
+        }
+
+        public string SolutionRoot { get; private set; }
+
+        public string GetContent(string path)
+        {
+            if (File.Exists(path))
+            {
+                return File.ReadAllText(path);
+            }
+            return null;
+        }
+
+        public Stream GetStream(string path)
+        {
+            if (File.Exists(path))
+            {
+                return File.OpenRead(path);
+            }
+            return null;
+        }
+        public bool Exists(string path)
+        {
+            return File.Exists(path);
+        }
+
+        public void Save(string path, string content)
+        {
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                try
+                {
+                    string fullPath = Path.GetDirectoryName(path);
+                    Directory.CreateDirectory(fullPath);
+                    File.WriteAllText(path, content, Encoding.UTF8); // todo: use original encoding?
+                    //using (var stream = File.OpenWrite(path))
+                    //{
+                    //    File.WriteAllText(path, content, Encoding.UTF8); // todo: use original encoding?
+                    //    using (var writer = new StreamWriter(stream))
+                    //    {
+                    //        writer.Write(content,);
+                    //    }
+                    //};
+                    Console.WriteLine($"Saved to {path}.");
+                }
+                catch (UnauthorizedAccessException UAEx)
+                {
+                    Console.WriteLine($"Could not create file at {path}.");
+                    Console.WriteLine(UAEx.Message);
+                }
+            }
+        }
+    }
     public interface IUpdateAction
     {
         string EntityName { get; set; }
@@ -88,7 +153,7 @@ namespace CodeGenShared
         string ValueType { get; set; }
         string InputType { get; set; }
     }
-    public class CustomParameter: ICustomParameter
+    public class CustomParameter : ICustomParameter
     {
         public string Name { get; set; }
         public string ValueType { get; set; }
@@ -97,6 +162,7 @@ namespace CodeGenShared
     public interface ICustomDocument
     {
         string Name { get; set; }
+        string Body { get; set; }
         bool IsCreateIfNotExisting { get; set; }
         string TemplateEntityName { get; set; }
         string TemplateEntitiesName { get; set; }
@@ -104,11 +170,18 @@ namespace CodeGenShared
         Stream GetStream(string solutionRoot);
         void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot);
         void Update(string solutionRoot, string content);
-        string UpdatedContent { get; set; }
     }
     public class CustomDocument : ICustomDocument
     {
+        private IFileIO _fileIO;
+
+        public CustomDocument(IFileIO fileIO)
+        {
+            _fileIO = fileIO;
+            Body = _fileIO.GetContent(Name);
+        }
         public string Name { get; set; }
+        public string Body { get; set; }
         public bool IsCreateIfNotExisting { get; set; }
         public string TemplateEntityName { get; set; }
         public string TemplateEntitiesName { get; set; }
@@ -117,70 +190,37 @@ namespace CodeGenShared
         public Stream GetStream(string solutionRoot)
         {
             string path = Path.Combine(solutionRoot, Name);
-            if (File.Exists(path))
-            {
-                return File.OpenRead(path);
-            }
-            return null;
+            return _fileIO.GetStream(path);
         }
+
         public void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot)
         {
             var path = Path.Combine(solutionRoot, Name);
-            if (!File.Exists(path))
+            if (_fileIO.Exists(path))
             {
                 Console.WriteLine($"{path} not found.");
                 var templatePath = Path.Combine(solutionRoot, Name);
-                if (File.Exists(templatePath))
-                {
-                    // File.Copy(templatePath, path, false);
-                    var textReplaced = "";
-                    using (var stream = File.OpenRead(templatePath))
-                    {
-                        using (var reader = new StreamReader(stream))
-                        {
-                            var text = reader.ReadToEnd();
-                            //string entitiesName = updateActions.First().EntitiesName;
-                            textReplaced = text.Replace(TemplateEntitiesName, entitiesName);
-                            Console.WriteLine($"Replaced {TemplateEntitiesName} with {entitiesName}");
-                            //string entityName = updateActions.First().EntityName;
-                            textReplaced = textReplaced.Replace(TemplateEntityName, entityName);
-                            Console.WriteLine($"Replaced {TemplateEntityName} with {entityName}");
-                        }
-                    }
-                    // todo: move to 'PersistChanges()'?
-                    if (!string.IsNullOrWhiteSpace(textReplaced))
-                    {
-                        try
-                        {
-                            string fullPath = Path.GetDirectoryName(path);
-                            Directory.CreateDirectory(fullPath);
-                            using (var stream = File.OpenWrite(path))
-                            {
-                                using (var writer = new StreamWriter(stream))
-                                {
-                                    writer.Write(textReplaced);
-                                }
-                            };
-                            Console.WriteLine($"{path} created from {templatePath}.");
-                        }
-                        catch (UnauthorizedAccessException UAEx)
-                        {
-                            Console.WriteLine($"Could not create file at {path}.");
-                            Console.WriteLine(UAEx.Message);
-                        }
-                    }
-                }
+                var text = _fileIO.GetContent(templatePath);
+                // File.Copy(templatePath, path, false);
+                var textReplaced = "";
+                //string entitiesName = updateActions.First().EntitiesName;
+                textReplaced = text.Replace(TemplateEntitiesName, entitiesName);
+                Console.WriteLine($"Replaced {TemplateEntitiesName} with {entitiesName}");
+                //string entityName = updateActions.First().EntityName;
+                textReplaced = textReplaced.Replace(TemplateEntityName, entityName);
+                Console.WriteLine($"Replaced {TemplateEntityName} with {entityName}");
+                // todo: move to 'PersistChanges()'?
+                Body = textReplaced;
             }
         }
 
         public void Update(string solutionRoot, string content)
         {
-            UpdatedContent = content;
+            Body = content;
             // todo: move to 'PersistChanges()'?
             var path = Path.Combine(solutionRoot, Name);
-            File.WriteAllText(path, content, Encoding.UTF8); // todo: use original encoding?
+            _fileIO.Save(path, Body);
         }
-        public string UpdatedContent { get; set; }
     }
     public class CodeGenSettings
     {
@@ -192,14 +232,15 @@ namespace CodeGenShared
         }
         public CodeGenSettings(string entityName, string entitiesName)
         {
+            var fileIO = new FileIO(@"C:\Users\Arwin\Documents\GitHub\Software-Management-Core");
             // todo: make settings file. These are development / test settings
             Documents = new List<ICustomDocument>();
-            Documents.Add(new CustomDocument { Name = $@"{entitiesName}Shared\{entitiesName}.cs" });
-            Documents.Add(new CustomDocument { Name = $@"SoftwareManagementCoreApi\Controllers\{entitiesName}Controller.cs" });
-            Documents.Add(new CustomDocument { Name = $@"SoftwareManagementEventSourcedRepository\MainEventSourceRepository.cs" });
-            Documents.Add(new CustomDocument { Name = $@"SoftwareManagementMongoDbCoreRepository\MainRepository.cs" });
-            Documents.Add(new CustomDocument { Name = $@"SoftwareManagementEFCoreRepository\MainRepository.cs" });
-            Documents.Add(new CustomDocument { Name = $@"SoftwareManagementCoreTests\{entitiesName}\Fakes\{entityName}State.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"{entitiesName}Shared\{entitiesName}.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementCoreApi\Controllers\{entitiesName}Controller.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementEventSourcedRepository\MainEventSourceRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementMongoDbCoreRepository\MainRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementEFCoreRepository\MainRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementCoreTests\{entitiesName}\Fakes\{entityName}State.cs" });
 
             // todo: make 'clean' template entity, or get it from the UI
             foreach (var document in Documents)
@@ -219,7 +260,9 @@ namespace CodeGenShared
         }
         // todo: this is user and machine specific! either update in repository or neatly find on this machine
         // somehow. Or perhaps a command line needs to update the solution from the solution folder?
-//        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
+        //        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
+
+        // todo: factor out this public property and use the one in fileIO
         public string SolutionRoot = @"C:\Users\Arwin\Documents\GitHub\Software-Management-Core";
         public string TemplateEntityName = "Company";
         public string TemplateEntitiesName = "Companies";

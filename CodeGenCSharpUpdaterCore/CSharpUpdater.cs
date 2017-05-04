@@ -144,6 +144,7 @@ namespace CodeGen
                 // todo: move save to document class?
                 if (newRoot != null && hasChanged)
                 {
+                    doc.HasChanged = hasChanged;
                     doc.Update(solutionRoot, newRoot.ToFullString());
                 }
             }
@@ -170,6 +171,7 @@ namespace CodeGen
                 }
                 if (newRoot != null && hasChanged)
                 {
+                    doc.HasChanged = hasChanged;
                     string content = newRoot.ToFullString();
                     doc.Update(solutionRoot, content);
                 }

@@ -24,7 +24,7 @@ namespace CodeGenCoreTests
 
             sut.AddProperty("testName", "string", "test", "tests");
 
-            settingsBuilder.DocumentMock.Verify(s => s.HasChanged, Times.AtLeastOnce);
+            settingsBuilder.DocumentMock.VerifySet(s => s.HasChanged = true, Times.AtLeastOnce);
             settingsBuilder.DocumentMock.Verify(s => s.CreateIfNotExisting("test", "tests", settings.SolutionRoot), Times.Once);
             settingsBuilder.DocumentMock.Verify(s => s.Update(settings.SolutionRoot, It.Is<string>(r => r.Contains("string testName"))));
         }
@@ -41,7 +41,7 @@ namespace CodeGenCoreTests
 
             sut.AddProperty("testName", "string", "test", "tests");
 
-            settingsBuilder.DocumentMock.Verify(s => s.HasChanged, Times.AtLeastOnce);
+            settingsBuilder.DocumentMock.VerifySet(s => s.HasChanged = true, Times.AtLeastOnce);
             settingsBuilder.DocumentMock.Verify(s => s.CreateIfNotExisting("test", "tests", settings.SolutionRoot), Times.Once);
             settingsBuilder.DocumentMock.Verify(s => s.Update(settings.SolutionRoot, It.Is<string>(r => r.Contains("string testName"))));
         }
@@ -60,7 +60,7 @@ namespace CodeGenCoreTests
             var parameters = new List<ICustomParameter> { parameter };
             sut.AddMethod("testName", "bool", parameters, "test", "tests");
 
-            settingsBuilder.DocumentMock.Verify(s => s.HasChanged, Times.AtLeastOnce);
+            settingsBuilder.DocumentMock.VerifySet(s => s.HasChanged = true, Times.AtLeastOnce);
             settingsBuilder.DocumentMock.Verify(s => s.CreateIfNotExisting("test", "tests", settings.SolutionRoot), Times.Once);
             settingsBuilder.DocumentMock.Verify(s => s.Update(settings.SolutionRoot, It.Is<string>(r => r.Contains("bool testName(string param1)"))));
         }
@@ -79,7 +79,7 @@ namespace CodeGenCoreTests
             var parameters = new List<ICustomParameter> { parameter };
             sut.AddMethod("testName", "bool", parameters, "test", "tests");
 
-            settingsBuilder.DocumentMock.Verify(s => s.HasChanged, Times.AtLeastOnce);
+            settingsBuilder.DocumentMock.VerifySet(s => s.HasChanged = true, Times.AtLeastOnce);
             settingsBuilder.DocumentMock.Verify(s => s.CreateIfNotExisting("test", "tests", settings.SolutionRoot), Times.Once);
             settingsBuilder.DocumentMock.Verify(s => s.Update(settings.SolutionRoot, It.Is<string>(r => r.Contains("bool testName(string param1)"))));
         }
