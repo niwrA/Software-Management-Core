@@ -97,7 +97,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IProjectStateRepository, MainRepository>();
             services.AddTransient<IProjectService, ProjectService>();
 
-            services.AddTransient<IContactStateRepository, MainRepository>();
+            services.AddTransient<IContactStateRepository, ContactStateRepository>();
             services.AddTransient<IContactService, ContactService>();
 
             services.AddTransient<ICompanyStateRepository, MainRepository>();

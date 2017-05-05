@@ -73,13 +73,6 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
 
     [BsonIgnoreExtraElements]
-    public class ContactState : NamedEntityState, IContactState
-    {
-        public DateTime? BirthDate { get; set; }
-        public string Email { get; set; }
-    }
-
-    [BsonIgnoreExtraElements]
     public class CompanyState : NamedEntityState, ICompanyState
     {
         public CompanyState()
@@ -144,7 +137,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public DateTime? ReceivedOn { get; set; }
         public string UserName { get; set; }
     }
-    public interface IMainRepository : IProductStateRepository, IContactStateRepository,
+    public interface IMainRepository : IProductStateRepository, 
         IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository,
         IProjectRoleAssignmentStateRepository, ILinkStateRepository
     { };
@@ -155,6 +148,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         private const string DesignStatesCollection = "DesignStates";
         private const string ProjectStatesCollection = "ProjectStates";
         private const string ContactStatesCollection = "ContactStates";
+
         private const string CompanyStatesCollection = "CompanyStates";
         private const string EmploymentStatesCollection = "EmploymentStates";
         private const string ProjectRoleAssignmentStatesCollection = "ProjectRoleAssignmentStates";
@@ -174,10 +168,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         private Dictionary<Guid, IProjectState> _projectStates;
         private List<Guid> _deletedProjectStates;
         private Dictionary<Guid, IProjectState> _updatedProjectStates;
-
-        private Dictionary<Guid, IContactState> _contactStates;
-        private List<Guid> _deletedContactStates;
-        private Dictionary<Guid, IContactState> _updatedContactStates;
 
         private Dictionary<Guid, ICompanyState> _companyStates;
         private List<Guid> _deletedCompanyStates;
@@ -213,10 +203,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             _projectStates = new Dictionary<Guid, IProjectState>();
             _deletedProjectStates = new List<Guid>();
             _updatedProjectStates = new Dictionary<Guid, IProjectState>();
-
-            _contactStates = new Dictionary<Guid, IContactState>();
-            _deletedContactStates = new List<Guid>();
-            _updatedContactStates = new Dictionary<Guid, IContactState>();
 
             _companyStates = new Dictionary<Guid, ICompanyState>();
             _deletedCompanyStates = new List<Guid>();
@@ -275,15 +261,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             return state;
         }
 
-        public IContactState CreateContactState(Guid guid, string name)
-        {
-            var state = new ContactState()
-            {
-                Guid = guid
-            };
-            _contactStates.Add(state.Guid, state);
-            return state;
-        }
+
 
         // for consideration - include some part of this in both the link and company entity read projections?
         public IEmploymentState CreateEmploymentState(Guid guid, Guid linkGuid, Guid companyRoleGuid)
@@ -323,10 +301,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             _deletedCompanyStates.Add(guid);
         }
 
-        public void DeleteContactState(Guid guid)
-        {
-            _deletedContactStates.Add(guid);
-        }
 
         public void DeleteEmploymentState(Guid guid)
         {
@@ -380,31 +354,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         public IEnumerable<ICompanyState> GetCompanyStates()
         {
             var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
-            var filter = new BsonDocument();
-            var states = collection.Find(filter);
-
-            return states?.ToList();
-        }
-
-        public IContactState GetContactState(Guid guid)
-        {
-            if (!_contactStates.TryGetValue(guid, out IContactState state))
-            {
-                if (!_updatedContactStates.TryGetValue(guid, out state))
-                {
-                    var collection = _database.GetCollection<ContactState>(ContactStatesCollection);
-                    var filter = Builders<ContactState>.Filter.Eq("Guid", guid);
-                    state = collection.Find(filter).FirstOrDefault();
-
-                    TrackContactState(state);
-                }
-            }
-            return state;
-        }
-
-        public IEnumerable<IContactState> GetContactStates()
-        {
-            var collection = _database.GetCollection<ContactState>(ContactStatesCollection);
             var filter = new BsonDocument();
             var states = collection.Find(filter);
 
@@ -545,13 +494,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
-        private void TrackContactState(IContactState state)
-        {
-            if (state != null && !_updatedContactStates.ContainsKey(state.Guid))
-            {
-                _updatedContactStates.Add(state.Guid, state);
-            }
-        }
 
         private void TrackCompanyState(ICompanyState state)
         {
@@ -592,7 +534,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             PersistCommands();
 
             PersistLinks();
-            PersistContacts();
             PersistProducts();
             PersistProjects();
             PersistCompanies();
@@ -684,43 +625,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
-        private void PersistContacts()
-        {
-            var contactCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
-            // inserts
-            if (_contactStates.Values.Any())
-            {
-                var contacts = _contactStates.Values.Select(s => s as ContactState).ToList();
-                contactCollection.InsertMany(contacts);
-                _contactStates.Clear();
-            }
-
-            // todo: can these be batched?
-            // updates
-            if (_updatedContactStates.Values.Any())
-            {
-                var contacts = _updatedContactStates.Values.Select(s => s as ContactState).ToList();
-                foreach (var state in contacts)
-                {
-                    var filter = Builders<ContactState>.Filter.Eq("Guid", state.Guid);
-                    contactCollection.ReplaceOne(filter, state);
-                }
-                _updatedContactStates.Clear();
-            }
-
-            // deletes
-            if (_deletedContactStates.Any())
-            {
-                var collection = _database.GetCollection<ContactState>(ContactStatesCollection);
-                foreach (var guid in _deletedContactStates)
-                {
-                    var filter = Builders<ContactState>.Filter.Eq("Guid", guid);
-                    collection.DeleteOne(filter);
-                }
-                _deletedContactStates.Clear();
-            }
-        }
-
+      
 
         private void PersistLinks()
         {
