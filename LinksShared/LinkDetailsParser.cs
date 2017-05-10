@@ -9,15 +9,17 @@ using System.Net;
 namespace LinksShared
 {
     // todo: this needs to move out to a separate project and eventually probably a nuget package
-    public class LinkDetailsProcessor: ILinkDetailsProcessor
+    public class LinkDetailsProcessor : ILinkDetailsProcessor
     {
-                // source https://webcmd.wordpress.com/2011/02/16/c-webservice-for-getting-link-details-like-facebook/
+        // source https://webcmd.wordpress.com/2011/02/16/c-webservice-for-getting-link-details-like-facebook/
         public ILinkDetails ProcessLinkDetails(string url)
         {
             ILinkDetails linkDetails = new LinkDetails();
             //http://htmlagilitypack.codeplex.com/
 
+            linkDetails.Title = url;
             linkDetails.Url = url;
+            linkDetails.MimeType = "";
             linkDetails = GetHeaders(linkDetails.Url, linkDetails);
 
             if (linkDetails.MimeType.ToLower().Contains("text/html"))
@@ -25,6 +27,7 @@ namespace LinksShared
                 linkDetails.LinkType = 1;
                 HtmlDocument htmlDocument = new HtmlDocument();
                 var webClient = new HttpClient();
+
                 string download = webClient.GetStringAsync(linkDetails.Url).Result;
 
                 htmlDocument.LoadHtml(download);
@@ -199,22 +202,19 @@ namespace LinksShared
 
         public ILinkDetails GetHeaders(string link, ILinkDetails linkDetails)
         {
-            try
+            var wc = new HttpClient();
+            var result = wc.GetAsync(link).Result;
+            if (result.IsSuccessStatusCode)
             {
+                var content = result.Content;
+                linkDetails.ContentLength = Convert.ToInt64(content.Headers.ContentLength);
+                linkDetails.MimeType = content.Headers.ContentType.ToString();
+            }
 
-                var wc = new HttpClient();
-                var result = wc.GetAsync(link).Result.Content;
-                linkDetails.ContentLength = Convert.ToInt64(result.Headers.ContentLength);
-                linkDetails.MimeType = result.Headers.ContentType.ToString();
-            }
-            catch
-            {
-                linkDetails.MimeType = "Don't Download";
-            }
             return linkDetails;
         }
 
-        public class LinkDetails: ILinkDetails
+        public class LinkDetails : ILinkDetails
         {
             public LinkDetails()
             {
@@ -236,7 +236,7 @@ namespace LinksShared
 
         }
 
-        public class ImageLink: IImageLink
+        public class ImageLink : IImageLink
         {
             public int Width { get; set; }
             public int Height { get; set; }
@@ -252,7 +252,7 @@ namespace LinksShared
                 var uri = new Uri(imgUrl);
                 var size = ImageUtilities.GetWebDimensions(uri);
                 this.Url = imgUrl;
-//                this.Height = size.;
+                //                this.Height = size.;
             }
             //get the image url if it beings with / instead of // if it's a relative url I'm too lazy to make it work
             private string FullyQualifiedImage(string imageUrl, string siteUrl)

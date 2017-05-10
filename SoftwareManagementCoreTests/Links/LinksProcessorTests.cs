@@ -19,6 +19,13 @@ namespace SoftwareManagementCoreTests.Links
             Assert.True(sutResult.ContentLength > 0);
             Assert.Contains("text/html", sutResult.MimeType);
         }
+        [Fact]
+        public void CanHandleNoAccessToLink()
+        {
+            var sut = new LinkDetailsProcessor();
+            var sutResult = sut.ProcessLinkDetails("https://github.com/Socres/liebregts.axan.ui/tree/develop-migration-ng4-cli");
+            Assert.Equal("https://github.com/Socres/liebregts.axan.ui/tree/develop-migration-ng4-cli", sutResult.Title);
+        }
 
         [Fact]
         public void CanGetImageLink()
