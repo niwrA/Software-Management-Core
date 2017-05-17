@@ -7,6 +7,7 @@ using LinksShared;
 
 namespace SoftwareManagementCoreTests.Links
 {
+    // todo: this breaks my rule of having external dependencies (in this case, the internet)
     public class LinksProcessorTests
     {
         [Fact]

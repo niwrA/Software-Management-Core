@@ -21,27 +21,6 @@ using System.Threading.Tasks;
 namespace SoftwareManagementMongoDbCoreRepository
 {
     [BsonIgnoreExtraElements]
-    public class ProductVersionState : NamedEntityState, IProductVersionState
-    {
-        public int Major { get; set; }
-        public int Minor { get; set; }
-        public int Revision { get; set; }
-        public int Build { get; set; }
-        public Guid ProductGuid { get; set; }
-    }
-    [BsonIgnoreExtraElements]
-    public class ProductState : NamedEntityState, IProductState
-    {
-        public ProductState()
-        {
-            ProductVersionStates = new List<IProductVersionState>() as ICollection<IProductVersionState>;
-        }
-
-        public string Description { get; set; }
-        public string BusinessCase { get; set; }
-        public ICollection<IProductVersionState> ProductVersionStates { get; set; }
-    }
-    [BsonIgnoreExtraElements]
     public class ProjectState : NamedEntityState, IProjectState
     {
         public ProjectState()
@@ -72,28 +51,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string Name { get; set; }
     }
 
-    [BsonIgnoreExtraElements]
-    public class CompanyState : NamedEntityState, ICompanyState
-    {
-        public CompanyState()
-        {
-            CompanyRoleStates = new List<ICompanyRoleState>() as ICollection<ICompanyRoleState>;
-            CompanyEnvironmentStates = new List<ICompanyEnvironmentState>() as ICollection<ICompanyEnvironmentState>;
-        }
-        public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
-        public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
-    }
 
-    [BsonIgnoreExtraElements]
-    public class CompanyRoleState :NamedEntityState, ICompanyRoleState
-    {
-    }
-
-    [BsonIgnoreExtraElements]
-    public class CompanyEnvironmentState : NamedEntityState, ICompanyEnvironmentState
-    {
-        public string Url { get; set; }
-    }
 
     [BsonIgnoreExtraElements]
     public class EmploymentState :EntityState, IEmploymentState
@@ -137,8 +95,8 @@ namespace SoftwareManagementMongoDbCoreRepository
         public DateTime? ReceivedOn { get; set; }
         public string UserName { get; set; }
     }
-    public interface IMainRepository : IProductStateRepository, 
-        IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository,
+    public interface IMainRepository :  
+        IProjectStateRepository, ICommandStateRepository, IEmploymentStateRepository,
         IProjectRoleAssignmentStateRepository, ILinkStateRepository
     { };
     public class MainRepository : IMainRepository
@@ -157,10 +115,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         private IMongoClient _client;
         private IMongoDatabase _database;
 
-        private Dictionary<Guid, IProductState> _productStates;
-        private List<Guid> _deletedProductStates;
-        private Dictionary<Guid, IProductState> _updatedProductStates;
-
         private Dictionary<Guid, IDesignState> _designStates;
         private List<Guid> _deletedDesignStates;
         private Dictionary<Guid, IDesignState> _updatedDesignStates;
@@ -168,10 +122,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         private Dictionary<Guid, IProjectState> _projectStates;
         private List<Guid> _deletedProjectStates;
         private Dictionary<Guid, IProjectState> _updatedProjectStates;
-
-        private Dictionary<Guid, ICompanyState> _companyStates;
-        private List<Guid> _deletedCompanyStates;
-        private Dictionary<Guid, ICompanyState> _updatedCompanyStates;
 
         private Dictionary<Guid, ILinkState> _linkStates;
         private List<Guid> _deletedLinkStates;
@@ -192,10 +142,6 @@ namespace SoftwareManagementMongoDbCoreRepository
 
             _commandStates = new Dictionary<Guid, ICommandState>();
 
-            _productStates = new Dictionary<Guid, IProductState>();
-            _deletedProductStates = new List<Guid>();
-            _updatedProductStates = new Dictionary<Guid, IProductState>();
-
             _designStates = new Dictionary<Guid, IDesignState>();
             _deletedDesignStates = new List<Guid>();
             _updatedDesignStates = new Dictionary<Guid, IDesignState>();
@@ -203,10 +149,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             _projectStates = new Dictionary<Guid, IProjectState>();
             _deletedProjectStates = new List<Guid>();
             _updatedProjectStates = new Dictionary<Guid, IProjectState>();
-
-            _companyStates = new Dictionary<Guid, ICompanyState>();
-            _deletedCompanyStates = new List<Guid>();
-            _updatedCompanyStates = new Dictionary<Guid, ICompanyState>();
 
             _linkStates = new Dictionary<Guid, ILinkState>();
             _deletedLinkStates = new List<Guid>();
@@ -219,17 +161,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             _deletedProjectRoleAssignmentStates = new List<Guid>();
         }
 
-        public ICompanyRoleState AddRoleToCompanyState(Guid guid, Guid roleGuid, string name)
-        {
-            var state = GetCompanyState(guid);
-            var roleState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
-            if (roleState == null)
-            {
-                roleState = new CompanyRoleState { Guid = roleGuid, Name = name };
-                state.CompanyRoleStates.Add(roleState);
-            }
-            return roleState;
-        }
 
         public void AddRoleToProjectState(Guid guid, Guid roleGuid, string name)
         {
@@ -251,16 +182,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             return state;
         }
 
-        public ICompanyState CreateCompanyState(Guid guid, string name)
-        {
-            var state = new CompanyState()
-            {
-                Guid = guid
-            };
-            _companyStates.Add(state.Guid, state);
-            return state;
-        }
-
 
 
         // for consideration - include some part of this in both the link and company entity read projections?
@@ -276,16 +197,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             return state;
         }
 
-        public IProductState CreateProductState(Guid guid, string name)
-        {
-            var state = new ProductState()
-            {
-                Guid = guid
-            };
-            _productStates.Add(state.Guid, state);
-            return state;
-        }
-
         public IProjectState CreateProjectState(Guid guid, string name)
         {
             var state = new ProjectState()
@@ -295,21 +206,9 @@ namespace SoftwareManagementMongoDbCoreRepository
             _projectStates.Add(state.Guid, state);
             return state;
         }
-
-        public void DeleteCompanyState(Guid guid)
-        {
-            _deletedCompanyStates.Add(guid);
-        }
-
-
         public void DeleteEmploymentState(Guid guid)
         {
             _deletedEmploymentStates.Add(guid);
-        }
-
-        public void DeleteProductState(Guid guid)
-        {
-            _deletedProductStates.Add(guid);
         }
 
         public void DeleteProjectState(Guid guid)
@@ -334,31 +233,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             return states;
         }
 
-        public ICompanyState GetCompanyState(Guid guid)
-        {
-            if (!_companyStates.TryGetValue(guid, out ICompanyState state))
-            {
-                if (!_updatedCompanyStates.TryGetValue(guid, out state))
-                {
-                    var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
-                    var filter = Builders<CompanyState>.Filter.Eq("Guid", guid);
-                    state = collection.Find(filter).FirstOrDefault();
-
-                    TrackCompanyState(state);
-
-                }
-            }
-            return state;
-        }
-
-        public IEnumerable<ICompanyState> GetCompanyStates()
-        {
-            var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
-            var filter = new BsonDocument();
-            var states = collection.Find(filter);
-
-            return states?.ToList();
-        }
 
         // todo: this can probably be done more efficiently
         public IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
@@ -435,33 +309,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             return states?.ToList();
         }
 
-        // todo: specify if read-only? it will likely barely matter in most cases,
-        // as long as for write mode persistchanges does the work
-        public IProductState GetProductState(Guid guid)
-        {
-            if (!_productStates.TryGetValue(guid, out IProductState state))
-            {
-                if (!_updatedProductStates.TryGetValue(guid, out state))
-                {
-
-                    var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
-                    var filter = Builders<ProductState>.Filter.Eq("Guid", guid);
-
-                    state = collection.Find(filter).FirstOrDefault();
-
-                    TrackProductState(state);
-                }
-            }
-            return state;
-        }
-
-        private void TrackProductState(IProductState state)
-        {
-            if (state != null && !_updatedProductStates.ContainsKey(state.Guid))
-            {
-                _updatedProductStates.Add(state.Guid, state);
-            }
-        }
         private void TrackDesignState(IDesignState state)
         {
             if (state != null && !_updatedDesignStates.ContainsKey(state.Guid))
@@ -494,15 +341,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             }
         }
 
-
-        private void TrackCompanyState(ICompanyState state)
-        {
-            if (state != null && !_updatedCompanyStates.ContainsKey(state.Guid))
-            {
-                _updatedCompanyStates.Add(state.Guid, state);
-            }
-        }
-
         private void TrackLinkState(ILinkState state)
         {
             if (state != null && !_updatedLinkStates.ContainsKey(state.Guid))
@@ -510,16 +348,6 @@ namespace SoftwareManagementMongoDbCoreRepository
                 _updatedLinkStates.Add(state.Guid, state);
             }
         }
-        // readonly by default. Should we enhance the interface? Or create a separate read-only repo?
-        public IEnumerable<IProductState> GetProductStates()
-        {
-            var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
-            var filter = new BsonDocument();
-            var states = collection.Find(filter);
-
-            return states?.ToList();
-        }
-
         public IEnumerable<IProjectState> GetProjectStates()
         {
             var collection = _database.GetCollection<ProjectState>(ProjectStatesCollection);
@@ -534,9 +362,7 @@ namespace SoftwareManagementMongoDbCoreRepository
             PersistCommands();
 
             PersistLinks();
-            PersistProducts();
             PersistProjects();
-            PersistCompanies();
             PersistEmployments();
             PersistProjectRoleAssignments();
         }
@@ -548,43 +374,6 @@ namespace SoftwareManagementMongoDbCoreRepository
                 var commandCollection = _database.GetCollection<CommandState>(CommandStatesCollection);
                 var commands = _commandStates.Values.Select(s => s as CommandState).ToList();
                 commandCollection.InsertMany(commands);
-            }
-        }
-
-        private void PersistProducts()
-        {
-            var productCollection = _database.GetCollection<ProductState>(ProductStatesCollection);
-            // inserts
-            if (_productStates.Values.Any())
-            {
-                var products = _productStates.Values.Select(s => s as ProductState).ToList();
-                productCollection.InsertMany(products);
-                _productStates.Clear();
-            }
-
-            // todo: can these be batched?
-            // updates
-            if (_updatedProductStates.Values.Any())
-            {
-                var products = _updatedProductStates.Values.Select(s => s as ProductState).ToList();
-                foreach (var state in products)
-                {
-                    var filter = Builders<ProductState>.Filter.Eq("Guid", state.Guid);
-                    productCollection.ReplaceOne(filter, state);
-                }
-                _updatedProductStates.Clear();
-            }
-
-            // deletes
-            if (_deletedProductStates.Any())
-            {
-                var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
-                foreach (var guid in _deletedProductStates)
-                {
-                    var filter = Builders<ProductState>.Filter.Eq("Guid", guid);
-                    collection.DeleteOne(filter);
-                }
-                _deletedProductStates.Clear();
             }
         }
 
@@ -663,44 +452,6 @@ namespace SoftwareManagementMongoDbCoreRepository
                 _deletedLinkStates.Clear();
             }
         }
-
-        private void PersistCompanies()
-        {
-            var companyCollection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
-            // inserts
-            if (_companyStates.Values.Any())
-            {
-                var companies = _companyStates.Values.Select(s => s as CompanyState).ToList();
-                companyCollection.InsertMany(companies);
-                _companyStates.Clear();
-            }
-
-            // todo: can these be batched?
-            // updates
-            if (_updatedCompanyStates.Values.Any())
-            {
-                var companies = _updatedCompanyStates.Values.Select(s => s as CompanyState).ToList();
-                foreach (var state in companies)
-                {
-                    var filter = Builders<CompanyState>.Filter.Eq("Guid", state.Guid);
-                    companyCollection.ReplaceOne(filter, state);
-                }
-                _updatedCompanyStates.Clear();
-            }
-
-            // deletes
-            if (_deletedCompanyStates.Any())
-            {
-                var collection = _database.GetCollection<CompanyState>(CompanyStatesCollection);
-                foreach (var guid in _deletedCompanyStates)
-                {
-                    var filter = Builders<CompanyState>.Filter.Eq("Guid", guid);
-                    collection.DeleteOne(filter);
-                }
-                _deletedCompanyStates.Clear();
-            }
-        }
-
         private void PersistEmployments()
         {
             // inserts
@@ -753,16 +504,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             throw new NotImplementedException();
         }
-        // todo: repository tests
-        public void RemoveRoleFromCompanyState(Guid guid, Guid roleGuid)
-        {
-            var state = GetCompanyState(guid);
-            var roleState = state.CompanyRoleStates.FirstOrDefault(s => s.Guid == roleGuid); // todo: work with Single and catch errors?
-            if (roleState != null)
-            {
-                state.CompanyRoleStates.Remove(roleState);
-            }
-        }
 
         public void RemoveRoleFromProjectState(Guid guid, Guid roleGuid)
         {
@@ -772,47 +513,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             {
                 state.ProjectRoleStates.Remove(roleState);
             }
-        }
-
-        public IProductVersionState CreateProductVersionState(Guid guid, Guid versionGuid, string name)
-        {
-            var state = GetProductState(guid);
-            var versionState = new ProductVersionState()
-            {
-                Guid = versionGuid,
-                Name = name
-            };
-            state.ProductVersionStates.Add(versionState);
-            return versionState;
-        }
-
-        public ICompanyEnvironmentState AddEnvironmentToCompanyState(Guid guid, Guid environmentGuid, string name)
-        {
-            var state = GetCompanyState(guid);
-            var environmentState = state.CompanyEnvironmentStates.FirstOrDefault(s => s.Guid == environmentGuid); // todo: work with Single and catch errors?
-            if (environmentState == null)
-            {
-                environmentState = new CompanyEnvironmentState { Guid = environmentGuid, Name = name };
-                state.CompanyEnvironmentStates.Add(environmentState);
-            } // todo: else throw error? replace?
-            return environmentState;
-        }
-        // todo: add test
-        public void RemoveEnvironmentFromCompanyState(Guid guid, Guid environmentGuid)
-        {
-            var state = GetCompanyState(guid);
-            var environmentState = state.CompanyEnvironmentStates.FirstOrDefault(s => s.Guid == environmentGuid); // todo: work with Single and catch errors?
-            if (environmentState != null)
-            {
-                state.CompanyEnvironmentStates.Remove(environmentState);
-            }
-        }
-
-        public ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid)
-        {
-            var companyState = GetCompanyState(companyGuid);
-            var state = companyState.CompanyEnvironmentStates.SingleOrDefault(s => s.Guid == environmentGuid);
-            return state;
         }
 
         public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid linkGuid, Guid companyRoleGuid)

@@ -179,90 +179,6 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             sutBuilder.ProjectRoleAssignmentStateCollection.Verify(s => s.DeleteOne(It.IsAny<FilterDefinition<ProjectRoleAssignmentState>>(), null, CancellationToken.None), Times.Once, "DeleteOne was not called");
         }
 
-        [Fact(DisplayName = "AddProductVersionState")]
-        public void CanAddProductVersionState()
-        {
-            var sutBuilder = new SutBuilder().WithProductCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var versionGuid = Guid.NewGuid();
-            var productState = (ProductState)sut.CreateProductState(guid, "testproductstate");
-            var state = sut.CreateProductVersionState(guid, versionGuid, "testversionstate");
-
-            sut.PersistChanges();
-
-            sutBuilder.ProductStateCollection.Verify(s => s.InsertMany(
-                It.Is<ICollection<ProductState>>(
-                    l => l.Contains(productState) &&
-                    l.Count == 1 &&
-                    l.First().ProductVersionStates.Contains(state) &&
-                    l.First().ProductVersionStates.Count == 1),
-                null, CancellationToken.None), Times.Once,
-                "InsertMany was not called with the expected state");
-        }
-
-        [Fact(DisplayName = "DeleteProductVersionState", Skip = "In progress")]
-        public void CanDeleteProductVersionState()
-        {
-            var sutBuilder = new SutBuilder().WithProductCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var versionGuid = Guid.NewGuid();
-            var productState = (ProductState)sut.CreateProductState(guid, "testproductstate");
-
-            sut.PersistChanges();
-
-        }
-
-        [Fact(DisplayName = "AddCompanyEnvironmentState")]
-        public void CanAddCompanyEnvironmentState()
-        {
-            var sutBuilder = new SutBuilder().WithCompanyCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var environmentGuid = Guid.NewGuid();
-            var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
-            var state = sut.AddEnvironmentToCompanyState(guid, environmentGuid, "testenvironmentstate");
-
-            sut.PersistChanges();
-
-            sutBuilder.CompanyStateCollection.Verify(s => s.InsertMany(
-                It.Is<ICollection<CompanyState>>(
-                    l => l.Contains(companyState) &&
-                    l.Count == 1 &&
-                    l.First().CompanyEnvironmentStates.Contains(state) &&
-                    l.First().CompanyEnvironmentStates.Count == 1),
-                null, CancellationToken.None), Times.Once,
-                "InsertMany was not called with the expected state");
-        }
-
-        [Fact(DisplayName = "DeleteCompanyEnvironmentState", Skip = "In progress")]
-        public void CanDeleteCompanyEnvironmentState()
-        {
-            var sutBuilder = new SutBuilder().WithCompanyCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var environmentGuid = Guid.NewGuid();
-            var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
-
-            sut.PersistChanges();
-
-        }
-
-        [Fact(DisplayName = "CanGetEnvironmentState", Skip = "In progress")]
-        public void CanGetEnvironmentState()
-        {
-            var sutBuilder = new SutBuilder().WithCompanyCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var environmentGuid = Guid.NewGuid();
-
-            // todo: setup mock for GetCompanyState
-
-            sut.GetEnvironmentState(guid, environmentGuid);
-        }
-
-
         [Fact(DisplayName = "CanPersistChanges_WhenNoChanges")]
         public void CanPersistChanges_WhenNoChanges()
         {
@@ -358,24 +274,4 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
         }
     }
 
-    public class CompanyStateBuilder
-    {
-        private List<CompanyEnvironmentState> _environments = new List<CompanyEnvironmentState>();
-        public CompanyState Build()
-        {
-            var state = new CompanyState();
-            foreach (var environmentState in _environments)
-            {
-                state.CompanyEnvironmentStates.Add(environmentState);
-            }
-            return state;
-        }
-         
-        public CompanyStateBuilder WithEnvironment(string name)
-        {
-            var state = new CompanyEnvironmentState { Name = name };
-            _environments.Add(state);
-            return this;
-        }
-    }
 }

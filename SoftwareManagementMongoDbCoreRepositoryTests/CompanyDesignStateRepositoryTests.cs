@@ -12,7 +12,7 @@ using DesignsShared;
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
     [Trait("Entity", "DesignState")]
-    public class DesignsTests
+    public class CompanyDesignStateRepositoryTests
     {
         [Fact(DisplayName = "CreateDesignState")]
         public void CanCreateDesignState()

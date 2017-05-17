@@ -88,7 +88,7 @@ namespace SoftwareManagementCoreApi
 
             // modules (always repo first, then service etc.)
             // note that I've used the same repo here for all, but that's just one of the options
-            services.AddTransient<IProductStateRepository, MainRepository>();
+            services.AddTransient<IProductStateRepository, ProductStateRepository>();
             services.AddTransient<IProductService, ProductService>();
 
             services.AddTransient<IDesignStateRepository, DesignStateRepository>();
@@ -100,7 +100,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IContactStateRepository, ContactStateRepository>();
             services.AddTransient<IContactService, ContactService>();
 
-            services.AddTransient<ICompanyStateRepository, MainRepository>();
+            services.AddTransient<ICompanyStateRepository, CompanyStateRepository>();
             services.AddTransient<ICompanyService, CompanyService>();
 
             services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
