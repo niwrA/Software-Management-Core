@@ -238,7 +238,8 @@ namespace CodeGenShared
             Documents.Add(new CustomDocument(fileIO) { Name = $@"{entitiesName}Shared\{entitiesName}.cs" });
             Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementCoreApi\Controllers\{entitiesName}Controller.cs" });
             Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementEventSourcedRepository\MainEventSourceRepository.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementMongoDbCoreRepository\MainRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementMongoDbCoreRepository\{entityName}StateRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementMongoDbCoreRepositoryTests\{entityName}StateRepositoryTests.cs" });
             Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementEFCoreRepository\MainRepository.cs" });
             Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementCoreTests\{entitiesName}\Fakes\{entityName}State.cs" });
 

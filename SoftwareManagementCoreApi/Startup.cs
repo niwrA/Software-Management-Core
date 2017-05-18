@@ -94,7 +94,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IDesignStateRepository, DesignStateRepository>();
             services.AddTransient<IDesignService, DesignService>();
 
-            services.AddTransient<IProjectStateRepository, MainRepository>();
+            services.AddTransient<IProjectStateRepository, ProjectStateRepository>();
             services.AddTransient<IProjectService, ProjectService>();
 
             services.AddTransient<IContactStateRepository, ContactStateRepository>();
@@ -104,18 +104,18 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<ICompanyService, CompanyService>();
 
             services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
-            services.AddTransient<ILinkStateRepository, MainRepository>();
+            services.AddTransient<ILinkStateRepository, LinkStateRepository>();
             services.AddTransient<ILinkService, LinkService>();
 
-            services.AddTransient<IEmploymentStateRepository, MainRepository>();
+            services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
             services.AddTransient<IEmploymentService, EmploymentService>();
 
-            services.AddTransient<IProjectRoleAssignmentStateRepository, MainRepository>();
+            services.AddTransient<IProjectRoleAssignmentStateRepository, IProjectRoleAssignmentStateRepository>();
             services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
 
             services.AddTransient<ICodeGenService, CSharpUpdater>();
 
-            services.AddTransient<ICommandStateRepository, MainRepository>();
+            services.AddTransient<ICommandStateRepository, CommandStateRepository>();
             services.AddTransient<ICommandService, CommandService>();
         }
 
