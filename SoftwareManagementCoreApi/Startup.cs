@@ -110,7 +110,7 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
             services.AddTransient<IEmploymentService, EmploymentService>();
 
-            services.AddTransient<IProjectRoleAssignmentStateRepository, IProjectRoleAssignmentStateRepository>();
+            services.AddTransient<IProjectRoleAssignmentStateRepository, ProjectRoleAssignmentStateRepository>();
             services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
 
             services.AddTransient<ICodeGenService, CSharpUpdater>();
