@@ -270,7 +270,7 @@ namespace LinksShared
                 {
                     string baseurl = siteUrl.Replace("http://", string.Empty).Replace("https://", string.Empty);
                     baseurl = baseurl.Split('/')[0];
-                    return string.Format("http://{0}{1}", baseurl, imageUrl);
+                    return string.Format("http://{0}/{1}", baseurl, imageUrl);
 
                 }
                 catch { }
