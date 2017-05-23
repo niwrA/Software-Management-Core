@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using System.Threading;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
+using FilesShared;
 
 // added for research as I came across it, not yet in use
 namespace SoftwareManagementCoreApi.Controllers
@@ -79,6 +80,12 @@ namespace SoftwareManagementCoreApi.Controllers
                 names.Add(fileName);
                 var folderName = @"uploads/" + forEntityType + @"/" + forEntityGuid;
                 await SaveAsync(file, folderName, fileName);
+                // todo: post command for saving a file record to the database
+                var createFileCommand = new CreateFileCommand();
+                createFileCommand.ForGuid = forEntityGuid;
+                createFileCommand.EntityGuid = Guid.NewGuid();
+                createFileCommand.Name = fileName;
+                createFileCommand.FolderName = folderName;
             }
         }
 

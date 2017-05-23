@@ -162,13 +162,15 @@ namespace CodeGenShared
     public interface ICustomDocument
     {
         string Name { get; set; }
+        string NameTemplate { get; set; }
         string Body { get; set; }
         bool IsCreateIfNotExisting { get; set; }
+        string TemplateName { get; set; }
         string TemplateEntityName { get; set; }
         string TemplateEntitiesName { get; set; }
         bool HasChanged { get; set; }
         Stream GetStream(string solutionRoot);
-        void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot);
+        bool CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot);
         void Update(string solutionRoot, string content);
     }
     public class CustomDocument : ICustomDocument
@@ -181,11 +183,13 @@ namespace CodeGenShared
             Body = _fileIO.GetContent(Name);
         }
         public string Name { get; set; }
+        public string TemplateName { get; set; }
         public string Body { get; set; }
-        public bool IsCreateIfNotExisting { get; set; }
+        public bool IsCreateIfNotExisting { get; set; } = true;
         public string TemplateEntityName { get; set; }
         public string TemplateEntitiesName { get; set; }
         public bool HasChanged { get; set; }
+        public string NameTemplate { get; set; }
 
         public Stream GetStream(string solutionRoot)
         {
@@ -193,13 +197,13 @@ namespace CodeGenShared
             return _fileIO.GetStream(path);
         }
 
-        public void CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot)
+        public bool CreateIfNotExisting(string entityName, string entitiesName, string solutionRoot)
         {
             var path = Path.Combine(solutionRoot, Name);
-            if (_fileIO.Exists(path))
+            if (!_fileIO.Exists(path))
             {
                 Console.WriteLine($"{path} not found.");
-                var templatePath = Path.Combine(solutionRoot, Name);
+                var templatePath = Path.Combine(solutionRoot, TemplateName);
                 var text = _fileIO.GetContent(templatePath);
                 // File.Copy(templatePath, path, false);
                 var textReplaced = "";
@@ -211,7 +215,9 @@ namespace CodeGenShared
                 Console.WriteLine($"Replaced {TemplateEntityName} with {entityName}");
                 // todo: move to 'PersistChanges()'?
                 Body = textReplaced;
+                return true;
             }
+            return false;
         }
 
         public void Update(string solutionRoot, string content)
@@ -232,22 +238,27 @@ namespace CodeGenShared
         }
         public CodeGenSettings(string entityName, string entitiesName)
         {
-            var fileIO = new FileIO(@"C:\Users\Arwin\Documents\GitHub\Software-Management-Core");
+            var fileIO = new FileIO(@"C:\PROJECTS\Software-Management-Core");
             // todo: make settings file. These are development / test settings
             Documents = new List<ICustomDocument>();
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"{entitiesName}Shared\{entitiesName}.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementCoreApi\Controllers\{entitiesName}Controller.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementEventSourcedRepository\MainEventSourceRepository.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementMongoDbCoreRepository\{entityName}StateRepository.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementMongoDbCoreRepositoryTests\{entityName}StateRepositoryTests.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementEFCoreRepository\MainRepository.cs" });
-            Documents.Add(new CustomDocument(fileIO) { Name = $@"SoftwareManagementCoreTests\{entitiesName}\Fakes\{entityName}State.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"{entitiesName}Shared\{entitiesName}.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"{entitiesName}Shared\{entityName}Commands.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementCoreApi\Controllers\{entitiesName}Controller.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementEventSourcedRepository\MainEventSourceRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementMongoDbCoreRepository\{entityName}StateRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementMongoDbCoreRepositoryTests\{entityName}StateRepositoryTests.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementEFCoreRepository\MainRepository.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementCoreTests\{entitiesName}\Fakes\{entityName}State.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementCoreTests\{entitiesName}\{entityName}CommandsTests.cs" });
+            Documents.Add(new CustomDocument(fileIO) { NameTemplate = @"SoftwareManagementCoreTests\{entitiesName}\{entitiesName}Tests.cs" });
 
             // todo: make 'clean' template entity, or get it from the UI
             foreach (var document in Documents)
             {
-                document.TemplateEntityName = "Contact";
-                document.TemplateEntitiesName = "Contact";
+                document.Name = GetDocumentName(document, entityName, entitiesName);
+                document.TemplateEntityName = this.TemplateEntityName;
+                document.TemplateEntitiesName = this.TemplateEntitiesName;
+                document.TemplateName = GetDocumentName(document, this.TemplateEntityName, this.TemplateEntitiesName);
             }
 
             Interfaces = new List<ICustomInterface>();
@@ -264,12 +275,18 @@ namespace CodeGenShared
         //        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
 
         // todo: factor out this public property and use the one in fileIO
-        public string SolutionRoot = @"C:\Users\Arwin\Documents\GitHub\Software-Management-Core";
-        public string TemplateEntityName = "Company";
-        public string TemplateEntitiesName = "Companies";
+        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core";
+        public string TemplateEntityName = "Link";
+        public string TemplateEntitiesName = "Links";
         public IList<ICustomDocument> Documents { get; set; }
         public IList<ICustomInterface> Interfaces { get; set; }
         public IList<ICustomClass> Classes { get; set; }
+        private string GetDocumentName(ICustomDocument doc, string templateEntityName, string templateEntitiesName)
+        {
+            var document = doc.NameTemplate.Replace(@"{entityName}", templateEntityName);
+            document = document.Replace(@"{entitiesName}", templateEntitiesName);
+            return document;
+        }
     }
     public interface ICustomClass
     {

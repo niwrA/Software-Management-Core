@@ -129,7 +129,10 @@ namespace CodeGen
                 var hasChanged = false;
                 SyntaxNode newRoot = null;
                 string path = Path.Combine(solutionRoot, doc.Name);
-                doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
+                if(doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot))
+                {
+                    doc.Update(solutionRoot,doc.Body);
+                }
                 //                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
                 using (var stream = doc.GetStream(solutionRoot))
                 {

@@ -37,19 +37,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string Name { get; set; }
     }
 
-
-    [BsonIgnoreExtraElements]
-    public class LinkState : NamedEntityState, ILinkState
-    {
-        public DateTime? BirthDate { get; set; }
-        public string Url { get; set; }
-        public Guid EntityGuid { get; set; }
-        public Guid ForGuid { get; set; }
-        public string Description { get; set; }
-        public string ImageUrl { get; set; }
-        public string SiteName { get; set; }
-    }
-
     [BsonIgnoreExtraElements]
     public class CommandState : EntityState, ICommandState
     {

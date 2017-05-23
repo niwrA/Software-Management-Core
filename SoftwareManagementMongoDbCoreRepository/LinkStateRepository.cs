@@ -1,5 +1,6 @@
 ﻿using LinksShared;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,18 @@ using System.Threading.Tasks;
 
 namespace SoftwareManagementMongoDbCoreRepository
 {
+    [BsonIgnoreExtraElements]
+    public class LinkState : NamedEntityState, ILinkState
+    {
+        public DateTime? BirthDate { get; set; }
+        public string Url { get; set; }
+        public Guid EntityGuid { get; set; }
+        public Guid ForGuid { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+        public string SiteName { get; set; }
+    }
+
     public class LinkStateRepository: ILinkStateRepository
     {
         private const string LinkStatesCollection = "LinkStates";

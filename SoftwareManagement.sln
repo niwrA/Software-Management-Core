@@ -83,6 +83,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenCSharpUpdaterCore", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenCoreTests", "CodeGenCoreTests\CodeGenCoreTests.csproj", "{903FEFD4-54C6-4DBD-A179-8C1ECF2A87E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{4EBCA4F1-2276-45E8-A282-395A491250BD}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FilesShared", "FilesShared\FilesShared.shproj", "{EDC83ED4-6DC7-4CB0-890F-8756FBCB40AB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CodeGenShared\CodeGenShared.projitems*{1bf33fc4-5819-4d02-9767-dfb67c976284}*SharedItemsImports = 13
@@ -96,6 +100,7 @@ Global
 		TextFragmentsShared\TextFragmentsShared.projitems*{c70ef468-fbe9-4e66-8a24-3785140dd09b}*SharedItemsImports = 13
 		LinksShared\LinksShared.projitems*{e497d6c4-60ef-4768-b0c7-41c11820bfd7}*SharedItemsImports = 13
 		CommandsShared\CommandsShared.projitems*{e836653d-f62d-4262-89cd-622bf092f8e3}*SharedItemsImports = 13
+		FilesShared\FilesShared.projitems*{edc83ed4-6dc7-4cb0-890f-8756fbcb40ab}*SharedItemsImports = 13
 		ProjectsShared\ProjectsShared.projitems*{f36337f9-5492-4327-8301-b0be8708e8e0}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -280,5 +285,7 @@ Global
 		{1BF33FC4-5819-4D02-9767-DFB67C976284} = {64DDC586-FACB-44BD-B52C-A67FDA0CD042}
 		{6363A2D7-40A3-452E-91B3-DD2EA306B3DA} = {221A9CE4-63E7-4222-8776-3F4E7226A92F}
 		{903FEFD4-54C6-4DBD-A179-8C1ECF2A87E2} = {221A9CE4-63E7-4222-8776-3F4E7226A92F}
+		{4EBCA4F1-2276-45E8-A282-395A491250BD} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{EDC83ED4-6DC7-4CB0-890F-8756FBCB40AB} = {4EBCA4F1-2276-45E8-A282-395A491250BD}
 	EndGlobalSection
 EndGlobal
