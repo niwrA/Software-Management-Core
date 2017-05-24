@@ -13,14 +13,11 @@ namespace SoftwareManagementMongoDbCoreRepository
     [BsonIgnoreExtraElements]
     public class FileState : NamedEntityState, IFileState
     {
-        public DateTime? BirthDate { get; set; }
+        public string FileName { get; set; }
         public string FolderName { get; set; }
         public Guid EntityGuid { get; set; }
         public Guid ForGuid { get; set; }
         public string Description { get; set; }
-        public string ImageUrl { get; set; }
-        public string SiteName { get; set; }
-        public string Path { get; set; }
         public string Type { get; set; }
     }
 
@@ -39,8 +36,6 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             _client = client;
             _database = _client.GetDatabase("SoftwareManagement");
-
-
             _linkStates = new Dictionary<Guid, IFileState>();
             _deletedFileStates = new List<Guid>();
             _updatedFileStates = new Dictionary<Guid, IFileState>();

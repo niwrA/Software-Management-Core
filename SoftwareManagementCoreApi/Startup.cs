@@ -25,6 +25,7 @@ using LinksShared;
 using DesignsShared;
 using CodeGenShared;
 using CodeGen;
+using FilesShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -107,6 +108,9 @@ namespace SoftwareManagementCoreApi
             services.AddTransient<ILinkStateRepository, LinkStateRepository>();
             services.AddTransient<ILinkService, LinkService>();
 
+            services.AddTransient<IFileService, FileService>();
+            services.AddTransient<IFileStateRepository, FileStateRepository>();
+
             services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
             services.AddTransient<IEmploymentService, EmploymentService>();
 
@@ -126,7 +130,7 @@ namespace SoftwareManagementCoreApi
             loggerFactory.AddDebug();
 
             app.UseCors("SiteCorsPolicy");
-
+            app.UseStaticFiles();
             app.UseMvc();
         }
     }

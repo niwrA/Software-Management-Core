@@ -19,19 +19,15 @@ namespace SoftwareManagementCoreApi.Controllers
         public Guid Guid { get { return _state.Guid; } }
         public Guid ForGuid { get { return _state.ForGuid; } }
         public string Name { get { return _state.Name; } }
-        public string Url { get { return _state.FolderName; } }
+        public string FileName { get { return _state.FileName; } }
+        public string FolderName { get { return _state.FolderName; } }
 
         public string Description { get { return _state.Description; } }
         public Guid EntityGuid { get { return _state.EntityGuid; } }
-        public string ImageUrl { get { return _state.ImageUrl; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
         public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
-        public string Path { get { return _state.Path; } }
-public string Type
-{
-    get;
-    set;
-}    }
+        public string Type { get; set; }
+    }
 
     [Route("api/[controller]")]
     public class FilesController : Controller

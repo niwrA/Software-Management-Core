@@ -10,6 +10,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using FilesShared;
+using CommandsShared;
 
 // added for research as I came across it, not yet in use
 namespace SoftwareManagementCoreApi.Controllers
@@ -41,10 +42,18 @@ namespace SoftwareManagementCoreApi.Controllers
     public class FileUploadController : Controller
     {
         private int DefaultBufferSize = 80 * 1024;
+        private ICommandService _commandService;
+        private IFileService _fileService;
 
-        public FileUploadController()
+        // todo: inject fileio service
+        public FileUploadController(ICommandService commandService, IFileService fileService)
         {
+            _commandService = commandService;
+            _fileService = fileService;
 
+            var filesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = fileService };
+
+            _commandService.AddConfig(filesConfig);
         }
         // todo: move to injected class
         private async Task SaveAsync(IFormFile formFile, string folderName, string fileName, CancellationToken cancellationToken = default(CancellationToken))
@@ -78,27 +87,36 @@ namespace SoftwareManagementCoreApi.Controllers
                 contentTypes.Add(file.ContentType);
 
                 names.Add(fileName);
-                var folderName = @"uploads/" + forEntityType + @"/" + forEntityGuid;
-                await SaveAsync(file, folderName, fileName);
+                var folderName = forEntityType + @"/" + forEntityGuid;
+                // todo: make a global setting for the uploads folder
+                // hosting them should eventually be from the controller
+                await SaveAsync(file, @"wwwroot/uploads/" + folderName, fileName);
                 // todo: post command for saving a file record to the database
-                var createFileCommand = new CreateFileCommand();
-                createFileCommand.ForGuid = forEntityGuid;
-                createFileCommand.EntityGuid = Guid.NewGuid();
-                createFileCommand.Name = fileName;
-                createFileCommand.FolderName = folderName;
+                PostCreateFileCommand(forEntityGuid, fileName, folderName);
             }
+        }
+
+        private void PostCreateFileCommand(Guid forEntityGuid, string fileName, string folderName)
+        {
+            var type = System.IO.Path.GetExtension(fileName).ToLower();
+            // todo: make a typed path (adjust commands to contain Entity name and auto-serialize the additional properties into ParametersJson)
+            var commandDto = new CommandDto { Entity = "File", EntityGuid = Guid.NewGuid(), Guid = Guid.NewGuid(), CreatedOn = DateTime.Now, Name = "Create" };
+            commandDto.ParametersJson = $@"{{'ForGuid':'{forEntityGuid}', 'Name': '{fileName}', 'FileName': '{fileName}', 'FolderName':'{folderName}', 'Type':'{type}'}}";
+            _commandService.ProcessCommand(commandDto);
+            _fileService.PersistChanges();
+            _commandService.PersistChanges();            
         }
 
         //[Route("download/{id}")]
         //[HttpGet]
         //public FileStreamResult Download(int id)
         //{
-            // todo: CQRS => read section? 
-            //var fileDescription = _fileRepository.GetFileDescription(id);
+        // todo: CQRS => read section? 
+        //var fileDescription = _fileRepository.GetFileDescription(id);
 
-            //var path = "" + "\\" + fileDescription.FileName;
-            //var stream = new FileStream(path, FileMode.Open);
-            //return File(stream, fileDescription.ContentType);
+        //var path = "" + "\\" + fileDescription.FileName;
+        //var stream = new FileStream(path, FileMode.Open);
+        //return File(stream, fileDescription.ContentType);
         //}
     }
 }

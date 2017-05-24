@@ -19,11 +19,13 @@ namespace SoftwareManagementCoreTests.Files
             var sut = new CommandBuilder<CreateFileCommand>().Build(linksMock.Object) as CreateFileCommand;
 
             sut.Name = "New File";
+            sut.FileName = "New File.jpg";
             sut.FolderName = "http://somewhere.nice";
+            sut.Type = ".jpg";
             sut.ForGuid = Guid.NewGuid();
             sut.Execute();
 
-            linksMock.Verify(s => s.CreateFile(sut.EntityGuid, sut.ForGuid, sut.FolderName, sut.Name), Times.Once);
+            linksMock.Verify(s => s.CreateFile(sut.EntityGuid, sut.ForGuid, sut.FolderName, sut.Name, sut.FileName, sut.Type), Times.Once);
         }
 
         [Fact(DisplayName = "DeleteFileCommand")]

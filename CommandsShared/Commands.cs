@@ -134,19 +134,6 @@ namespace CommandsShared
         private ICommandProcessor _commandProcessor;
         public virtual ICommandProcessor CommandProcessor { get { return _commandProcessor; } set { _commandProcessor = value; } }
 
-        public ICommand CreateCommand<T>(ICommandStateRepository commandRepository, ICommandableEntity entity) where T : ICommand, new()
-        {
-            var createdCommand = new T()
-            {
-                CommandRepository = commandRepository
-            };
-            return createdCommand;
-        }
-
-        public void SetState(ICommandState state)
-        {
-            _state = state;
-        }
     }
     // the domain class for Commands 
     public interface ICommandProcessor
@@ -178,8 +165,10 @@ namespace CommandsShared
         void AddConfig(ICommandConfig config);
         void AddConfig(IProcessorConfig config);
         ICommand ProcessCommand(CommandDto command);
+        ICommand ProcessCommand(ICommand command);
         void PersistChanges();
         void MergeCommands(IEnumerable<CommandDto> commands);
+        ICommand CreateCommand<T>() where T : ICommand, new();
     }
 
     public class ProcessorConfig : IProcessorConfig
@@ -297,6 +286,17 @@ namespace CommandsShared
         {
             return ProcessCommand(command, null);
         }
+        public ICommand ProcessCommand(ICommand command)
+        {
+            // todo: support command configs
+            if(_configs.TryGetValue(command.CommandTypeId, out IProcessorConfig value))
+            {
+                command.CommandProcessor = value.Processor;
+                command.Execute();
+                command.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
+            }
+            return command;
+        }
         private ICommand ProcessCommand(CommandDto command, ICommandState state)
         {
             ICommand typedCommand = null;
@@ -338,6 +338,17 @@ namespace CommandsShared
             typedCommand.Guid = command.Guid;
             typedCommand.ParametersJson = command.ParametersJson;
             typedCommand.CommandProcessor = processor;
+        }
+
+        public ICommand CreateCommand<T>() where T: ICommand, new()
+        {
+            var command = new T()
+            {
+                CommandRepository = _repo
+            };
+            command.Guid = Guid.NewGuid();
+            command.CreatedOn = DateTime.Now;
+            return command;
         }
     }
 

@@ -8,7 +8,7 @@ namespace FilesShared
 {
     public interface IFileService : ICommandProcessor
     {
-        IFile CreateFile(Guid guid, Guid linkForGuid, string url, string name);
+        IFile CreateFile(Guid guid, Guid linkForGuid, string folderName, string name, string fileName, string type);
         IFile GetFile(Guid guid);
         void DeleteFile(Guid guid);
         void PersistChanges();
@@ -20,12 +20,8 @@ namespace FilesShared
         string FolderName { get; set; }
         Guid ForGuid { get; set; }
         string Description { get; set; }
-        string ImageUrl { get; set; }
-        string Path { get; set; }
-        string Type
-        {
-            get;
-        }
+        string Type { get; set; }
+        string FileName { get; set; }
     }
 
     public interface IFileStateRepository : IEntityRepository
@@ -45,10 +41,10 @@ namespace FilesShared
     }
     public interface IFile : IEntity
     {
+        string FileName { get; }
         string FolderName { get; }
         void MoveToFolder(string targetFolder, string sourceFolder);
         string Description { get; }
-        string ImageUrl { get; }
         string Type { get; }
     }
     public class File : IFile
@@ -70,11 +66,11 @@ namespace FilesShared
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
+        public string FileName { get { return _state.FileName; } }
         public string FolderName { get { return _state.FolderName; } }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
         public string Description { get { return _state.Description; } }
-        public string ImageUrl { get { return _state.ImageUrl; } }
 
         //        public IImageFile ImageFile { get { return _state.ImageFile; } }
 
@@ -101,20 +97,7 @@ namespace FilesShared
                 // todo: implement concurrency policy
             }
         }
-        public string Path
-        {
-            get
-            {
-                return _state.Path;
-            }
-        }
-        public string Type
-        {
-            get
-            {
-                return _state.Type;
-            }
-        }
+        public string Type { get { return _state.Type; } }
     }
     public class FileService : IFileService
     {
@@ -126,14 +109,16 @@ namespace FilesShared
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
         }
-        public IFile CreateFile(Guid guid, Guid linkForGuid, string url, string name)
+        public IFile CreateFile(Guid guid, Guid linkForGuid, string folderName, string name, string fileName, string type)
         {
             var state = _repo.CreateFileState(guid, name);
             state.ForGuid = linkForGuid;
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
+            state.FileName = fileName;
+            state.FolderName = folderName;
+            state.Type = type;
             var link = new File(state, _repo);
-            link.MoveToFolder(url, null);
             return link;
         }
         public IFile GetFile(Guid guid)
@@ -153,21 +138,20 @@ namespace FilesShared
     }
     public class FileBuilder
     {
-        private FileService _links;
+        private FileService _files;
         private Guid _guid;
         private string _name;
         private string _url;
 
-        public FileBuilder(FileService links)
+        public FileBuilder(FileService files)
         {
-            _links = links;
+            _files = files;
         }
 
-        public IFile Build(Guid linkForGuid, string name, string url)
+        public IFile Build(Guid linkForGuid, string name, string fileName, string folderName, string type)
         {
             EnsureGuid();
-            var link = _links.CreateFile(_guid, linkForGuid, url, name);
-            link.MoveToFolder(_url, null);
+            var link = _files.CreateFile(_guid, linkForGuid, folderName, name, fileName, type);
             return link;
         }
 

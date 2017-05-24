@@ -25,10 +25,12 @@ namespace FilesShared
     {
         public string FolderName { get; set; }
         public string Name { get; set; }
+        public string FileName { get; set; }
         public Guid ForGuid { get; set; }
+        public string Type { get; set; }
         public override void Execute()
         {
-            ((IFileService)base.CommandProcessor).CreateFile(EntityGuid, ForGuid, FolderName, Name);
+            ((IFileService)base.CommandProcessor).CreateFile(EntityGuid, ForGuid, FolderName, Name, FileName, Type);
             base.Execute();
         }
     }

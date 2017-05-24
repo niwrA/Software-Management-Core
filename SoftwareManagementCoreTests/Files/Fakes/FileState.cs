@@ -22,6 +22,7 @@ namespace SoftwareManagementCoreTests.Files.Fakes
         public DateTime UpdatedOn { get; set; }
         public Guid Guid { get; set; }
         public string Name { get; set; }
+        public string FileName { get; set; }
         public Guid EntityGuid { get; set; }
         public string FolderName { get; set; }
         public Guid ForGuid { get; set; }

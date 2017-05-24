@@ -20,9 +20,10 @@ namespace SoftwareManagementCoreTests
 
             var guid = Guid.NewGuid();
             var name = "New File";
+            var folder = "New Folder";
             var forGuid = Guid.NewGuid();
-            var url = "http://someplace.unsafe";
-            sut.CreateFile(guid, forGuid, url, name);
+            var type = ".jpg";
+            sut.CreateFile(guid, forGuid, folder, name, name, type);
 
             repoMock.Verify(s => s.CreateFileState(guid, name), Times.Once);
         }
