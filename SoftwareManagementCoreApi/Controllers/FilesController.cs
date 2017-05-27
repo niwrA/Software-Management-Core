@@ -18,6 +18,7 @@ namespace SoftwareManagementCoreApi.Controllers
         }
         public Guid Guid { get { return _state.Guid; } }
         public Guid ForGuid { get { return _state.ForGuid; } }
+        public string ForType { get { return _state.ForType; } }
         public string Name { get { return _state.Name; } }
         public string FileName { get { return _state.FileName; } }
         public string FolderName { get { return _state.FolderName; } }
@@ -26,7 +27,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public Guid EntityGuid { get { return _state.EntityGuid; } }
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
         public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
-        public string Type { get; set; }
+        public string Type { get { return _state.Type; } }
     }
 
     [Route("api/[controller]")]

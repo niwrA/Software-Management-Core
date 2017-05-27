@@ -14,9 +14,10 @@ namespace SoftwareManagementMongoDbCoreRepository
     public class FileState : NamedEntityState, IFileState
     {
         public string FileName { get; set; }
-        public string FolderName { get; set; }
+        public string FolderName { get { return ForType + @"/" + ForGuid; } }
         public Guid EntityGuid { get; set; }
         public Guid ForGuid { get; set; }
+        public string ForType { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
     }
@@ -40,7 +41,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             _deletedFileStates = new List<Guid>();
             _updatedFileStates = new Dictionary<Guid, IFileState>();
         }
-
         public IFileState CreateFileState(Guid guid, string name)
         {
             var state = new FileState()

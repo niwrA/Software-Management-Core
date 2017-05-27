@@ -87,12 +87,14 @@ namespace SoftwareManagementCoreApi.Controllers
                 contentTypes.Add(file.ContentType);
 
                 names.Add(fileName);
+                // todo: this logic needs to match the command's logic. Or do we replace
+                // foldername with forEntityType in both?
                 var folderName = forEntityType + @"/" + forEntityGuid;
                 // todo: make a global setting for the uploads folder
                 // hosting them should eventually be from the controller
                 await SaveAsync(file, @"wwwroot/uploads/" + folderName, fileName);
-                // todo: post command for saving a file record to the database
-                PostCreateFileCommand(forEntityGuid, fileName, folderName);
+                // in progress: moving this to the frontend, where it probably belongs
+                // PostCreateFileCommand(forEntityGuid, fileName, folderName);
             }
         }
 

@@ -8,7 +8,7 @@ namespace FilesShared
 {
     public interface IFileService : ICommandProcessor
     {
-        IFile CreateFile(Guid guid, Guid linkForGuid, string folderName, string name, string fileName, string type);
+        IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type);
         IFile GetFile(Guid guid);
         void DeleteFile(Guid guid);
         void PersistChanges();
@@ -17,8 +17,9 @@ namespace FilesShared
     public interface IFileState : INamedEntityState
     {
         Guid EntityGuid { get; set; }
-        string FolderName { get; set; }
+        string FolderName { get; }
         Guid ForGuid { get; set; }
+        string ForType { get; set; }
         string Description { get; set; }
         string Type { get; set; }
         string FileName { get; set; }
@@ -43,7 +44,6 @@ namespace FilesShared
     {
         string FileName { get; }
         string FolderName { get; }
-        void MoveToFolder(string targetFolder, string sourceFolder);
         string Description { get; }
         string Type { get; }
     }
@@ -86,17 +86,6 @@ namespace FilesShared
             }
         }
 
-        public void MoveToFolder(string targetFolder, string sourceFolder)
-        {
-            if (_state.FolderName == sourceFolder)
-            {
-                _state.FolderName = targetFolder;
-            }
-            else
-            {
-                // todo: implement concurrency policy
-            }
-        }
         public string Type { get { return _state.Type; } }
     }
     public class FileService : IFileService
@@ -109,14 +98,14 @@ namespace FilesShared
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
         }
-        public IFile CreateFile(Guid guid, Guid linkForGuid, string folderName, string name, string fileName, string type)
+        public IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type)
         {
             var state = _repo.CreateFileState(guid, name);
-            state.ForGuid = linkForGuid;
+            state.ForGuid = forGuid;
             state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
             state.UpdatedOn = _dateTimeProvider.GetUtcDateTime();
             state.FileName = fileName;
-            state.FolderName = folderName;
+            state.ForType = forType;
             state.Type = type;
             var link = new File(state, _repo);
             return link;

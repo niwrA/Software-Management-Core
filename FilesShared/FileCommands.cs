@@ -27,10 +27,11 @@ namespace FilesShared
         public string Name { get; set; }
         public string FileName { get; set; }
         public Guid ForGuid { get; set; }
+        public string ForType { get; set; }
         public string Type { get; set; }
         public override void Execute()
         {
-            ((IFileService)base.CommandProcessor).CreateFile(EntityGuid, ForGuid, FolderName, Name, FileName, Type);
+            ((IFileService)base.CommandProcessor).CreateFile(EntityGuid, ForGuid, ForType, Name, FileName, Type);
             base.Execute();
         }
     }
@@ -46,18 +47,5 @@ namespace FilesShared
             base.Execute();
         }
     }
-
-    public class ChangeUrlForFileCommand : FileCommand
-    {
-        public string OriginalUrl { get; set; }
-        public string Url { get; set; }
-        public override void Execute()
-        {
-            var product = ((IFileService)base.CommandProcessor).GetFile(this.EntityGuid);
-            product.MoveToFolder(this.Url, this.OriginalUrl);
-            base.Execute();
-        }
-    }
-
 
 }

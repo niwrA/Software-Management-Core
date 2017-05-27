@@ -14,8 +14,8 @@ namespace SoftwareManagementCoreTests.Files.Fakes
             Guid = Guid.NewGuid();
             Name = "Fake File";
             EntityGuid = Guid.NewGuid();
-            FolderName = "Fake Url";
             ForGuid = Guid.NewGuid();
+            ForType = "fakes";
             SiteName = "Fake SiteName";
         }
         public DateTime CreatedOn { get; set; }
@@ -24,20 +24,15 @@ namespace SoftwareManagementCoreTests.Files.Fakes
         public string Name { get; set; }
         public string FileName { get; set; }
         public Guid EntityGuid { get; set; }
-        public string FolderName { get; set; }
+        public string FolderName { get { return ForType + @"/" + ForGuid; } }
         public Guid ForGuid { get; set; }
+        public string ForType { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public string SiteName { get; set; }
-public string Path
-{
-    get;
-    set;
-}    public string Type
-{
-    get;
-    set;
-}}
+        public string Path { get; set; }
+        public string Type { get; set; }
+    }
 }
 
 

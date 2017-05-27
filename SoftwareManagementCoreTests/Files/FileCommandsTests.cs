@@ -20,12 +20,13 @@ namespace SoftwareManagementCoreTests.Files
 
             sut.Name = "New File";
             sut.FileName = "New File.jpg";
-            sut.FolderName = "http://somewhere.nice";
+            // sut.FolderName = "http://somewhere.nice";
             sut.Type = ".jpg";
             sut.ForGuid = Guid.NewGuid();
+            sut.ForType = "tests";
             sut.Execute();
 
-            linksMock.Verify(s => s.CreateFile(sut.EntityGuid, sut.ForGuid, sut.FolderName, sut.Name, sut.FileName, sut.Type), Times.Once);
+            linksMock.Verify(s => s.CreateFile(sut.EntityGuid, sut.ForGuid, sut.ForType, sut.Name, sut.FileName, sut.Type), Times.Once);
         }
 
         [Fact(DisplayName = "DeleteFileCommand")]
@@ -50,19 +51,6 @@ namespace SoftwareManagementCoreTests.Files
             sut.Execute();
 
             sutBuilder.FileMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
-        }
-
-        [Fact(DisplayName = "ChangeUrlForFileCommand")]
-        public void ChangeUrlForFileCommand()
-        {
-            var sutBuilder = new FileCommandBuilder<ChangeUrlForFileCommand>();
-            var sut = sutBuilder.Build() as ChangeUrlForFileCommand;
-
-            sut.Url = "New";
-            sut.OriginalUrl = "Original";
-            sut.Execute();
-
-            sutBuilder.FileMock.Verify(s => s.MoveToFolder(sut.Url, sut.OriginalUrl), Times.Once);
         }
     }
 
