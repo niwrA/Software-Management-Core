@@ -18,12 +18,13 @@ namespace SoftwareManagementCoreTests.ProjectRoleAssignments
 
             Guid guid = Guid.NewGuid();
             Guid contactGuid = Guid.NewGuid();
-            Guid companyRoleGuid = Guid.NewGuid();
+            Guid projectGuid = Guid.NewGuid();
+            Guid projectRoleAssignmentGuid = Guid.NewGuid();
 
             var startDate = DateTime.Now.Date as DateTime?;
-            var projectroleassignment = sut.CreateProjectRoleAssignment(guid, contactGuid, companyRoleGuid, startDate, null, null);
+            var projectroleassignment = sut.CreateProjectRoleAssignment(guid, contactGuid, projectGuid, projectRoleAssignmentGuid, startDate, null, null);
 
-            sutBuilder.RepoMock.Verify(v => v.CreateProjectRoleAssignmentState(guid, contactGuid, companyRoleGuid), Times.Once);
+            sutBuilder.RepoMock.Verify(v => v.CreateProjectRoleAssignmentState(guid, contactGuid, projectGuid, projectRoleAssignmentGuid), Times.Once);
         }
 
         [Fact(DisplayName = "ReflectsState")]
@@ -47,7 +48,7 @@ namespace SoftwareManagementCoreTests.ProjectRoleAssignments
             public ProjectRoleAssignmentService Build()
             {
                 _repo = new Mock<IProjectRoleAssignmentStateRepository>();
-                _repo.Setup(s => s.CreateProjectRoleAssignmentState(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(new Fakes.ProjectRoleAssignmentState());
+                _repo.Setup(s => s.CreateProjectRoleAssignmentState(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(new Fakes.ProjectRoleAssignmentState());
                 var sut = new ProjectRoleAssignmentService(_repo.Object);
                 return sut;
             }

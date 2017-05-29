@@ -20,11 +20,13 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             var guid = Guid.NewGuid();
             var projectRoleGuid = Guid.NewGuid();
             var contactGuid = Guid.NewGuid();
+            var projectGuid = Guid.NewGuid();
 
-            var state = sut.CreateProjectRoleAssignmentState(guid, contactGuid, projectRoleGuid);
+            var state = sut.CreateProjectRoleAssignmentState(guid, contactGuid, projectGuid, projectRoleGuid);
 
             Assert.Equal(guid, state.Guid);
             Assert.Equal(contactGuid, state.ContactGuid);
+            Assert.Equal(projectGuid, state.ProjectGuid);
             Assert.Equal(projectRoleGuid, state.ProjectRoleGuid);
         }
 
@@ -48,8 +50,9 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             var guid = Guid.NewGuid();
             var projectRoleGuid = Guid.NewGuid();
             var contactGuid = Guid.NewGuid();
+            var projectGuid = Guid.NewGuid();
 
-            var state = sut.CreateProjectRoleAssignmentState(guid, contactGuid, projectRoleGuid) as ProjectRoleAssignmentState;
+            var state = sut.CreateProjectRoleAssignmentState(guid, contactGuid, projectGuid, projectRoleGuid) as ProjectRoleAssignmentState;
 
             sut.PersistChanges();
 

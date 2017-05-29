@@ -24,9 +24,11 @@ namespace SoftwareManagementCoreTests.Files
             sut.Type = ".jpg";
             sut.ForGuid = Guid.NewGuid();
             sut.ForType = "tests";
+            sut.ContentType = @"some/type";
+            sut.Size = 123456789;
             sut.Execute();
 
-            linksMock.Verify(s => s.CreateFile(sut.EntityGuid, sut.ForGuid, sut.ForType, sut.Name, sut.FileName, sut.Type), Times.Once);
+            linksMock.Verify(s => s.CreateFile(sut.EntityGuid, sut.ForGuid, sut.ForType, sut.Name, sut.FileName, sut.Type, sut.ContentType, sut.Size), Times.Once);
         }
 
         [Fact(DisplayName = "DeleteFileCommand")]

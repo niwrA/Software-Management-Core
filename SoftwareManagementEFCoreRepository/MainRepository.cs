@@ -152,6 +152,7 @@ namespace SoftwareManagementEFCoreRepository
         [Key]
         public Guid Guid { get; set; }
         public Guid ContactGuid { get; set; }
+        public Guid ProjectGuid { get; set; }
         public Guid ProjectRoleGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }

@@ -29,9 +29,11 @@ namespace FilesShared
         public Guid ForGuid { get; set; }
         public string ForType { get; set; }
         public string Type { get; set; }
+        public string ContentType { get; set; }
+        public long Size { get; set; }
         public override void Execute()
         {
-            ((IFileService)base.CommandProcessor).CreateFile(EntityGuid, ForGuid, ForType, Name, FileName, Type);
+            ((IFileService)base.CommandProcessor).CreateFile(EntityGuid, ForGuid, ForType, Name, FileName, Type, ContentType, Size);
             base.Execute();
         }
     }

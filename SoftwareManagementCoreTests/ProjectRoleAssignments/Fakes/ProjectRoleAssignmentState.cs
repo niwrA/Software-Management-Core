@@ -12,6 +12,7 @@ namespace SoftwareManagementCoreTests.Fakes
         {
             Guid = Guid.NewGuid();
             ContactGuid = Guid.NewGuid();
+            ProjectGuid = Guid.NewGuid();
             ProjectRoleGuid = Guid.NewGuid();
             StartDate = DateTime.Now.Date;
             EndDate = DateTime.Now.Date.AddYears(1);
@@ -21,6 +22,7 @@ namespace SoftwareManagementCoreTests.Fakes
         }
         public Guid Guid { get; set; }
         public Guid ContactGuid { get; set; }
+        public Guid ProjectGuid { get; set; }
         public Guid ProjectRoleGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }

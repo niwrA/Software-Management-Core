@@ -6,9 +6,10 @@ using System.Text;
 
 namespace ProjectRoleAssignmentsShared
 {
-    public interface IProjectRoleAssignmentState: IEntityState
+    public interface IProjectRoleAssignmentState : IEntityState
     {
         Guid ContactGuid { get; set; }
+        Guid ProjectGuid { get; set; }
         Guid ProjectRoleGuid { get; set; }
         string ContactName { get; set; }
         DateTime? StartDate { get; set; }
@@ -18,6 +19,7 @@ namespace ProjectRoleAssignmentsShared
     {
         Guid Guid { get; }
         Guid ContactGuid { get; }
+        Guid ProjectGuid { get; }
         Guid ProjectRoleGuid { get; }
         DateTime? StartDate { get; }
         DateTime? EndDate { get; }
@@ -28,7 +30,7 @@ namespace ProjectRoleAssignmentsShared
     }
     public interface IProjectRoleAssignmentStateRepository
     {
-        IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid companyRoleGuid);
+        IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid companyRoleGuid);
         IProjectRoleAssignmentState GetProjectRoleAssignmentState(Guid guid);
         IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByProjectRoleGuid(Guid companyRoleGuid);
         IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid);
@@ -36,6 +38,7 @@ namespace ProjectRoleAssignmentsShared
         void DeleteProjectRoleAssignmentState(Guid entityGuid);
         IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentStates();
         void PersistChanges();
+        IEnumerable<IContactState> GetContactsByProjectGuid(Guid guid);
     }
     public class ProjectRoleAssignment : IProjectRoleAssignment
     {
@@ -44,6 +47,7 @@ namespace ProjectRoleAssignmentsShared
 
         public Guid Guid { get { return _state.Guid; } }
         public Guid ContactGuid { get { return _state.ContactGuid; } }
+        public Guid ProjectGuid { get { return _state.ProjectGuid; } }
         public Guid ProjectRoleGuid { get { return _state.ProjectRoleGuid; } }
         public DateTime? StartDate { get { return _state.StartDate; } }
         public DateTime? EndDate { get { return _state.EndDate; } }
@@ -76,7 +80,7 @@ namespace ProjectRoleAssignmentsShared
 
         public void RenameContact(string name, string originalName)
         {
-            if(_state.ContactName == originalName)
+            if (_state.ContactName == originalName)
             {
                 _state.ContactName = name;
             }
@@ -90,7 +94,8 @@ namespace ProjectRoleAssignmentsShared
 
     public interface IProjectRoleAssignmentService : ICommandProcessor
     {
-        IProjectRoleAssignment CreateProjectRoleAssignment(Guid guid, Guid contactGuid, Guid companyGuid, DateTime? startDate, DateTime? endDate, string contactName);
+        // todo: remove contactname or add projectname, probably remove contactname
+        IProjectRoleAssignment CreateProjectRoleAssignment(Guid guid, Guid contactGuid, Guid projectGuid, Guid companyGuid, DateTime? startDate, DateTime? endDate, string contactName);
         void DeleteProjectRoleAssignment(Guid entityGuid);
         IProjectRoleAssignment GetProjectRoleAssignment(Guid guid);
         void PersistChanges();
@@ -103,9 +108,9 @@ namespace ProjectRoleAssignmentsShared
         {
             _repo = repo;
         }
-        public IProjectRoleAssignment CreateProjectRoleAssignment(Guid guid, Guid contactGuid, Guid companyRoleGuid, DateTime? startDate, DateTime? endDate, string contactName)
+        public IProjectRoleAssignment CreateProjectRoleAssignment(Guid guid, Guid contactGuid, Guid projectGuid, Guid projectRoleAssignmentGUid, DateTime? startDate, DateTime? endDate, string contactName)
         {
-            var state = _repo.CreateProjectRoleAssignmentState(guid, contactGuid, companyRoleGuid);
+            var state = _repo.CreateProjectRoleAssignmentState(guid, contactGuid, projectGuid, projectRoleAssignmentGUid);
             state.StartDate = startDate;
             state.EndDate = endDate;
             state.ContactName = contactName;

@@ -17,6 +17,7 @@ namespace SoftwareManagementCoreTests.Files.Fakes
             ForGuid = Guid.NewGuid();
             ForType = "fakes";
             SiteName = "Fake SiteName";
+            Size = 123456789;
         }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
@@ -32,6 +33,8 @@ namespace SoftwareManagementCoreTests.Files.Fakes
         public string SiteName { get; set; }
         public string Path { get; set; }
         public string Type { get; set; }
+        public string ContentType { get; set; }
+        public long Size { get; set; }
     }
 }
 

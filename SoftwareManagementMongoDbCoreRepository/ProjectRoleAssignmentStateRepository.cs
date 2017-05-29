@@ -16,6 +16,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     public class ProjectRoleAssignmentState : EntityState, IProjectRoleAssignmentState
     {
         public Guid ContactGuid { get; set; }
+        public Guid ProjectGuid { get; set; }
         public Guid ProjectRoleGuid { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -73,13 +74,14 @@ namespace SoftwareManagementMongoDbCoreRepository
             throw new NotImplementedException();
         }
 
-        public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid linkGuid, Guid companyRoleGuid)
+        public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid projectRoleAssignmentGuid)
         {
             var state = new ProjectRoleAssignmentState()
             {
                 Guid = guid,
-                ContactGuid = linkGuid,
-                ProjectRoleGuid = companyRoleGuid
+                ContactGuid = contactGuid,
+                ProjectGuid = projectGuid,
+                ProjectRoleGuid = projectRoleAssignmentGuid
             };
             _projectRoleAssignmentStates.Add(state.Guid, state);
             return state;
@@ -162,6 +164,24 @@ namespace SoftwareManagementMongoDbCoreRepository
         {
             PersistProjectRoleAssignments();
         }
+
+        public IEnumerable<IContactState> GetContactsByProjectGuid(Guid guid)
+        {
+            var collection = _database.GetCollection<ProjectRoleAssignmentState>(ProjectRoleAssignmentStatesCollection);
+            var filter = Builders<ProjectRoleAssignmentState>.Filter.Eq("ProjectGuid", guid);
+            var states = collection.Find(filter);
+            if (states != null)
+            {
+                var contactsCollection = _database.GetCollection<ContactState>(ContactStatesCollection);
+                var contactGuids = states.ToList().Select(s => s.ContactGuid).ToList();
+                var filterDef = new FilterDefinitionBuilder<ContactState>();
+                var contactsFilter = filterDef.In(x => x.Guid, contactGuids);
+                var contactStates = contactsCollection.Find(contactsFilter).ToList();
+                return contactStates?.ToList();
+            }
+            return null;
+        }
+
 
     }
 }

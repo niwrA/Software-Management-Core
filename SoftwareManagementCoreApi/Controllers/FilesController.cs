@@ -28,6 +28,8 @@ namespace SoftwareManagementCoreApi.Controllers
         public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
         public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
         public string Type { get { return _state.Type; } }
+        public string ContentType { get { return _state.ContentType; } }
+        public long Size { get { return _state.Size; } }
     }
 
     [Route("api/[controller]")]

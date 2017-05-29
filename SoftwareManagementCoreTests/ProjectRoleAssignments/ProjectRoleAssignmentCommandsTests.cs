@@ -19,12 +19,13 @@ namespace SoftwareManagementCoreTests.ProjectRoleAssignments
             var sut = new CommandBuilder<CreateProjectRoleAssignmentCommand>().Build(projectroleassignmentsMock.Object) as CreateProjectRoleAssignmentCommand;
 
             sut.ContactGuid = Guid.NewGuid();
-            sut.CompanyRoleGuid = Guid.NewGuid();
+            sut.ProjectGuid = Guid.NewGuid();
+            sut.ProjectRoleGuid = Guid.NewGuid();
             sut.StartDate = DateTime.Now.Date;
             sut.EndDate = DateTime.Now.Date.AddYears(1);
             sut.Execute();
 
-            projectroleassignmentsMock.Verify(s => s.CreateProjectRoleAssignment(sut.EntityGuid, sut.ContactGuid, sut.CompanyRoleGuid, sut.StartDate, sut.EndDate, sut.ContactName), Times.Once);
+            projectroleassignmentsMock.Verify(s => s.CreateProjectRoleAssignment(sut.EntityGuid, sut.ContactGuid, sut.ProjectGuid, sut.ProjectRoleGuid, sut.StartDate, sut.EndDate, sut.ContactName), Times.Once);
         }
 
         // todo: duplicate check on ProjectRoleAssignments

@@ -20,6 +20,8 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string ForType { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
+        public string ContentType { get; set; }
+        public long Size { get; set; }
     }
 
     public class FileStateRepository : IFileStateRepository

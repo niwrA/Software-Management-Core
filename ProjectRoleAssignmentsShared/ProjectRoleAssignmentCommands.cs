@@ -14,13 +14,14 @@ namespace ProjectRoleAssignmentsShared
     public class CreateProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
     {
         public Guid ContactGuid { get; set; }
-        public Guid CompanyRoleGuid { get; set; }
+        public Guid ProjectGuid { get; set; }
+        public Guid ProjectRoleGuid { get; set; } 
         public string ContactName { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public override void Execute()
         {
-            ((IProjectRoleAssignmentService)base.CommandProcessor).CreateProjectRoleAssignment(this.EntityGuid, this.ContactGuid, this.CompanyRoleGuid, this.StartDate, this.EndDate, this.ContactName);
+            ((IProjectRoleAssignmentService)base.CommandProcessor).CreateProjectRoleAssignment(this.EntityGuid, this.ContactGuid, this.ProjectGuid, this.ProjectRoleGuid, this.StartDate, this.EndDate, this.ContactName);
             base.Execute();
         }
     }

@@ -20,6 +20,7 @@ namespace SoftwareManagementCoreApi.Controllers
         }
         public Guid Guid { get { return _state.Guid; } }
         public Guid ContactGuid { get { return _state.ContactGuid; } }
+        public Guid ProjectGuid { get { return _state.ProjectGuid; } }
         public Guid ProjectRoleGuid { get { return _state.ProjectRoleGuid; } }
         public string StartDate { get { return _state.StartDate.HasValue ? _state.StartDate.Value.ToString("yyyy-MM-dd") : ""; } }
         public string EndDate { get { return _state.EndDate.HasValue ? _state.EndDate.Value.ToString("yyyy-MM-dd") : ""; } }
@@ -50,6 +51,14 @@ namespace SoftwareManagementCoreApi.Controllers
         public IEnumerable<ContactDto> GetContactsByProjectRoleId(Guid guid)
         {
             var states = _projectroleassignmentStateRepository.GetContactsByProjectRoleGuid(guid);
+            var dtos = states.Select(s => new ContactDto(s)).ToList();
+            return dtos;
+        }
+
+        [Route("getcontactsbyprojectid/{guid}")]
+        public IEnumerable<ContactDto> GetContactsByProjectId(Guid guid)
+        {
+            var states = _projectroleassignmentStateRepository.GetContactsByProjectGuid(guid);
             var dtos = states.Select(s => new ContactDto(s)).ToList();
             return dtos;
         }

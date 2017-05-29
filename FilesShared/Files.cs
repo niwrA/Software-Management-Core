@@ -8,7 +8,7 @@ namespace FilesShared
 {
     public interface IFileService : ICommandProcessor
     {
-        IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type);
+        IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type, string contentType, long size);
         IFile GetFile(Guid guid);
         void DeleteFile(Guid guid);
         void PersistChanges();
@@ -23,6 +23,8 @@ namespace FilesShared
         string Description { get; set; }
         string Type { get; set; }
         string FileName { get; set; }
+        string ContentType { get; set; }
+        long Size { get; set; }
     }
 
     public interface IFileStateRepository : IEntityRepository
@@ -46,6 +48,11 @@ namespace FilesShared
         string FolderName { get; }
         string Description { get; }
         string Type { get; }
+        string ContentType { get; }
+        long Size
+        {
+            get;
+        }
     }
     public class File : IFile
     {
@@ -87,6 +94,8 @@ namespace FilesShared
         }
 
         public string Type { get { return _state.Type; } }
+        public string ContentType { get { return _state.ContentType; } }
+        public long Size { get { return _state.Size; } }
     }
     public class FileService : IFileService
     {
@@ -98,7 +107,7 @@ namespace FilesShared
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;
         }
-        public IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type)
+        public IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type, string contentType, long size)
         {
             var state = _repo.CreateFileState(guid, name);
             state.ForGuid = forGuid;
@@ -107,6 +116,8 @@ namespace FilesShared
             state.FileName = fileName;
             state.ForType = forType;
             state.Type = type;
+            state.ContentType = contentType;
+            state.Size = size;
             var link = new File(state, _repo);
             return link;
         }
@@ -137,10 +148,10 @@ namespace FilesShared
             _files = files;
         }
 
-        public IFile Build(Guid linkForGuid, string name, string fileName, string folderName, string type)
+        public IFile Build(Guid linkForGuid, string name, string fileName, string folderName, string type, string contentType, long size)
         {
             EnsureGuid();
-            var link = _files.CreateFile(_guid, linkForGuid, folderName, name, fileName, type);
+            var link = _files.CreateFile(_guid, linkForGuid, folderName, name, fileName, type, contentType, size);
             return link;
         }
 
