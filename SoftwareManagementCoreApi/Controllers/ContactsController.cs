@@ -20,6 +20,8 @@ namespace SoftwareManagementCoreApi.Controllers
         public string Name { get { return _state.Name; } }
         public string Email { get { return _state.Email; } }
         public string BirthDate { get { return _state.BirthDate.HasValue ? _state.BirthDate.Value.ToString("yyyy-MM-dd") : ""; } }
+        public string AvatarUrl {  get { return _state.AvatarUrl; } }
+        public Guid? AvatarFileGuid { get { return _state.AvatarFileGuid; } }
     }
 
     [Route("api/[controller]")]

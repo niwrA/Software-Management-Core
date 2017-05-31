@@ -23,5 +23,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public DateTime? BirthDate{ get; set; }
+        public Guid? AvatarFileGuid { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }

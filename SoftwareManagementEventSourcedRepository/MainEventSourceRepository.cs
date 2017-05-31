@@ -17,6 +17,8 @@ namespace SoftwareManagementEventSourceRepository
         public Guid Guid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public Guid? AvatarFileGuid { get; set; }
+        public string AvatarUrl { get; set; }
     }
     public class CompanyState : ICompanyState
     {

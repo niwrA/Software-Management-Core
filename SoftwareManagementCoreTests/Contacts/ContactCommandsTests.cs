@@ -60,8 +60,20 @@ namespace SoftwareManagementCoreTests.Contacts
 
             sutBuilder.ContactMock.Verify(s => s.ChangeEmail(sut.Email, sut.OriginalEmail), Times.Once);
         }
+        [Fact(DisplayName = "ChangeAvatarForContactCommand")]
+        public void ChangeAvatarForContactCommand()
+        {
+            var sutBuilder = new ContactCommandBuilder<ChangeAvatarForContactCommand>();
+            var sut = sutBuilder.Build() as ChangeAvatarForContactCommand;
+
+            sut.AvatarFileGuid = Guid.NewGuid();
+            sut.AvatarUrl = "some/url";
+            sut.Execute();
+
+            sutBuilder.ContactMock.Verify(s => s.ChangeAvatar(sut.AvatarFileGuid, sut.OriginalAvatarFileGuid, sut.AvatarUrl), Times.Once);
+        }
         [Fact(DisplayName = "ChangeBirthDateOfContactCommand")]
-        public void ChangeContactOfBirthDateCommand()
+        public void ChangeBirthDateOfContactCommand()
         {
             var sutBuilder = new ContactCommandBuilder<ChangeBirthDateOfContactCommand>();
             var sut = sutBuilder.Build() as ChangeBirthDateOfContactCommand;

@@ -101,6 +101,8 @@ namespace SoftwareManagementEFCoreRepository
     {
         public DateTime? BirthDate { get; set; }
         public string Email { get; set; }
+        public Guid? AvatarFileGuid { get; set; }
+        public string AvatarUrl { get; set; }
     }
 
     public class CompanyState : NamedEntityState, ICompanyState

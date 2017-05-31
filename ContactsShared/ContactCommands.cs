@@ -55,6 +55,18 @@ namespace ContactsShared
         }
     }
 
+    public class ChangeAvatarForContactCommand : ContactCommand
+    {
+        public Guid? OriginalAvatarFileGuid { get; set; }
+        public Guid? AvatarFileGuid { get; set; }
+        public string AvatarUrl { get; set; }
+        public override void Execute()
+        {
+            var contact = ((IContactService)base.CommandProcessor).GetContact(this.EntityGuid);
+            contact.ChangeAvatar(this.AvatarFileGuid, this.OriginalAvatarFileGuid, this.AvatarUrl);
+            base.Execute();
+        }
+    }
     public class ChangeBirthDateOfContactCommand : ContactCommand
     {
         public DateTime? OriginalBirthDate { get; set; }

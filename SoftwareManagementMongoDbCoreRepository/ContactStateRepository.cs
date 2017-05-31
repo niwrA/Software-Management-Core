@@ -15,6 +15,8 @@ namespace SoftwareManagementMongoDbCoreRepository
     {
         public DateTime? BirthDate { get; set; }
         public string Email { get; set; }
+        public Guid? AvatarFileGuid { get; set; }
+        public string AvatarUrl { get; set; }
     }
     public class ContactStateRepository: IContactStateRepository
     {

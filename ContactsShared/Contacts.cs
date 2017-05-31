@@ -18,6 +18,8 @@ namespace ContactsShared
     {
         DateTime? BirthDate { get; set; }
         string Email { get; set; }
+        Guid? AvatarFileGuid { get; set; }
+        string AvatarUrl { get; set; }
     }
 
     public interface IContactStateRepository : IEntityRepository
@@ -39,6 +41,7 @@ namespace ContactsShared
         string Email { get; }
         void ChangeBirthDate(DateTime? birthDate, DateTime? originalBirthDate);
         void ChangeEmail(string email, string originalEmail);
+        void ChangeAvatar(Guid? avatarFileGuid, Guid? originalAvatarFileGuid, string avatarUrl);
     }
     public class Contact : IContact
     {
@@ -89,6 +92,15 @@ namespace ContactsShared
             if (_state.BirthDate == originalBirthDate)
             {
                 _state.BirthDate = birthDate;
+            }
+        }
+
+        public void ChangeAvatar(Guid? avatarFileGuid, Guid? originalAvatarFileGuid, string avatarUrl)
+        {
+            if(_state.AvatarFileGuid == originalAvatarFileGuid)
+            {
+                _state.AvatarFileGuid = avatarFileGuid;
+                _state.AvatarUrl = avatarUrl;
             }
         }
     }
