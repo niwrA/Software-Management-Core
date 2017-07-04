@@ -84,5 +84,25 @@ namespace SoftwareManagementCoreTests
             stateMock.VerifySet(t => t.ProductGuid = productGuid);
         }
 
+        [Fact(DisplayName = "AddFeature Implements IRepository")]
+        public void CanAddFeature()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductFeatureState>();
+            const string name = "new";
+
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+            repoMock.Setup(t => t.CreateProductFeatureState(productGuid, guid, name)).Returns(stateMock.Object);
+
+            var result = sut.AddFeature(guid, name);
+
+            stateMock.VerifySet(t => t.ProductGuid = productGuid);
+        }
+
     }
 }

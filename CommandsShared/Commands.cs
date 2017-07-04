@@ -56,6 +56,13 @@ namespace CommandsShared
         DateTime CreatedOn { get; set; }
         DateTime UpdatedOn { get; set; }
     }
+    public interface INamedEntity
+    {
+        DateTime CreatedOn { get; }
+        DateTime UpdatedOn { get; }
+        Guid Guid { get; }
+        string Name { get; }
+    }
 
     public interface INamedEntityState : IEntityState
     {

@@ -9,6 +9,10 @@ namespace SoftwareManagementCoreApi.Test
 {
     public class ProductStateRepositoryFake : IProductStateRepository
     {
+        public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
+        {
+            throw new NotImplementedException();
+        }
 
         public IProductState CreateProductState(Guid guid, string name)
         {

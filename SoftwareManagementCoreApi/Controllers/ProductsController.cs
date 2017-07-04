@@ -24,6 +24,18 @@ namespace SoftwareManagementCoreApi.Controllers
         public int Build {  get { return _state.Build; } }
         public Guid ProductGuid { get { return _state.ProductGuid; } }
     }
+    public class ProductFeatureDto
+    {
+        private IProductFeatureState _state;
+        public ProductFeatureDto(IProductFeatureState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public Guid ProductGuid { get { return _state.ProductGuid; } }
+    }
+
     public class ProductDto
     {
         private IProductState _state;
@@ -36,6 +48,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public string Description {  get { return _state.Description; } }
         public string BusinessCase { get { return _state.BusinessCase; } }
         public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates.Select(s => new ProductVersionDto(s)).ToList(); } }
+        public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates.Select(s => new ProductFeatureDto(s)).ToList(); } }
     }
 
     [Route("api/[controller]")]

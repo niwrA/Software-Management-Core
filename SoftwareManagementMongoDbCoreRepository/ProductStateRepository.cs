@@ -19,17 +19,23 @@ namespace SoftwareManagementMongoDbCoreRepository
         public int Build { get; set; }
         public Guid ProductGuid { get; set; }
     }
+    public class ProductFeatureState : NamedEntityState, IProductFeatureState
+    {
+        public Guid ProductGuid { get; set; }
+    }
     [BsonIgnoreExtraElements]
     public class ProductState : NamedEntityState, IProductState
     {
         public ProductState()
         {
             ProductVersionStates = new List<IProductVersionState>() as ICollection<IProductVersionState>;
+            ProductFeatureStates = new List<IProductFeatureState>() as ICollection<IProductFeatureState>;
         }
 
         public string Description { get; set; }
         public string BusinessCase { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
+        public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     }
 
     public class ProductStateRepository: IProductStateRepository
@@ -79,6 +85,18 @@ namespace SoftwareManagementMongoDbCoreRepository
             };
             state.ProductVersionStates.Add(versionState);
             return versionState;
+        }
+
+        public IProductFeatureState CreateProductFeatureState(Guid guid, Guid featureGuid, string name)
+        {
+            var state = GetProductState(guid);
+            var featureState = new ProductFeatureState()
+            {
+                Guid = featureGuid,
+                Name = name
+            };
+            state.ProductFeatureStates.Add(featureState);
+            return featureState;
         }
 
 

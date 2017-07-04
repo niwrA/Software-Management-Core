@@ -70,6 +70,7 @@ namespace SoftwareManagementEventSourceRepository
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
+        public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     }
     public class EventSourcedMainRepository : IContactStateRepository, ICompanyStateRepository, IProjectStateRepository, IProductStateRepository
     {
@@ -135,6 +136,11 @@ namespace SoftwareManagementEventSourceRepository
                 _contactDictionary.Add(guid, state);
             }
             return state;
+        }
+
+        public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
+        {
+            throw new NotImplementedException();
         }
 
         public IProductState CreateProductState(Guid guid, string name)

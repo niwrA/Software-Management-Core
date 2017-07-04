@@ -25,6 +25,7 @@ namespace SoftwareManagementEFCoreRepository
         }
         public DbSet<ProductState> ProductStates { get; set; }
         public DbSet<ProductVersionState> ProductVersionStates { get; set; }
+        public DbSet<ProductFeatureState> ProductFeatureStates { get; set; }
         public DbSet<ProjectState> ProjectStates { get; set; }
         public DbSet<ProjectRoleState> ProjectRoleStates { get; set; }
         public DbSet<CommandState> CommandStates { get; set; }
@@ -56,6 +57,11 @@ namespace SoftwareManagementEFCoreRepository
                 .HasMany(h => (ICollection<ProductVersionState>)h.ProductVersionStates)
                 .WithOne()
                 .HasForeignKey(p => p.ProductGuid);
+
+            modelBuilder.Entity<ProductState>()
+                .HasMany(h => (ICollection<ProductFeatureState>)h.ProductFeatureStates)
+                .WithOne()
+                .HasForeignKey(p => p.ProductGuid);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -84,12 +90,17 @@ namespace SoftwareManagementEFCoreRepository
         public int Build { get; set; }
         public Guid ProductGuid { get; set; }
     }
+    public class ProductFeatureState : NamedEntityState, IProductFeatureState
+    {
+        public Guid ProductGuid { get; set; }
+    }
 
     public class ProductState : NamedEntityState, IProductState
     {
         public string Description { get; set; }
         public string BusinessCase { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
+        public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     }
 
     public class ProjectRoleState : NamedEntityState, IProjectRoleState
@@ -471,6 +482,11 @@ namespace SoftwareManagementEFCoreRepository
         }
 
         public ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
         {
             throw new NotImplementedException();
         }

@@ -47,6 +47,41 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
 
         }
 
+        [Fact(DisplayName = "AddProductFeatureState")]
+        public void CanAddProductFeatureState()
+        {
+            var sutBuilder = new SutBuilder().WithProductCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var featureGuid = Guid.NewGuid();
+            var productState = (ProductState)sut.CreateProductState(guid, "testproductstate");
+            var state = sut.CreateProductFeatureState(guid, featureGuid, "testfeaturestate");
+
+            sut.PersistChanges();
+
+            sutBuilder.ProductStateCollection.Verify(s => s.InsertMany(
+                It.Is<ICollection<ProductState>>(
+                    l => l.Contains(productState) &&
+                    l.Count == 1 &&
+                    l.First().ProductFeatureStates.Contains(state) &&
+                    l.First().ProductFeatureStates.Count == 1),
+                null, CancellationToken.None), Times.Once,
+                "InsertMany was not called with the expected state");
+        }
+
+        [Fact(DisplayName = "DeleteProductFeatureState", Skip = "In progress")]
+        public void CanDeleteProductFeatureState()
+        {
+            var sutBuilder = new SutBuilder().WithProductCollection();
+            var sut = sutBuilder.Build();
+            var guid = Guid.NewGuid();
+            var featureGuid = Guid.NewGuid();
+            var productState = (ProductState)sut.CreateProductState(guid, "testproductstate");
+
+            sut.PersistChanges();
+
+        }
+
         public class SutBuilder
         {
             private Mock<IMongoDatabase> _databaseMock;

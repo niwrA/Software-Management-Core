@@ -82,4 +82,18 @@ namespace ProductsShared
         }
 
     }
+
+    public class AddFeatureToProductCommand : ProductCommand
+    {
+        public string Name { get; set; }
+        public Guid ProductFeatureGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.AddFeature(ProductFeatureGuid, Name);
+            base.Execute();
+        }
+
+    }
+
 }

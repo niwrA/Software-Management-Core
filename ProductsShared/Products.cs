@@ -11,6 +11,7 @@ namespace ProductsShared
         string Description { get; set; }
         string BusinessCase { get; set; }
         ICollection<IProductVersionState> ProductVersionStates { get; set; }
+        ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
 
     }
     public interface IProductVersionState : INamedEntityState
@@ -21,6 +22,11 @@ namespace ProductsShared
         int Build { get; set; }
         Guid ProductGuid { get; set; }
     }
+    public interface IProductFeatureState : INamedEntityState
+    {
+        Guid ProductGuid { get; set; }
+    }
+
     public interface IProductStateRepository : IEntityRepository
     {
         IProductState CreateProductState(Guid guid, string name);
@@ -28,16 +34,18 @@ namespace ProductsShared
         IEnumerable<IProductState> GetProductStates();
         void DeleteProductState(Guid guid);
         IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name);
+        IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name);
     }
-    public interface IProductVersion
+    public interface IProductVersion: INamedEntity
     {
-        DateTime CreatedOn { get; }
-        Guid Guid { get; }
-        string Name { get; }
         int Major { get; }
         int Minor { get; }
         int Revision { get; }
         int Build { get; }
+    }
+    public interface IProductFeature: INamedEntity
+    {
+
     }
 
     public interface IProduct
@@ -49,6 +57,7 @@ namespace ProductsShared
         void ChangeDescription(string description);
         void ChangeBusinessCase(string businessCase);
         IProductVersion AddVersion(Guid guid, string name, int major, int minor, int revision, int build);
+        IProductFeature AddFeature(Guid guid, string name);
     }
     public class Product : IProduct
     {
@@ -98,6 +107,14 @@ namespace ProductsShared
             var productVersion = new ProductVersion(state);
             return productVersion;
         }
+        public IProductFeature AddFeature(Guid guid, string name)
+        {
+            var state = _repo.CreateProductFeatureState(Guid, guid, name);
+            state.ProductGuid = Guid;
+            var productFeature = new ProductFeature(state);
+            return productFeature;
+        }
+
     }
 
     public class ProductVersion : IProductVersion
@@ -108,6 +125,7 @@ namespace ProductsShared
             _state = state;
         }
         public DateTime CreatedOn { get { return _state.CreatedOn; } }
+        public DateTime UpdatedOn { get { return _state.UpdatedOn; } }
 
         public Guid Guid { get { return _state.Guid; } }
 
@@ -121,6 +139,22 @@ namespace ProductsShared
 
         public int Build { get { return _state.Build; } }
     }
+    public class ProductFeature : IProductFeature
+    {
+        private IProductFeatureState _state;
+        public ProductFeature(IProductFeatureState state)
+        {
+            _state = state;
+        }
+        public DateTime CreatedOn { get { return _state.CreatedOn; } }
+        public DateTime UpdatedOn { get { return _state.UpdatedOn; } }
+
+        public Guid Guid { get { return _state.Guid; } }
+
+        public string Name { get { return _state.Name; } }
+
+    }
+
 
     public interface IProductService : ICommandProcessor
     {
