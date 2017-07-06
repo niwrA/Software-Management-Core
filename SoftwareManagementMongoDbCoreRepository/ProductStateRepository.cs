@@ -22,6 +22,9 @@ namespace SoftwareManagementMongoDbCoreRepository
     public class ProductFeatureState : NamedEntityState, IProductFeatureState
     {
         public Guid ProductGuid { get; set; }
+        public string Description { get; set; }
+        public bool IsRequest { get; set; }
+        public Guid FirstVersionGuid { get; set; }
     }
     [BsonIgnoreExtraElements]
     public class ProductState : NamedEntityState, IProductState
@@ -93,7 +96,8 @@ namespace SoftwareManagementMongoDbCoreRepository
             var featureState = new ProductFeatureState()
             {
                 Guid = featureGuid,
-                Name = name
+                Name = name,
+                ProductGuid = guid
             };
             state.ProductFeatureStates.Add(featureState);
             return featureState;

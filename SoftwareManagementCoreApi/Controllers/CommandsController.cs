@@ -70,6 +70,8 @@ namespace SoftwareManagementCoreWeb.Controllers
         {
             var projectsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService };
             var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
+            var productFeaturesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductFeature", Processor = _productService };
+            var productVersionsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductVersion", Processor = _productService };
             var designsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "Design", Processor = _designService };
             var epicElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EpicElement", Processor = _designService };
             var entityElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EntityElement", Processor = _designService };
@@ -87,6 +89,8 @@ namespace SoftwareManagementCoreWeb.Controllers
 
             _commandManager.AddConfig(projectsConfig);
             _commandManager.AddConfig(productsConfig);
+            _commandManager.AddConfig(productVersionsConfig);
+            _commandManager.AddConfig(productFeaturesConfig);
             _commandManager.AddConfig(designsConfig);
             _commandManager.AddConfig(epicElementConfig);
             _commandManager.AddConfig(entityElementConfig);

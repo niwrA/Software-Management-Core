@@ -93,6 +93,9 @@ namespace SoftwareManagementEFCoreRepository
     public class ProductFeatureState : NamedEntityState, IProductFeatureState
     {
         public Guid ProductGuid { get; set; }
+        public string Description { get; set; }
+        public bool IsRequest { get; set; }
+        public Guid FirstVersionGuid { get; set; }
     }
 
     public class ProductState : NamedEntityState, IProductState

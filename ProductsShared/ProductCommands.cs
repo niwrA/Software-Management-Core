@@ -87,13 +87,40 @@ namespace ProductsShared
     {
         public string Name { get; set; }
         public Guid ProductFeatureGuid { get; set; }
+        public Guid FirstVersionGuid { get; set; }
         public override void Execute()
         {
             var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-            product.AddFeature(ProductFeatureGuid, Name);
+            product.AddFeature(ProductFeatureGuid, Name, FirstVersionGuid);
             base.Execute();
         }
 
+    }
+
+    public class RenameProductFeatureCommand : ProductCommand
+    {
+        public string OriginalName { get; set; }
+        public string Name { get; set; }
+        public Guid ProductGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+            IProductFeature feature = product.GetFeature(this.EntityGuid);
+            feature.Rename(this.Name, this.OriginalName);
+            base.Execute();
+        }
+    }
+    public class ChangeDescriptionOfProductFeatureCommand : ProductCommand
+    {
+        public string Description { get; set; }
+        public Guid ProductGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+            IProductFeature feature = product.GetFeature(this.EntityGuid);
+            feature.ChangeDescription(this.Description);
+            base.Execute();
+        }
     }
 
 }

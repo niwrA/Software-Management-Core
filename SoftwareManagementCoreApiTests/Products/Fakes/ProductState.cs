@@ -32,7 +32,10 @@ namespace SoftwareManagementCoreApiTests.Fakes
     {
         public Guid ProductGuid { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsRequest { get; set; }
         public Guid Guid { get; set; }
+        public Guid FirstVersionGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }

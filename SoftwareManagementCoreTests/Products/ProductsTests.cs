@@ -95,13 +95,17 @@ namespace SoftwareManagementCoreTests
 
             var guid = Guid.NewGuid();
             var productGuid = Guid.NewGuid();
+            var firstVersionGuid = Guid.NewGuid();
 
             productStateMock.Setup(s => s.Guid).Returns(productGuid);
             repoMock.Setup(t => t.CreateProductFeatureState(productGuid, guid, name)).Returns(stateMock.Object);
 
-            var result = sut.AddFeature(guid, name);
+            var result = sut.AddFeature(guid, name, firstVersionGuid);
 
+            stateMock.VerifySet(t => t.Guid = guid);
+            stateMock.VerifySet(t => t.Name = name);
             stateMock.VerifySet(t => t.ProductGuid = productGuid);
+            stateMock.VerifySet(t => t.FirstVersionGuid = firstVersionGuid);
         }
 
     }
