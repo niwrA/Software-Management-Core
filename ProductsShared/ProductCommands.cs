@@ -96,6 +96,19 @@ namespace ProductsShared
         }
 
     }
+    public class RequestFeatureForProductCommand : ProductCommand
+    {
+        public string Name { get; set; }
+        public Guid ProductFeatureGuid { get; set; }
+        public Guid RequestedForVersionGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.RequestFeature(ProductFeatureGuid, Name, RequestedForVersionGuid);
+            base.Execute();
+        }
+
+    }
 
     public class RenameProductFeatureCommand : ProductCommand
     {
@@ -122,5 +135,14 @@ namespace ProductsShared
             base.Execute();
         }
     }
-
+    public class RemoveFeatureFromProductCommand : ProductCommand
+    {
+        public Guid ProductFeatureGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.DeleteFeature(ProductFeatureGuid);
+            base.Execute();
+        }
+    }
 }

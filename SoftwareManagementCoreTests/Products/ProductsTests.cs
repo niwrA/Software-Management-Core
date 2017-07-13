@@ -102,11 +102,49 @@ namespace SoftwareManagementCoreTests
 
             var result = sut.AddFeature(guid, name, firstVersionGuid);
 
-            stateMock.VerifySet(t => t.Guid = guid);
-            stateMock.VerifySet(t => t.Name = name);
-            stateMock.VerifySet(t => t.ProductGuid = productGuid);
             stateMock.VerifySet(t => t.FirstVersionGuid = firstVersionGuid);
         }
 
+        [Fact(DisplayName = "RequestFeature Implements IRepository")]
+        public void RequestFeature()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductFeatureState>();
+            const string name = "new";
+
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+            var requestedForVersionGuid = Guid.NewGuid();
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+            repoMock.Setup(t => t.CreateProductFeatureState(productGuid, guid, name)).Returns(stateMock.Object);
+
+            var result = sut.RequestFeature(guid, name, requestedForVersionGuid);
+
+            stateMock.VerifySet(t => t.RequestedForVersionGuid = requestedForVersionGuid);
+            stateMock.VerifySet(t => t.IsRequest = true);
+        }
+
+        [Fact(DisplayName = "AddFeature Implements IRepository")]
+        public void CanDeleteFeature()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductFeatureState>();
+            
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+
+            repoMock.Setup(s => s.GetProductState(productGuid)).Returns(productStateMock.Object);
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+
+            sut.DeleteFeature(guid);
+
+            repoMock.Verify(s => s.DeleteProductFeatureState(productGuid, guid), Times.Once);
+        }
     }
 }

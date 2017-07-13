@@ -95,7 +95,8 @@ namespace SoftwareManagementEFCoreRepository
         public Guid ProductGuid { get; set; }
         public string Description { get; set; }
         public bool IsRequest { get; set; }
-        public Guid FirstVersionGuid { get; set; }
+        public Guid? FirstVersionGuid { get; set; }
+        public Guid? RequestedForVersionGuid { get; set; }
     }
 
     public class ProductState : NamedEntityState, IProductState
@@ -490,6 +491,11 @@ namespace SoftwareManagementEFCoreRepository
         }
 
         public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProductFeatureState(Guid productGuid, Guid guid)
         {
             throw new NotImplementedException();
         }

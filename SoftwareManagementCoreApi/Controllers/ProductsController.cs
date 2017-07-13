@@ -36,7 +36,8 @@ namespace SoftwareManagementCoreApi.Controllers
         public string Description { get { return _state.Description; } }
         public bool IsRequest { get { return _state.IsRequest; } }
         public Guid ProductGuid { get { return _state.ProductGuid; } }
-        public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+        public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+        public Guid? RequestedForVersionGuid { get { return _state.RequestedForVersionGuid; } }
     }
 
     public class ProductDto

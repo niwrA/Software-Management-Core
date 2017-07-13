@@ -191,6 +191,11 @@ namespace SoftwareManagementEventSourceRepository
             // ignore in eventsourcing
         }
 
+        public void DeleteProductFeatureState(Guid productGuid, Guid guid)
+        {
+            // ignore in eventsourcing
+        }
+
         public void DeleteProductState(Guid guid)
         {
             // ignore in eventsourcing

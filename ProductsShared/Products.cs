@@ -27,8 +27,9 @@ namespace ProductsShared
         Guid ProductGuid { get; set; }
         string Description { get; set; }
         bool IsRequest { get; set; }
-        Guid FirstVersionGuid { get; set; }
-    }
+        Guid? FirstVersionGuid { get; set; }
+        Guid? RequestedForVersionGuid { get; set; }
+            }
 
     public interface IProductStateRepository : IEntityRepository
     {
@@ -38,8 +39,9 @@ namespace ProductsShared
         void DeleteProductState(Guid guid);
         IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name);
         IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name);
+        void DeleteProductFeatureState(Guid productGuid, Guid guid);
     }
-    public interface IProductVersion: INamedEntity
+    public interface IProductVersion : INamedEntity
     {
         int Major { get; }
         int Minor { get; }
@@ -50,7 +52,7 @@ namespace ProductsShared
     {
         void Rename(string name, string originalName);
         void ChangeDescription(string description);
-        Guid FirstVersionGuid { get; }
+        Guid? FirstVersionGuid { get; }
     }
 
     public interface IProduct
@@ -64,13 +66,15 @@ namespace ProductsShared
         IProductVersion AddVersion(Guid guid, string name, int major, int minor, int revision, int build);
         IProductFeature AddFeature(Guid guid, string name, Guid firstVersionGuid);
         IProductFeature GetFeature(Guid featureGuid);
+        IProductFeature RequestFeature(Guid productFeatureGuid, string name, Guid requestedForVersionGuid);
+        void DeleteFeature(Guid guid);
     }
     public class Product : IProduct
     {
         private IProductState _state;
         private IProductStateRepository _repo;
 
-        public Product(IProductState state, IProductStateRepository repo) 
+        public Product(IProductState state, IProductStateRepository repo)
         {
             _state = state;
             _repo = repo;
@@ -121,14 +125,29 @@ namespace ProductsShared
             return productFeature;
         }
 
+        public IProductFeature RequestFeature(Guid guid, string name, Guid requestedForVersionGuid)
+        {
+            var state = _repo.CreateProductFeatureState(Guid, guid, name);
+            state.RequestedForVersionGuid = requestedForVersionGuid;
+            state.IsRequest = true;
+            var productFeature = new ProductFeature(state);
+            return productFeature;
+        }
+
         public IProductFeature GetFeature(Guid featureGuid)
         {
             var state = _state.ProductFeatureStates.FirstOrDefault(s => s.Guid == featureGuid);
-            if(state != null)
+            if (state != null)
             {
                 return new ProductFeature(state);
             }
             return null;
+        }
+
+        // todo: hide in repository?
+        public void DeleteFeature(Guid guid)
+        {
+            _repo.DeleteProductFeatureState(this.Guid, guid);
         }
     }
 
@@ -165,13 +184,13 @@ namespace ProductsShared
         public DateTime UpdatedOn { get { return _state.UpdatedOn; } }
 
         public Guid Guid { get { return _state.Guid; } }
-        public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+        public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
 
         public string Name { get { return _state.Name; } }
 
         public void Rename(string name, string originalName)
         {
-            if(_state.Name == originalName)
+            if (_state.Name == originalName)
             {
                 _state.Name = name;
             }

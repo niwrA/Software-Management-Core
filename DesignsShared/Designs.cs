@@ -201,6 +201,7 @@ namespace DesignsShared
             return entityElement;
         }
 
+        // todo: this works for MongoDb but should be hidden in the repository
         public void DeleteEntityElement(Guid entityGuid)
         {
             var state = _state.EntityElementStates.Single(s => s.Guid == entityGuid);

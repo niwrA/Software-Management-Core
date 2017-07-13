@@ -24,7 +24,8 @@ namespace SoftwareManagementMongoDbCoreRepository
         public Guid ProductGuid { get; set; }
         public string Description { get; set; }
         public bool IsRequest { get; set; }
-        public Guid FirstVersionGuid { get; set; }
+        public Guid? FirstVersionGuid { get; set; }
+        public Guid? RequestedForVersionGuid { get; set; }
     }
     [BsonIgnoreExtraElements]
     public class ProductState : NamedEntityState, IProductState
@@ -120,7 +121,6 @@ namespace SoftwareManagementMongoDbCoreRepository
             {
                 if (!_updatedProductStates.TryGetValue(guid, out state))
                 {
-
                     var collection = _database.GetCollection<ProductState>(ProductStatesCollection);
                     var filter = Builders<ProductState>.Filter.Eq("Guid", guid);
 
@@ -187,6 +187,16 @@ namespace SoftwareManagementMongoDbCoreRepository
         public Task PersistChangesAsync()
         {
             throw new NotImplementedException();
+        }
+
+        public void DeleteProductFeatureState(Guid productGuid, Guid guid)
+        {
+            var productState = GetProductState(productGuid);
+            var featureState = productState.ProductFeatureStates.FirstOrDefault(s => s.Guid == guid);
+            if (featureState != null)
+            {
+                productState.ProductFeatureStates.Remove(featureState);
+            }
         }
     }
 }

@@ -23,6 +23,11 @@ namespace SoftwareManagementCoreApi.Test
             throw new NotImplementedException();
         }
 
+        public void DeleteProductFeatureState(Guid productGuid, Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
         public void DeleteProductState(Guid guid)
         {
             throw new NotImplementedException();
