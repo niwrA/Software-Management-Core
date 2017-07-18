@@ -71,6 +71,7 @@ namespace SoftwareManagementEventSourceRepository
         public DateTime UpdatedOn { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
         public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
+        public ICollection<IProductIssueState> ProductIssueStates { get; set; }
     }
     public class EventSourcedMainRepository : IContactStateRepository, ICompanyStateRepository, IProjectStateRepository, IProductStateRepository
     {
@@ -195,6 +196,10 @@ namespace SoftwareManagementEventSourceRepository
         {
             // ignore in eventsourcing
         }
+        public void DeleteProductVersionState(Guid productGuid, Guid guid)
+        {
+            // ignore in eventsourcing
+        }
 
         public void DeleteProductState(Guid guid)
         {
@@ -304,6 +309,16 @@ namespace SoftwareManagementEventSourceRepository
             var state = GetProjectState(guid);
             var roleState = state.ProjectRoleStates.Single(s => s.Guid == guid);
             state.ProjectRoleStates.Remove(roleState);
+        }
+
+        public IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProductIssueState(Guid productGuid, Guid guid)
+        {
+            // not in eventsourcing
         }
     }
 }

@@ -27,6 +27,13 @@ namespace SoftwareManagementMongoDbCoreRepository
         public Guid? FirstVersionGuid { get; set; }
         public Guid? RequestedForVersionGuid { get; set; }
     }
+    public class ProductIssueState : NamedEntityState, IProductIssueState
+    {
+        public Guid ProductGuid { get; set; }
+        public string Description { get; set; }
+        public Guid FirstVersionGuid { get; set; }
+    }
+
     [BsonIgnoreExtraElements]
     public class ProductState : NamedEntityState, IProductState
     {
@@ -40,6 +47,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public string BusinessCase { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
         public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
+        public ICollection<IProductIssueState> ProductIssueStates { get; set; }
     }
 
     public class ProductStateRepository: IProductStateRepository
@@ -102,6 +110,25 @@ namespace SoftwareManagementMongoDbCoreRepository
             };
             state.ProductFeatureStates.Add(featureState);
             return featureState;
+        }
+        // todo: make upgrading more robust by creating collections if necessary?
+        // it is necessary to check for a null collection now if the product was created
+        // before issues was supported
+        public IProductIssueState CreateProductIssueState(Guid guid, Guid issueGuid, string name)
+        {
+            var state = GetProductState(guid);
+            var issueState = new ProductIssueState()
+            {
+                Guid = issueGuid,
+                Name = name,
+                ProductGuid = guid
+            };
+            if(state.ProductIssueStates == null)
+            {
+                state.ProductIssueStates = new List<IProductIssueState>();
+            }
+            state.ProductIssueStates.Add(issueState);
+            return issueState;
         }
 
 
@@ -196,6 +223,24 @@ namespace SoftwareManagementMongoDbCoreRepository
             if (featureState != null)
             {
                 productState.ProductFeatureStates.Remove(featureState);
+            }
+        }
+        public void DeleteProductVersionState(Guid productGuid, Guid guid)
+        {
+            var productState = GetProductState(productGuid);
+            var versionState = productState.ProductVersionStates.FirstOrDefault(s => s.Guid == guid);
+            if (versionState != null)
+            {
+                productState.ProductVersionStates.Remove(versionState);
+            }
+        }
+        public void DeleteProductIssueState(Guid productGuid, Guid guid)
+        {
+            var productState = GetProductState(productGuid);
+            var issueState = productState.ProductIssueStates.FirstOrDefault(s => s.Guid == guid);
+            if (issueState != null)
+            {
+                productState.ProductIssueStates.Remove(issueState);
             }
         }
     }

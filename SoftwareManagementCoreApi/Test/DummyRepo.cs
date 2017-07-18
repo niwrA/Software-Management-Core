@@ -14,6 +14,11 @@ namespace SoftwareManagementCoreApi.Test
             throw new NotImplementedException();
         }
 
+        public IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
         public IProductState CreateProductState(Guid guid, string name)
         {
             throw new NotImplementedException();
@@ -28,7 +33,17 @@ namespace SoftwareManagementCoreApi.Test
             throw new NotImplementedException();
         }
 
+        public void DeleteProductIssueState(Guid productGuid, Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
         public void DeleteProductState(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProductVersionState(Guid productGuid, Guid guid)
         {
             throw new NotImplementedException();
         }

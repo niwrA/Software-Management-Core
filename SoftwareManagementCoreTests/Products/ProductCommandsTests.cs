@@ -54,24 +54,24 @@ namespace SoftwareManagementCoreTests.Products
         {
             var sutBuilder = new ProductFeatureCommandBuilder<ChangeDescriptionOfProductFeatureCommand>();
             var guid = Guid.NewGuid();
-            var featureGuid = Guid.NewGuid();
-            var featureMock = new Mock<IProductFeature>();
+            var issueGuid = Guid.NewGuid();
+            var issueMock = new Mock<IProductFeature>();
 
-            featureMock.Setup(s => s.Guid).Returns(featureGuid);
+            issueMock.Setup(s => s.Guid).Returns(issueGuid);
 
             var sut = sutBuilder
                 .WithProduct(guid)
-                .WithProductFeature(featureMock.Object)
+                .WithProductFeature(issueMock.Object)
                 .Build() as ChangeDescriptionOfProductFeatureCommand;
 
-            sut.EntityGuid = featureGuid;
+            sut.EntityGuid = issueGuid;
             sut.Description = "Description";
             sut.ProductGuid = guid;
             sut.Execute();
 
             sutBuilder.ProductsMock.Verify(s => s.GetProduct(guid));
-            sutBuilder.ProductMock.Verify(s => s.GetFeature(featureGuid));
-            featureMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
+            sutBuilder.ProductMock.Verify(s => s.GetFeature(issueGuid));
+            issueMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
         }
         [Fact(DisplayName = "RemoveFeatureFromProductCommand")]
         public void RemoveFeatureFromProductCommand()
@@ -80,13 +80,43 @@ namespace SoftwareManagementCoreTests.Products
             var sut = sutBuilder.Build() as RemoveFeatureFromProductCommand;
 
             var guid = Guid.NewGuid();
-            var featureGuid = Guid.NewGuid();
+            var issueGuid = Guid.NewGuid();
 
             sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-            sut.ProductFeatureGuid = featureGuid;
+            sut.ProductFeatureGuid = issueGuid;
             sut.Execute();
 
-            sutBuilder.ProductMock.Verify(s => s.DeleteFeature(featureGuid));
+            sutBuilder.ProductMock.Verify(s => s.DeleteFeature(issueGuid));
+        }
+        [Fact(DisplayName = "RemoveVersionFromProductCommand")]
+        public void RemoveVersionFromProductCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<RemoveVersionFromProductCommand>();
+            var sut = sutBuilder.Build() as RemoveVersionFromProductCommand;
+
+            var guid = Guid.NewGuid();
+            var versionGuid = Guid.NewGuid();
+
+            sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
+            sut.ProductVersionGuid = versionGuid;
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.DeleteVersion(versionGuid));
+        }
+        [Fact(DisplayName = "RemoveIssueFromProductCommand")]
+        public void RemoveIssueFromProductCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<RemoveIssueFromProductCommand>();
+            var sut = sutBuilder.Build() as RemoveIssueFromProductCommand;
+
+            var guid = Guid.NewGuid();
+            var issueGuid = Guid.NewGuid();
+
+            sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
+            sut.ProductIssueGuid = issueGuid;
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.DeleteIssue(issueGuid));
         }
 
         [Fact(DisplayName = "RenameFeatureCommand")]
@@ -94,24 +124,24 @@ namespace SoftwareManagementCoreTests.Products
         {
             var sutBuilder = new ProductFeatureCommandBuilder<RenameProductFeatureCommand>();
             var guid = Guid.NewGuid();
-            var featureGuid = Guid.NewGuid();
-            var featureMock = new Mock<IProductFeature>();
-            featureMock.Setup(s => s.Guid).Returns(featureGuid);
+            var issueGuid = Guid.NewGuid();
+            var issueMock = new Mock<IProductFeature>();
+            issueMock.Setup(s => s.Guid).Returns(issueGuid);
 
             var sut = sutBuilder
                 .WithProduct(guid)
-                .WithProductFeature(featureMock.Object)
+                .WithProductFeature(issueMock.Object)
                 .Build() as RenameProductFeatureCommand;
 
-            sut.EntityGuid = featureGuid;
+            sut.EntityGuid = issueGuid;
             sut.OriginalName = "Old name";
             sut.Name = "New name";
             sut.ProductGuid = guid;
             sut.Execute();
 
             sutBuilder.ProductsMock.Verify(s => s.GetProduct(guid));
-            sutBuilder.ProductMock.Verify(s => s.GetFeature(featureGuid));
-            featureMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
+            sutBuilder.ProductMock.Verify(s => s.GetFeature(issueGuid));
+            issueMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
         }
 
         [Fact(DisplayName = "ChangeDescriptionCommand")]
@@ -168,6 +198,20 @@ namespace SoftwareManagementCoreTests.Products
 
             sutBuilder.ProductMock.Verify(s => s.AddFeature(sut.ProductFeatureGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
         }
+        [Fact(DisplayName = "AddIssueToProductCommand")]
+        public void AddIssueToProductCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<AddIssueToProductCommand>();
+            var sut = sutBuilder.Build() as AddIssueToProductCommand;
+
+            sut.ProductIssueGuid = Guid.NewGuid();
+            sut.FirstVersionGuid = Guid.NewGuid();
+            sut.Name = "New name";
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.AddIssue(sut.ProductIssueGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
+        }
+
         public void RequestFeatureForProductCommand()
         {
             var sutBuilder = new ProductCommandBuilder<RequestFeatureForProductCommand>();
@@ -179,6 +223,42 @@ namespace SoftwareManagementCoreTests.Products
             sut.Execute();
 
             sutBuilder.ProductMock.Verify(s => s.RequestFeature(sut.ProductFeatureGuid, sut.Name, sut.RequestedForVersionGuid), Times.Once);
+        }
+        [Fact(DisplayName = "RenameIssueCommand")]
+        public void RenameIssueCommand()
+        {
+            var sutBuilder = new ProductIssueCommandBuilder<RenameProductIssueCommand>();
+            var guid = Guid.NewGuid();
+            var issueGuid = Guid.NewGuid();
+            var issueMock = new Mock<IProductIssue>();
+            issueMock.Setup(s => s.Guid).Returns(issueGuid);
+
+            var sut = sutBuilder
+                .WithProduct(guid)
+                .WithProductIssue(issueMock.Object)
+                .Build() as RenameProductIssueCommand;
+
+            sut.EntityGuid = issueGuid;
+            sut.OriginalName = "Old name";
+            sut.Name = "New name";
+            sut.ProductGuid = guid;
+            sut.Execute();
+
+            sutBuilder.ProductsMock.Verify(s => s.GetProduct(guid));
+            sutBuilder.ProductMock.Verify(s => s.GetIssue(issueGuid));
+            issueMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
+        }
+
+        [Fact(DisplayName = "ChangeDescriptionCommand")]
+        public void ChangeDescriptionOfProductCommand()
+        {
+            var sutBuilder = new ProductCommandBuilder<ChangeDescriptionOfProductCommand>();
+            var sut = sutBuilder.Build() as ChangeDescriptionOfProductCommand;
+
+            sut.Description = "New description";
+            sut.Execute();
+
+            sutBuilder.ProductMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
         }
 
         // todo: move to another file, along with the globals?
@@ -252,9 +332,33 @@ namespace SoftwareManagementCoreTests.Products
             ProductsMock.Setup(s => s.GetProduct(guid)).Returns(ProductMock.Object);
             return this;
         }
-        public ProductFeatureCommandBuilder<T> WithProductFeature(IProductFeature feature)
+        public ProductFeatureCommandBuilder<T> WithProductFeature(IProductFeature issue)
         {
-            ProductMock.Setup(s => s.GetFeature(feature.Guid)).Returns(feature);
+            ProductMock.Setup(s => s.GetFeature(issue.Guid)).Returns(issue);
+            return this;
+        }
+
+    }
+    class ProductIssueCommandBuilder<T> where T : ICommand, new()
+    {
+        public Mock<IProduct> ProductMock = new Mock<IProduct>();
+        public Mock<IProductIssue> ProductIssueMock { get; set; }
+        public Mock<IProductService> ProductsMock = new Mock<IProductService>();
+
+        public ICommand Build()
+        {
+            var sut = new CommandBuilder<T>().Build(ProductsMock.Object);
+
+            return sut;
+        }
+        public ProductIssueCommandBuilder<T> WithProduct(Guid guid)
+        {
+            ProductsMock.Setup(s => s.GetProduct(guid)).Returns(ProductMock.Object);
+            return this;
+        }
+        public ProductIssueCommandBuilder<T> WithProductIssue(IProductIssue issue)
+        {
+            ProductMock.Setup(s => s.GetIssue(issue.Guid)).Returns(issue);
             return this;
         }
 

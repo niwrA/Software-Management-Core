@@ -39,6 +39,20 @@ namespace SoftwareManagementCoreApi.Controllers
         public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
         public Guid? RequestedForVersionGuid { get { return _state.RequestedForVersionGuid; } }
     }
+    public class ProductIssueDto
+    {
+        private IProductIssueState _state;
+        public ProductIssueDto(IProductIssueState state)
+        {
+            _state = state;
+        }
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public string Description { get { return _state.Description; } }
+        public Guid ProductGuid { get { return _state.ProductGuid; } }
+        public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+    }
+
 
     public class ProductDto
     {
@@ -53,6 +67,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public string BusinessCase { get { return _state.BusinessCase; } }
         public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates.Select(s => new ProductVersionDto(s)).ToList(); } }
         public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates.Select(s => new ProductFeatureDto(s)).ToList(); } }
+        public ICollection<ProductIssueDto> Issues { get { return _state.ProductIssueStates?.Select(s => new ProductIssueDto(s)).ToList(); } }
     }
 
     [Route("api/[controller]")]

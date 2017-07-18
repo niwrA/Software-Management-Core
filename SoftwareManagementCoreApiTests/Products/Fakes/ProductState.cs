@@ -35,11 +35,23 @@ namespace SoftwareManagementCoreApiTests.Fakes
         public string Description { get; set; }
         public bool IsRequest { get; set; }
         public Guid Guid { get; set; }
-        public Guid FirstVersionGuid { get; set; }
-        public Guid RequestedForVersionGuid { get; set; }
+        public Guid? FirstVersionGuid { get; set; }
+        public Guid? RequestedForVersionGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
+    public class ProductIssueState : IProductIssueState
+    {
+        public Guid ProductGuid { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsRequest { get; set; }
+        public Guid Guid { get; set; }
+        public Guid FirstVersionGuid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+
     public class ProductState : IProductState
     {
         public ProductState()
@@ -51,6 +63,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
             this.Name = "Product name";
             this.ProductVersionStates = new List<IProductVersionState> { new ProductVersionState() };
             this.ProductFeatureStates = new List<IProductFeatureState> { new ProductFeatureState() };
+            this.ProductIssueStates = new List<IProductIssueState> { new ProductIssueState() };
         }
 
         public string Description { get; set; }
@@ -61,5 +74,6 @@ namespace SoftwareManagementCoreApiTests.Fakes
         public DateTime UpdatedOn { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
         public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
+        public ICollection<IProductIssueState> ProductIssueStates { get; set; }
     }
 }

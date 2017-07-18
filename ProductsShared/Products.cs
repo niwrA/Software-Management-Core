@@ -13,6 +13,7 @@ namespace ProductsShared
         string BusinessCase { get; set; }
         ICollection<IProductVersionState> ProductVersionStates { get; set; }
         ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
+        ICollection<IProductIssueState> ProductIssueStates { get; set; }
     }
     public interface IProductVersionState : INamedEntityState
     {
@@ -29,7 +30,13 @@ namespace ProductsShared
         bool IsRequest { get; set; }
         Guid? FirstVersionGuid { get; set; }
         Guid? RequestedForVersionGuid { get; set; }
-            }
+    }
+    public interface IProductIssueState : INamedEntityState
+    {
+        string Description { get; set; }
+        Guid FirstVersionGuid { get; set; }
+        Guid ProductGuid { get; set; }
+    }
 
     public interface IProductStateRepository : IEntityRepository
     {
@@ -40,6 +47,9 @@ namespace ProductsShared
         IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name);
         IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name);
         void DeleteProductFeatureState(Guid productGuid, Guid guid);
+        void DeleteProductVersionState(Guid productGuid, Guid guid);
+        IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name);
+        void DeleteProductIssueState(Guid productGuid, Guid guid);
     }
     public interface IProductVersion : INamedEntity
     {
@@ -54,7 +64,12 @@ namespace ProductsShared
         void ChangeDescription(string description);
         Guid? FirstVersionGuid { get; }
     }
-
+    public interface IProductIssue : INamedEntity
+    {
+        void Rename(string name, string originalName);
+        void ChangeDescription(string description);
+        Guid FirstVersionGuid { get; }
+    }
     public interface IProduct
     {
         DateTime CreatedOn { get; }
@@ -65,26 +80,40 @@ namespace ProductsShared
         void ChangeBusinessCase(string businessCase);
         IProductVersion AddVersion(Guid guid, string name, int major, int minor, int revision, int build);
         IProductFeature AddFeature(Guid guid, string name, Guid firstVersionGuid);
-        IProductFeature GetFeature(Guid featureGuid);
+        IProductIssue AddIssue(Guid productIssueGuid, string name, Guid firstVersionGuid);
+        IProductFeature GetFeature(Guid guid);
+        IProductIssue GetIssue(Guid guid);
         IProductFeature RequestFeature(Guid productFeatureGuid, string name, Guid requestedForVersionGuid);
         void DeleteFeature(Guid guid);
+        void DeleteVersion(Guid guid);
+        void DeleteIssue(Guid guid);
     }
-    public class Product : IProduct
+    public class NamedEntity : INamedEntity
+    {
+        private INamedEntityState _state;
+        public NamedEntity(INamedEntityState state)
+        {
+            _state = state;
+        }
+
+        public Guid Guid { get { return _state.Guid; } }
+        public string Name { get { return _state.Name; } }
+        public DateTime CreatedOn { get { return _state.CreatedOn; } }
+        public DateTime UpdatedOn { get { return _state.UpdatedOn; } }
+    }
+    public class Product : NamedEntity, IProduct
     {
         private IProductState _state;
         private IProductStateRepository _repo;
 
-        public Product(IProductState state, IProductStateRepository repo)
+        public Product(IProductState state, IProductStateRepository repo): base(state)
         {
             _state = state;
             _repo = repo;
         }
 
-        public Guid Guid { get { return _state.Guid; } }
-        public string Name { get { return _state.Name; } }
         public string Description { get { return _state.Description; } }
         public string BusinessCase { get { return _state.BusinessCase; } }
-        public DateTime CreatedOn { get { return _state.CreatedOn; } }
         public void Rename(string name, string originalName)
         {
             if (_state.Name == originalName)
@@ -124,6 +153,13 @@ namespace ProductsShared
             var productFeature = new ProductFeature(state);
             return productFeature;
         }
+        public IProductIssue AddIssue(Guid guid, string name, Guid firstVersionGuid)
+        {
+            var state = _repo.CreateProductIssueState(Guid, guid, name);
+            state.FirstVersionGuid = firstVersionGuid;
+            var productIssue = new ProductIssue(state);
+            return productIssue;
+        }
 
         public IProductFeature RequestFeature(Guid guid, string name, Guid requestedForVersionGuid)
         {
@@ -134,36 +170,47 @@ namespace ProductsShared
             return productFeature;
         }
 
-        public IProductFeature GetFeature(Guid featureGuid)
+        public IProductFeature GetFeature(Guid guid)
         {
-            var state = _state.ProductFeatureStates.FirstOrDefault(s => s.Guid == featureGuid);
+            var state = _state.ProductFeatureStates.FirstOrDefault(s => s.Guid == guid);
             if (state != null)
             {
                 return new ProductFeature(state);
             }
             return null;
         }
+        public IProductIssue GetIssue(Guid guid)
+        {
+            var state = _state.ProductIssueStates.FirstOrDefault(s => s.Guid == guid);
+            if (state != null)
+            {
+                return new ProductIssue(state);
+            }
+            return null;
+        }
 
-        // todo: hide in repository?
         public void DeleteFeature(Guid guid)
         {
             _repo.DeleteProductFeatureState(this.Guid, guid);
         }
+        public void DeleteVersion(Guid guid)
+        {
+            _repo.DeleteProductVersionState(this.Guid, guid);
+        }
+        public void DeleteIssue(Guid guid)
+        {
+            _repo.DeleteProductIssueState(this.Guid, guid);
+        }
+
     }
 
-    public class ProductVersion : IProductVersion
+    public class ProductVersion : NamedEntity, IProductVersion
     {
         private IProductVersionState _state;
-        public ProductVersion(IProductVersionState state)
+        public ProductVersion(IProductVersionState state): base(state)
         {
             _state = state;
         }
-        public DateTime CreatedOn { get { return _state.CreatedOn; } }
-        public DateTime UpdatedOn { get { return _state.UpdatedOn; } }
-
-        public Guid Guid { get { return _state.Guid; } }
-
-        public string Name { get { return _state.Name; } }
 
         public int Major { get { return _state.Major; } }
 
@@ -173,20 +220,14 @@ namespace ProductsShared
 
         public int Build { get { return _state.Build; } }
     }
-    public class ProductFeature : IProductFeature
+    public class ProductFeature : NamedEntity, IProductFeature
     {
         private IProductFeatureState _state;
-        public ProductFeature(IProductFeatureState state)
+        public ProductFeature(IProductFeatureState state): base(state)
         {
             _state = state;
         }
-        public DateTime CreatedOn { get { return _state.CreatedOn; } }
-        public DateTime UpdatedOn { get { return _state.UpdatedOn; } }
-
-        public Guid Guid { get { return _state.Guid; } }
         public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
-
-        public string Name { get { return _state.Name; } }
 
         public void Rename(string name, string originalName)
         {
@@ -201,7 +242,29 @@ namespace ProductsShared
             _state.Description = description;
         }
     }
+    // todo: move rename to base class?
+    public class ProductIssue : NamedEntity, IProductIssue
+    {
+        private IProductIssueState _state;
+        public ProductIssue(IProductIssueState state): base(state)
+        {
+            _state = state;
+        }
+        public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
 
+        public void Rename(string name, string originalName)
+        {
+            if (_state.Name == originalName)
+            {
+                _state.Name = name;
+            }
+            // todo: implement concurrency policy
+        }
+        public void ChangeDescription(string description)
+        {
+            _state.Description = description;
+        }
+    }
 
     public interface IProductService : ICommandProcessor
     {

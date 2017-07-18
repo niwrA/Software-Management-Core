@@ -78,6 +78,7 @@ namespace SoftwareManagementCoreApi
             BsonClassMap.RegisterClassMap<ProjectRoleState>();
             BsonClassMap.RegisterClassMap<ProductVersionState>();
             BsonClassMap.RegisterClassMap<ProductFeatureState>();
+            BsonClassMap.RegisterClassMap<ProductIssueState>();
             BsonClassMap.RegisterClassMap<CompanyEnvironmentState>();
             BsonClassMap.RegisterClassMap<EpicElementState>();
             BsonClassMap.RegisterClassMap<EntityElementState>();

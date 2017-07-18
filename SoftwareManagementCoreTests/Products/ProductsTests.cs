@@ -105,6 +105,28 @@ namespace SoftwareManagementCoreTests
             stateMock.VerifySet(t => t.FirstVersionGuid = firstVersionGuid);
         }
 
+        [Fact(DisplayName = "AddIssue Implements IRepository")]
+        public void CanAddIssue()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductIssueState>();
+            const string name = "new";
+
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+            var firstVersionGuid = Guid.NewGuid();
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+            repoMock.Setup(t => t.CreateProductIssueState(productGuid, guid, name)).Returns(stateMock.Object);
+
+            var result = sut.AddIssue(guid, name, firstVersionGuid);
+
+            stateMock.VerifySet(t => t.FirstVersionGuid = firstVersionGuid);
+        }
+
+
         [Fact(DisplayName = "RequestFeature Implements IRepository")]
         public void RequestFeature()
         {
@@ -146,5 +168,43 @@ namespace SoftwareManagementCoreTests
 
             repoMock.Verify(s => s.DeleteProductFeatureState(productGuid, guid), Times.Once);
         }
+
+        public void CanDeleteVersion()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductFeatureState>();
+
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+
+            repoMock.Setup(s => s.GetProductState(productGuid)).Returns(productStateMock.Object);
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+
+            sut.DeleteVersion(guid);
+
+            repoMock.Verify(s => s.DeleteProductVersionState(productGuid, guid), Times.Once);
+        }
+        public void CanDeleteIssue()
+        {
+            var repoMock = new Mock<IProductStateRepository>();
+            var productStateMock = new Mock<IProductState>();
+            var sut = new Product(productStateMock.Object, repoMock.Object);
+            var stateMock = new Mock<IProductFeatureState>();
+
+            var guid = Guid.NewGuid();
+            var productGuid = Guid.NewGuid();
+
+            repoMock.Setup(s => s.GetProductState(productGuid)).Returns(productStateMock.Object);
+
+            productStateMock.Setup(s => s.Guid).Returns(productGuid);
+
+            sut.DeleteIssue(guid);
+
+            repoMock.Verify(s => s.DeleteProductIssueState(productGuid, guid), Times.Once);
+        }
+
     }
 }

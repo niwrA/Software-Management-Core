@@ -66,6 +66,21 @@ namespace ProductsShared
             base.Execute();
         }
     }
+
+    public class AddIssueToProductCommand : ProductCommand
+    {
+        public string Name { get; set; }
+        public Guid ProductIssueGuid { get; set; }
+        public Guid FirstVersionGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.AddIssue(ProductIssueGuid, Name, FirstVersionGuid);
+            base.Execute();
+        }
+
+    }
+
     public class AddVersionToProductCommand : ProductCommand
     {
         public string Name { get; set; }
@@ -80,7 +95,6 @@ namespace ProductsShared
             product.AddVersion(ProductVersionGuid, Name, Major, Minor, Revision, Build);
             base.Execute();
         }
-
     }
 
     public class AddFeatureToProductCommand : ProductCommand
@@ -94,7 +108,6 @@ namespace ProductsShared
             product.AddFeature(ProductFeatureGuid, Name, FirstVersionGuid);
             base.Execute();
         }
-
     }
     public class RequestFeatureForProductCommand : ProductCommand
     {
@@ -135,6 +148,31 @@ namespace ProductsShared
             base.Execute();
         }
     }
+    public class RenameProductIssueCommand : ProductCommand
+    {
+        public string OriginalName { get; set; }
+        public string Name { get; set; }
+        public Guid ProductGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+            IProductIssue issue = product.GetIssue(this.EntityGuid);
+            issue.Rename(this.Name, this.OriginalName);
+            base.Execute();
+        }
+    }
+    public class ChangeDescriptionOfProductIssueCommand : ProductCommand
+    {
+        public string Description { get; set; }
+        public Guid ProductGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+            IProductIssue issue = product.GetIssue(this.EntityGuid);
+            issue.ChangeDescription(this.Description);
+            base.Execute();
+        }
+    }
     public class RemoveFeatureFromProductCommand : ProductCommand
     {
         public Guid ProductFeatureGuid { get; set; }
@@ -145,4 +183,25 @@ namespace ProductsShared
             base.Execute();
         }
     }
+    public class RemoveVersionFromProductCommand : ProductCommand
+    {
+        public Guid ProductVersionGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.DeleteVersion(ProductVersionGuid);
+            base.Execute();
+        }
+    }
+    public class RemoveIssueFromProductCommand : ProductCommand
+    {
+        public Guid ProductIssueGuid { get; set; }
+        public override void Execute()
+        {
+            var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+            product.DeleteIssue(ProductIssueGuid);
+            base.Execute();
+        }
+    }
+
 }

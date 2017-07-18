@@ -62,6 +62,11 @@ namespace SoftwareManagementEFCoreRepository
                 .HasMany(h => (ICollection<ProductFeatureState>)h.ProductFeatureStates)
                 .WithOne()
                 .HasForeignKey(p => p.ProductGuid);
+
+            modelBuilder.Entity<ProductState>()
+                .HasMany(h => (ICollection<ProductIssueState>)h.ProductIssueStates)
+                .WithOne()
+                .HasForeignKey(p => p.ProductGuid);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -98,6 +103,12 @@ namespace SoftwareManagementEFCoreRepository
         public Guid? FirstVersionGuid { get; set; }
         public Guid? RequestedForVersionGuid { get; set; }
     }
+    public class ProductIssueState : NamedEntityState, IProductIssueState
+    {
+        public Guid ProductGuid { get; set; }
+        public string Description { get; set; }
+        public Guid FirstVersionGuid { get; set; }
+    }
 
     public class ProductState : NamedEntityState, IProductState
     {
@@ -105,6 +116,7 @@ namespace SoftwareManagementEFCoreRepository
         public string BusinessCase { get; set; }
         public ICollection<IProductVersionState> ProductVersionStates { get; set; }
         public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
+        public ICollection<IProductIssueState> ProductIssueStates { get; set; }
     }
 
     public class ProjectRoleState : NamedEntityState, IProjectRoleState
@@ -496,6 +508,21 @@ namespace SoftwareManagementEFCoreRepository
         }
 
         public void DeleteProductFeatureState(Guid productGuid, Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProductVersionState(Guid productGuid, Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProductIssueState(Guid productGuid, Guid guid)
         {
             throw new NotImplementedException();
         }
