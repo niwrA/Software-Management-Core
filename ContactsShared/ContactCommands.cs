@@ -37,8 +37,8 @@ namespace ContactsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var product = ((IContactService)base.CommandProcessor).GetContact(this.EntityGuid);
-            product.Rename(this.Name, this.OriginalName);
+            var contact = ((IContactService)base.CommandProcessor).GetContact(this.EntityGuid);
+            contact.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
     }
