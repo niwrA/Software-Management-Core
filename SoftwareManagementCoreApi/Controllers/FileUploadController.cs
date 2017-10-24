@@ -83,7 +83,7 @@ namespace SoftwareManagementCoreApi.Controllers
             var file = fileDescription.File;
             if (file.Length > 0)
             {
-                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim().ToString();
                 contentTypes.Add(file.ContentType);
 
                 names.Add(fileName);
@@ -106,14 +106,14 @@ namespace SoftwareManagementCoreApi.Controllers
             commandDto.ParametersJson = $@"{{'ForGuid':'{forEntityGuid}', 'Name': '{fileName}', 'FileName': '{fileName}', 'FolderName':'{folderName}', 'Type':'{type}'}}";
             _commandService.ProcessCommand(commandDto);
             _fileService.PersistChanges();
-            _commandService.PersistChanges();            
+            _commandService.PersistChanges();
         }
 
         //[Route("download/{id}")]
         //[HttpGet]
         //public FileStreamResult Download(int id)
         //{
-        // todo: CQRS => read section? 
+        // todo: CQRS => read section?
         //var fileDescription = _fileRepository.GetFileDescription(id);
 
         //var path = "" + "\\" + fileDescription.FileName;

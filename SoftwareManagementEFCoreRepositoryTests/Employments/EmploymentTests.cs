@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SoftwareManagementEFCoreRepositoryTests.Employments
 {
-    [Trait("Entity", "MainRepository")]
+    [Trait("Entity", "MainRepository_EFC")]
     public class EmploymentTests
     {
         [Fact(DisplayName = "CreateEmploymentState")]
