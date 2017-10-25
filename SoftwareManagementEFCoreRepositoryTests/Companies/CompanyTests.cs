@@ -169,7 +169,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Companies
             var companyGuid = Guid.NewGuid();
             const string companyName = "Cool Company";
             var environmentGuid = Guid.NewGuid();
-            const string environmentName = "Software Developer 2";
+            const string environmentName = "Test Environment";
             var inMemoryDatabaseBuilder = new InMemoryDatabaseBuilder();
             var options = inMemoryDatabaseBuilder
                 .WithCompanyState(companyGuid, companyName)
