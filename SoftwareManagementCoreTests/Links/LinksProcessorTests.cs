@@ -7,8 +7,9 @@ using LinksShared;
 
 namespace SoftwareManagementCoreTests.Links
 {
-    // todo: this breaks my rule of having external dependencies (in this case, the internet)
-    public class LinksProcessorTests
+  // todo: this breaks my rule of having external dependencies (in this case, the internet)
+  [Trait("Processor", "Links")]
+  public class LinksProcessorTests
     {
         [Fact]
         public void CanGetLinkDetails()
@@ -33,7 +34,7 @@ namespace SoftwareManagementCoreTests.Links
         {
             var sut = new LinkDetailsProcessor();
             var sutResult = sut.ProcessLinkDetails("http://www.eurogamer.net/articles/digitalfoundry-2014-alien-isolation-face-off");
-            
+
             Assert.NotNull(sutResult.Image);
             Assert.False(string.IsNullOrWhiteSpace(sutResult.Image.Url));
         }

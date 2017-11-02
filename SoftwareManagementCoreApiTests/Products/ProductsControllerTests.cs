@@ -9,7 +9,8 @@ using Xunit;
 
 namespace SoftwareManagementCoreApiTests.Products
 {
-    public class ProductsControllerTests
+  [Trait("Entity", "Product")]
+  public class ProductsControllerTests
     {
         [Fact(DisplayName = "GetProduct")]
         public void CanGetProduct()

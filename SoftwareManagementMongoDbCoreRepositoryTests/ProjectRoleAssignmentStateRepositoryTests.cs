@@ -9,7 +9,8 @@ using Xunit;
 
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
-    public class ProjectRoleAssignmentStateRepositoryTests
+  [Trait("MongoDb", "ProjectRoleAssignmentState")]
+  public class ProjectRoleAssignmentStateRepositoryTests
     {
         [Fact(DisplayName = "CreateProjectRoleAssignmentState")]
         public void CanCreateProjectRoleAssignmentState()

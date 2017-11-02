@@ -10,7 +10,8 @@ using Xunit;
 
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
-    public class ProductStateRepositoryTests
+  [Trait("MongoDb", "ProductState")]
+  public class ProductStateRepositoryTests
     {
         [Fact(DisplayName = "AddProductVersionState")]
         public void CanAddProductVersionState()

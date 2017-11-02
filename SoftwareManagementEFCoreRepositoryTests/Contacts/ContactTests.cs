@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SoftwareManagementEFCoreRepositoryTests.Contacts
 {
-    [Trait("Entity", "MainRepository_EFC")]
+    [Trait("EFCore", "CompanyState")]
     public class CompanyTests
     {
         [Fact(DisplayName = "CreateContactState")]

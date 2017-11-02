@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SoftwareManagementEFCoreRepositoryTests.Products
 {
-    [Trait("Entity", "MainRepository")]
+    [Trait("EFCore", "ProductState")]
     public class ProductTests
     {
         [Fact(DisplayName = "CreateProductState")]

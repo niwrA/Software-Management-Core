@@ -9,7 +9,8 @@ using Xunit;
 
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
-    public class EmploymentStateRepositoryTests
+  [Trait("MongoDb", "EmploymentState")]
+  public class EmploymentStateRepositoryTests
     {
         [Fact(DisplayName = "CreateEmploymentState")]
         public void CanCreateEmploymentState()

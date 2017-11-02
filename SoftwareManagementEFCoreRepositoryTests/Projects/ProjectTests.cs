@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SoftwareManagementEFCoreRepositoryTests.Projects
 {
-    [Trait("Entity", "Projects")]
+    [Trait("EFCore", "ProjectState")]
     public class ProjectTests
     {
         [Fact(DisplayName = "CanAddProjectRoleStateToProjectState")]

@@ -9,7 +9,8 @@ using Xunit;
 
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
-   public class FileStateRepositoryTests
+  [Trait("MongoDb", "FileState")]
+  public class FileStateRepositoryTests
     {
 
         [Fact(DisplayName = "PersistCreatedFileState")]
