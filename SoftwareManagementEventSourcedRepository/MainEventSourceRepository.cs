@@ -40,6 +40,7 @@ namespace SoftwareManagementEventSourceRepository
     {
         public string Name { get; set; }
         public Guid Guid { get; set; }
+        public Guid CompanyGuid { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string Url { get; set; }
@@ -320,5 +321,20 @@ namespace SoftwareManagementEventSourceRepository
         {
             // not in eventsourcing
         }
+
+    public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid, string hardwareName)
+    {
+      throw new NotImplementedException();
     }
+
+    public void RemoveHardwareFromEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
+    {
+      throw new NotImplementedException();
+    }
+  }
 }

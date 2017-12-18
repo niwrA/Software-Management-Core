@@ -7,20 +7,45 @@ using Xunit;
 
 namespace SoftwareManagementCoreTests.Companies
 {
-    [Trait("Entity", "Environment")]
-    public class EnvironmentsTests
+  [Trait("Entity", "Environment")]
+  public class EnvironmentsTests
+  {
+    [Fact(DisplayName = "Rename")]
+    public void CanRenameEnvironment()
     {
-        [Fact(DisplayName = "Rename")]
-        public void CanRenameCompany()
-        {
-            var stateMock = new Mock<ICompanyEnvironmentState>();
-            var sut = new CompanyEnvironment(stateMock.Object);
+      var stateMock = new Mock<ICompanyEnvironmentState>();
+      var sut = new CompanyEnvironment(stateMock.Object);
 
-            stateMock.Setup(s => s.Name).Returns("old");
+      stateMock.Setup(s => s.Name).Returns("old");
 
-            sut.Rename("new", "old");
+      sut.Rename("new", "old");
 
-            stateMock.VerifySet(t => t.Name = "new");
-        }
+      stateMock.VerifySet(t => t.Name = "new");
     }
+    [Fact(DisplayName = "CanAddHardware")]
+    public void CanAddHardware()
+    {
+      var stateMock = new Mock<ICompanyEnvironmentState>();
+      var repoMock = new Mock<ICompanyStateRepository>();
+
+      var sut = new CompanyEnvironment(stateMock.Object, repoMock.Object);
+      var guid = Guid.NewGuid();
+      const string hardwareName = "name";
+      sut.AddHardware(guid, hardwareName);
+
+      repoMock.Verify(t => t.AddHardwareToEnvironmentState(stateMock.Object, guid, hardwareName), Times.Once);
+    }
+    [Fact(DisplayName = "CanRemoveHardware")]
+    public void CanRemoveHardware()
+    {
+      var stateMock = new Mock<ICompanyEnvironmentState>();
+      var repoMock = new Mock<ICompanyStateRepository>();
+
+      var sut = new CompanyEnvironment(stateMock.Object, repoMock.Object);
+      var guid = Guid.NewGuid();
+      sut.RemoveHardware(guid);
+
+      repoMock.Verify(t => t.RemoveHardwareFromEnvironmentState(stateMock.Object, guid), Times.Once);
+    }
+  }
 }
