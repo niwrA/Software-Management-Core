@@ -39,7 +39,7 @@ namespace SoftwareManagementCoreTests.Companies
     public void RenameCommand()
     {
       var sutBuilder = new CompanyCommandBuilder<RenameCompanyCommand>();
-      var sut = sutBuilder.Build() as RenameCompanyCommand;
+      var sut = sutBuilder.Build();
 
       sut.Name = "New Name";
       sut.OriginalName = "Original Name";
@@ -52,7 +52,7 @@ namespace SoftwareManagementCoreTests.Companies
     public void AddRoleToCompanyCommand()
     {
       var sutBuilder = new CompanyCommandBuilder<AddRoleToCompanyCommand>();
-      var sut = sutBuilder.Build() as AddRoleToCompanyCommand;
+      var sut = sutBuilder.Build();
 
       sut.RoleName = "New Name";
       sut.RoleGuid = Guid.NewGuid();
@@ -65,7 +65,7 @@ namespace SoftwareManagementCoreTests.Companies
     public void RemoveRoleFromCompanyCommand()
     {
       var sutBuilder = new CompanyCommandBuilder<RemoveRoleFromCompanyCommand>();
-      var sut = sutBuilder.Build() as RemoveRoleFromCompanyCommand;
+      var sut = sutBuilder.Build();
 
       sut.RoleGuid = Guid.NewGuid();
       sut.Execute();
@@ -77,7 +77,7 @@ namespace SoftwareManagementCoreTests.Companies
     public void AddEnvironmentToCompanyCommand()
     {
       var sutBuilder = new CompanyCommandBuilder<AddEnvironmentToCompanyCommand>();
-      var sut = sutBuilder.Build() as AddEnvironmentToCompanyCommand;
+      var sut = sutBuilder.Build();
 
       sut.EnvironmentName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
@@ -90,7 +90,7 @@ namespace SoftwareManagementCoreTests.Companies
     public void RemoveEnvironmentFromCompanyCommand()
     {
       var sutBuilder = new CompanyCommandBuilder<RemoveEnvironmentFromCompanyCommand>();
-      var sut = sutBuilder.Build() as RemoveEnvironmentFromCompanyCommand;
+      var sut = sutBuilder.Build();
 
       sut.EnvironmentGuid = Guid.NewGuid();
       sut.Execute();
@@ -102,7 +102,7 @@ namespace SoftwareManagementCoreTests.Companies
   class CompanyCommandBuilder<T> where T : ICommand, new()
   {
     public Mock<ICompany> CompanyMock { get; set; }
-    public ICommand Build()
+    public T Build()
     {
       var companiesMock = new Mock<ICompanyService>();
       var companyMock = new Mock<ICompany>();

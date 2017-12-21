@@ -44,8 +44,9 @@ namespace SoftwareManagementEventSourceRepository
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string Url { get; set; }
-    }
-    public class ProjectState : IProjectState
+        public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+  }
+  public class ProjectState : IProjectState
     {
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

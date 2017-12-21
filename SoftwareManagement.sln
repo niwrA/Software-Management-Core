@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementCore", "SoftwareManagementCore\SoftwareManagementCore.csproj", "{201FF2B7-DF85-414E-8CCB-A76FFC261D6B}"
 EndProject
@@ -57,11 +57,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Employment", "Employment", 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmploymentsShared", "EmploymentShared\EmploymentsShared.shproj", "{3EF38306-DDC8-42F9-923B-3DC288DF5BF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementEventSourcedRepository", "SoftwareManagementEventSourcedRepository\SoftwareManagementEventSourcedRepository.csproj", "{A46E4D81-1CA1-46EF-9424-1073E2E54B15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementEventSourcedRepository", "SoftwareManagementEventSourcedRepository\SoftwareManagementEventSourcedRepository.csproj", "{A46E4D81-1CA1-46EF-9424-1073E2E54B15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementMongoDbCoreRepository", "SoftwareManagementMongoDbCoreRepository\SoftwareManagementMongoDbCoreRepository.csproj", "{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementMongoDbCoreRepository", "SoftwareManagementMongoDbCoreRepository\SoftwareManagementMongoDbCoreRepository.csproj", "{AE6914B2-312F-4D9A-B49B-514CFFE4CFD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareManagementMongoDbCoreRepositoryTests", "SoftwareManagementMongoDbCoreRepositoryTests\SoftwareManagementMongoDbCoreRepositoryTests.csproj", "{5949935B-9EC1-4C47-87BE-1A8A5D56C127}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementMongoDbCoreRepositoryTests", "SoftwareManagementMongoDbCoreRepositoryTests\SoftwareManagementMongoDbCoreRepositoryTests.csproj", "{5949935B-9EC1-4C47-87BE-1A8A5D56C127}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectRoleAssignment", "ProjectRoleAssignment", "{B7E86F53-7178-4866-8812-7B6AFFB88D71}"
 EndProject
@@ -79,13 +79,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{64DD
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CodeGenShared", "CodeGenShared\CodeGenShared.shproj", "{1BF33FC4-5819-4D02-9767-DFB67C976284}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenCSharpUpdaterCore", "CodeGenCSharpUpdaterCore\CodeGenCSharpUpdaterCore.csproj", "{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenCSharpUpdaterCore", "CodeGenCSharpUpdaterCore\CodeGenCSharpUpdaterCore.csproj", "{6363A2D7-40A3-452E-91B3-DD2EA306B3DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenCoreTests", "CodeGenCoreTests\CodeGenCoreTests.csproj", "{903FEFD4-54C6-4DBD-A179-8C1ECF2A87E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenCoreTests", "CodeGenCoreTests\CodeGenCoreTests.csproj", "{903FEFD4-54C6-4DBD-A179-8C1ECF2A87E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{4EBCA4F1-2276-45E8-A282-395A491250BD}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FilesShared", "FilesShared\FilesShared.shproj", "{EDC83ED4-6DC7-4CB0-890F-8756FBCB40AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Technologies", "Technologies", "{64D0352F-F418-4107-A461-02B25300307A}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -287,5 +289,9 @@ Global
 		{903FEFD4-54C6-4DBD-A179-8C1ECF2A87E2} = {221A9CE4-63E7-4222-8776-3F4E7226A92F}
 		{4EBCA4F1-2276-45E8-A282-395A491250BD} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{EDC83ED4-6DC7-4CB0-890F-8756FBCB40AB} = {4EBCA4F1-2276-45E8-A282-395A491250BD}
+		{64D0352F-F418-4107-A461-02B25300307A} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5DF8C015-D64B-4A82-98B5-7A3CA6EEAF57}
 	EndGlobalSection
 EndGlobal

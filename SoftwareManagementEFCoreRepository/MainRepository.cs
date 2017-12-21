@@ -34,6 +34,7 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<CompanyRoleState> CompanyRoleStates { get; set; }
     public DbSet<EmploymentState> EmploymentStates { get; set; }
     public DbSet<CompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
+    public DbSet<CompanyEnvironmentHardwareState> CompanyEnvironmentHardwareStates { get; set; }
     public DbSet<ProjectRoleAssignmentState> ProjectRoleAssignmentStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -151,6 +152,12 @@ namespace SoftwareManagementEFCoreRepository
   {
     public Guid CompanyGuid { get; set; }
     public string Url { get; set; }
+    public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+  }
+  public class CompanyEnvironmentHardwareState : NamedEntityState, ICompanyEnvironmentHardwareState
+  {
+    public Guid EnvironmentGuid { get; set; }
+    public Guid CompanyGuid { get; set; }
   }
   public class ProjectState : NamedEntityState, IProjectState
   {
@@ -331,6 +338,13 @@ namespace SoftwareManagementEFCoreRepository
     {
       var newState = new CompanyEnvironmentState { CompanyGuid = companyGuid, Guid = guid, Name = name };
       _context.CompanyEnvironmentStates.Add(newState);
+      return newState;
+
+    }
+    public ICompanyEnvironmentHardwareState CreateCompanyEnvironmentHardwareState(Guid companyGuid, Guid guid, string name)
+    {
+      var newState = new CompanyEnvironmentHardwareState { CompanyGuid = companyGuid, Guid = guid, Name = name };
+      _context.CompanyEnvironmentHardwareStates.Add(newState);
       return newState;
 
     }
@@ -527,16 +541,14 @@ namespace SoftwareManagementEFCoreRepository
       throw new NotImplementedException();
     }
 
-    public void AddHardwareToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid hardwareGuid, string hardwareName)
+    public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid hardwareGuid, string hardwareName)
     {
-      var companyState = GetCompanyState(companyEnvironmentState.Guid);
-      var state = companyState.CompanyEnvironmentStates.SingleOrDefault(s => s.Guid == companyEnvironmentGuid);
+      var state = companyEnvironmentState.HardwareStates.SingleOrDefault(s => s.Guid == hardwareGuid);
       if (state == null)
       {
-        state = CreateCompanyEnvironmentState(companyGuid, companyEnvironmentGuid, companyEnvironmentName);
+        state = CreateCompanyEnvironmentHardwareState(companyEnvironmentState.CompanyGuid, companyEnvironmentState.Guid, hardwareName);
       }
       return state;
-      throw new NotImplementedException();
     }
 
     public void RemoveHardwareFromEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)

@@ -26,6 +26,7 @@ namespace CompaniesShared
   {
     Guid CompanyGuid { get; set; }
     string Url { get; set; }
+    ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
   }
   public interface ICompanyEnvironmentHardwareState : INamedEntityState
   {

@@ -32,6 +32,8 @@ namespace SoftwareManagementMongoDbCoreRepository
   {
     public Guid CompanyGuid { get; set; }
     public string Url { get; set; }
+    public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+
   }
 
   public class CompanyStateRepository : ICompanyStateRepository
