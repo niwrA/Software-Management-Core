@@ -33,7 +33,13 @@ namespace SoftwareManagementMongoDbCoreRepository
     public Guid CompanyGuid { get; set; }
     public string Url { get; set; }
     public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+  }
 
+  [BsonIgnoreExtraElements]
+  public class CompanyEnvironmentHardwareState : NamedEntityState, ICompanyEnvironmentHardwareState
+  {
+    public Guid CompanyGuid { get; set; }
+    public Guid EnvironmentGuid { get; set; }
   }
 
   public class CompanyStateRepository : ICompanyStateRepository
@@ -125,8 +131,6 @@ namespace SoftwareManagementMongoDbCoreRepository
       return state;
     }
 
-
-
     public ICompanyState GetCompanyState(Guid guid)
     {
       if (!_companyStates.TryGetValue(guid, out ICompanyState state))
@@ -210,17 +214,27 @@ namespace SoftwareManagementMongoDbCoreRepository
 
     public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid, string hardwareName)
     {
-      throw new NotImplementedException();
+      var hardwareState = state.HardwareStates.FirstOrDefault(s => s.Guid == hardwareGuid); // todo: work with Single and catch errors?
+      if (hardwareState == null)
+      {
+        hardwareState = new CompanyEnvironmentHardwareState { Guid = hardwareGuid, EnvironmentGuid = state.Guid, Name = hardwareName };
+        state.HardwareStates.Add(hardwareState);
+      } // todo: else throw error? replace?
+      return hardwareState;
     }
 
     public void RemoveHardwareFromEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
     {
-      throw new NotImplementedException();
+      var hardwareState = state.HardwareStates.FirstOrDefault(s => s.Guid == hardwareGuid); // todo: work with Single and catch errors?
+      if (hardwareState != null)
+      {
+        state.HardwareStates.Remove(hardwareState);
+      }
     }
 
     public ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
     {
-      throw new NotImplementedException();
+      return state.HardwareStates.FirstOrDefault(s => s.Guid == hardwareGuid); // todo: work with Single and catch errors?
     }
   }
   // todo: not yet used, so use or remove

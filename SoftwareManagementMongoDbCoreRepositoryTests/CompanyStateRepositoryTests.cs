@@ -10,7 +10,8 @@ using Xunit;
 
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
-    class CompanyStateRepositoryTests
+  [Trait("MongoDb", "CompanyState")]
+  class CompanyStateRepositoryTests
     {
         [Fact(DisplayName = "AddCompanyEnvironmentState")]
         public void CanAddCompanyEnvironmentState()
@@ -60,8 +61,35 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
             sut.GetEnvironmentState(guid, environmentGuid);
         }
 
+    // todo: this tests tests too much, makes previous tests unnecessary
+    [Fact(DisplayName = "AddCompanyEnvironmentHardwareState")]
+    public void CanAddCompanyEnvironmentHardwareState()
+    {
+      var sutBuilder = new SutBuilder().WithCompanyCollection();
+      var sut = sutBuilder.Build();
+      var guid = Guid.NewGuid();
+      var environmentGuid = Guid.NewGuid();
+      var hardwareGuid = Guid.NewGuid();
+      var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
+      var state = sut.AddEnvironmentToCompanyState(guid, environmentGuid, "testenvironmentstate");
+      var hardwareState = sut.AddHardwareToEnvironmentState(state, hardwareGuid, "testhardwarestate");
 
-        public class SutBuilder
+      sut.PersistChanges();
+
+      sutBuilder.CompanyStateCollection.Verify(s => s.InsertMany(
+          It.Is<ICollection<CompanyState>>(
+              l => l.Contains(companyState) &&
+              l.Count == 1 &&
+              l.First().CompanyEnvironmentStates.Contains(state) &&
+              l.First().CompanyEnvironmentStates.Count == 1 &&
+              l.First().CompanyEnvironmentStates.First().HardwareStates.Count == 1 &&
+              l.First().CompanyEnvironmentStates.First().HardwareStates.First() == hardwareState),
+          null, CancellationToken.None), Times.Once,
+          "InsertMany was not called with the expected state");
+    }
+
+
+    public class SutBuilder
         {
             private Mock<IMongoDatabase> _databaseMock;
             private Mock<IMongoClient> _clientMock;

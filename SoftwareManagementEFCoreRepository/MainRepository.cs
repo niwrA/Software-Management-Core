@@ -68,6 +68,11 @@ namespace SoftwareManagementEFCoreRepository
           .HasMany(h => (ICollection<ProductIssueState>)h.ProductIssueStates)
           .WithOne()
           .HasForeignKey(p => p.ProductGuid);
+
+      modelBuilder.Entity<CompanyEnvironmentState>()
+        .HasMany(h => (ICollection<CompanyEnvironmentHardwareState>)h.HardwareStates)
+        .WithOne()
+        .HasForeignKey(p => p.EnvironmentGuid);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

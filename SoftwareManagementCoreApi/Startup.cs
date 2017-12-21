@@ -29,111 +29,111 @@ using FilesShared;
 
 namespace SoftwareManagementCoreApi
 {
-    public class Startup
+  public class Startup
+  {
+    public Startup(IHostingEnvironment env)
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-        }
-
-        public IConfigurationRoot Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // Add framework services.
-            var corsBuilder = new CorsPolicyBuilder();
-            corsBuilder.AllowAnyHeader();
-            corsBuilder.AllowAnyMethod();
-            corsBuilder.AllowAnyOrigin(); // For anyone access.
-            //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
-            corsBuilder.AllowCredentials();
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
-            });
-            services.AddMvc();
-
-            #region "EntityFramework Configuration with SQL Server"
-            //var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
-            //services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
-            #endregion
-            SetupDI(services);
-        }
-
-        private static void SetupDI(IServiceCollection services)
-        {
-            #region "MongoDb Config"
-            services.AddTransient<IMongoClient, MongoClient>();
-            // this needs to be here for now, because MainRepository is instanced per Controller
-            // see: http://mongodb.github.io/mongo-csharp-driver/2.2/reference/bson/mapping/
-            // todo: add tests that expose if these are missing
-            BsonClassMap.RegisterClassMap<CompanyRoleState>();
-            BsonClassMap.RegisterClassMap<ProjectRoleState>();
-            BsonClassMap.RegisterClassMap<ProductVersionState>();
-            BsonClassMap.RegisterClassMap<ProductFeatureState>();
-            BsonClassMap.RegisterClassMap<ProductIssueState>();
-            BsonClassMap.RegisterClassMap<CompanyEnvironmentState>();
-            BsonClassMap.RegisterClassMap<EpicElementState>();
-            BsonClassMap.RegisterClassMap<EntityElementState>();
-            BsonClassMap.RegisterClassMap<PropertyElementState>();
-            BsonClassMap.RegisterClassMap<CommandElementState>();
-            #endregion
-
-            // helpers
-            services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-
-            // modules (always repo first, then service etc.)
-            // note that I've used the same repo here for all, but that's just one of the options
-            services.AddTransient<IProductStateRepository, ProductStateRepository>();
-            services.AddTransient<IProductService, ProductService>();
-
-            services.AddTransient<IDesignStateRepository, DesignStateRepository>();
-            services.AddTransient<IDesignService, DesignService>();
-
-            services.AddTransient<IProjectStateRepository, ProjectStateRepository>();
-            services.AddTransient<IProjectService, ProjectService>();
-
-            services.AddTransient<IContactStateRepository, ContactStateRepository>();
-            services.AddTransient<IContactService, ContactService>();
-
-            services.AddTransient<ICompanyStateRepository, CompanyStateRepository>();
-            services.AddTransient<ICompanyService, CompanyService>();
-
-            services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
-            services.AddTransient<ILinkStateRepository, LinkStateRepository>();
-            services.AddTransient<ILinkService, LinkService>();
-
-            services.AddTransient<IFileService, FileService>();
-            services.AddTransient<IFileStateRepository, FileStateRepository>();
-
-            services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
-            services.AddTransient<IEmploymentService, EmploymentService>();
-
-            services.AddTransient<IProjectRoleAssignmentStateRepository, ProjectRoleAssignmentStateRepository>();
-            services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
-
-            services.AddTransient<ICodeGenService, CSharpUpdater>();
-
-            services.AddTransient<ICommandStateRepository, CommandStateRepository>();
-            services.AddTransient<ICommandService, CommandService>();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
-            app.UseCors("SiteCorsPolicy");
-            app.UseStaticFiles();
-            app.UseMvc();
-        }
+      var builder = new ConfigurationBuilder()
+          .SetBasePath(env.ContentRootPath)
+          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+          .AddEnvironmentVariables();
+      Configuration = builder.Build();
     }
+
+    public IConfigurationRoot Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+      // Add framework services.
+      var corsBuilder = new CorsPolicyBuilder();
+      corsBuilder.AllowAnyHeader();
+      corsBuilder.AllowAnyMethod();
+      corsBuilder.AllowAnyOrigin(); // For anyone access.
+                                    //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
+      corsBuilder.AllowCredentials();
+
+      services.AddCors(options =>
+      {
+        options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
+      });
+      services.AddMvc();
+
+      #region "EntityFramework Configuration with SQL Server"
+      //var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
+      //services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
+      #endregion
+      SetupDI(services);
+    }
+    private static void SetupMongoDbDI(IServiceCollection services)
+    {
+      services.AddTransient<IMongoClient, MongoClient>();
+      // this needs to be here for now, because MainRepository is instanced per Controller
+      // see: http://mongodb.github.io/mongo-csharp-driver/2.2/reference/bson/mapping/
+      // todo: add tests that expose if these are missing
+      BsonClassMap.RegisterClassMap<CompanyRoleState>();
+      BsonClassMap.RegisterClassMap<ProjectRoleState>();
+      BsonClassMap.RegisterClassMap<ProductVersionState>();
+      BsonClassMap.RegisterClassMap<ProductFeatureState>();
+      BsonClassMap.RegisterClassMap<ProductIssueState>();
+      BsonClassMap.RegisterClassMap<CompanyEnvironmentState>();
+      BsonClassMap.RegisterClassMap<CompanyEnvironmentHardwareState>();
+      BsonClassMap.RegisterClassMap<EpicElementState>();
+      BsonClassMap.RegisterClassMap<EntityElementState>();
+      BsonClassMap.RegisterClassMap<PropertyElementState>();
+      BsonClassMap.RegisterClassMap<CommandElementState>();
+    }
+    private static void SetupDI(IServiceCollection services)
+    {
+      SetupMongoDbDI(services);
+      // helpers
+      services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+
+      // modules (always repo first, then service etc.)
+      services.AddTransient<IProductStateRepository, ProductStateRepository>();
+      services.AddTransient<IProductService, ProductService>();
+
+      services.AddTransient<IDesignStateRepository, DesignStateRepository>();
+      services.AddTransient<IDesignService, DesignService>();
+
+      services.AddTransient<IProjectStateRepository, ProjectStateRepository>();
+      services.AddTransient<IProjectService, ProjectService>();
+
+      services.AddTransient<IContactStateRepository, ContactStateRepository>();
+      services.AddTransient<IContactService, ContactService>();
+
+      services.AddTransient<ICompanyStateRepository, CompanyStateRepository>();
+      services.AddTransient<ICompanyService, CompanyService>();
+
+      services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
+      services.AddTransient<ILinkStateRepository, LinkStateRepository>();
+      services.AddTransient<ILinkService, LinkService>();
+
+      services.AddTransient<IFileService, FileService>();
+      services.AddTransient<IFileStateRepository, FileStateRepository>();
+
+      services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
+      services.AddTransient<IEmploymentService, EmploymentService>();
+
+      services.AddTransient<IProjectRoleAssignmentStateRepository, ProjectRoleAssignmentStateRepository>();
+      services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
+
+      services.AddTransient<ICodeGenService, CSharpUpdater>();
+
+      services.AddTransient<ICommandStateRepository, CommandStateRepository>();
+      services.AddTransient<ICommandService, CommandService>();
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    {
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+
+      app.UseCors("SiteCorsPolicy");
+      app.UseStaticFiles();
+      app.UseMvc();
+    }
+  }
 }
