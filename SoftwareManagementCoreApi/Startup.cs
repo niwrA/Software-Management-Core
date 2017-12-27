@@ -61,10 +61,25 @@ namespace SoftwareManagementCoreApi
       services.AddMvc();
 
       #region "EntityFramework Configuration with SQL Server"
-      //var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
-      //services.AddDbContext<MainContext>(options => options.UseSqlServer(connection));
+      var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
+      services.AddDbContext<SoftwareManagementEFCoreRepository.MainContext>(options => options.UseSqlServer(connection));
       #endregion
       SetupDI(services);
+      // todo: setup so that both SQL server and MongoDb can be used at the same time and which one to use can be configured
+    }
+    private static void SetupSQLServerDbDI(IServiceCollection services)
+    {
+      services.AddTransient<IProductStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IDesignStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IProjectStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IContactStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<ICompanyStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<ILinkStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IFileStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IEmploymentStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IProjectRoleAssignmentStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<ICommandStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+
     }
     private static void SetupMongoDbDI(IServiceCollection services)
     {
@@ -83,45 +98,46 @@ namespace SoftwareManagementCoreApi
       BsonClassMap.RegisterClassMap<EntityElementState>();
       BsonClassMap.RegisterClassMap<PropertyElementState>();
       BsonClassMap.RegisterClassMap<CommandElementState>();
+      services.AddTransient<IProductStateRepository, ProductStateRepository>();
+      services.AddTransient<IDesignStateRepository, DesignStateRepository>();
+      services.AddTransient<IProjectStateRepository, ProjectStateRepository>();
+      services.AddTransient<IContactStateRepository, ContactStateRepository>();
+      services.AddTransient<ICompanyStateRepository, CompanyStateRepository>();
+      services.AddTransient<ILinkStateRepository, LinkStateRepository>();
+      services.AddTransient<IFileStateRepository, FileStateRepository>();
+      services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
+      services.AddTransient<IProjectRoleAssignmentStateRepository, ProjectRoleAssignmentStateRepository>();
+      services.AddTransient<ICommandStateRepository, CommandStateRepository>();
     }
     private static void SetupDI(IServiceCollection services)
     {
-      SetupMongoDbDI(services);
+      //SetupMongoDbDI(services); // uncommnent to use MongoDb
+      SetupSQLServerDbDI(services); // comment to use MongoDb
       // helpers
       services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
       // modules (always repo first, then service etc.)
-      services.AddTransient<IProductStateRepository, ProductStateRepository>();
       services.AddTransient<IProductService, ProductService>();
 
-      services.AddTransient<IDesignStateRepository, DesignStateRepository>();
       services.AddTransient<IDesignService, DesignService>();
 
-      services.AddTransient<IProjectStateRepository, ProjectStateRepository>();
       services.AddTransient<IProjectService, ProjectService>();
 
-      services.AddTransient<IContactStateRepository, ContactStateRepository>();
       services.AddTransient<IContactService, ContactService>();
 
-      services.AddTransient<ICompanyStateRepository, CompanyStateRepository>();
       services.AddTransient<ICompanyService, CompanyService>();
 
       services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
-      services.AddTransient<ILinkStateRepository, LinkStateRepository>();
       services.AddTransient<ILinkService, LinkService>();
 
       services.AddTransient<IFileService, FileService>();
-      services.AddTransient<IFileStateRepository, FileStateRepository>();
 
-      services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
       services.AddTransient<IEmploymentService, EmploymentService>();
 
-      services.AddTransient<IProjectRoleAssignmentStateRepository, ProjectRoleAssignmentStateRepository>();
       services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
 
       services.AddTransient<ICodeGenService, CSharpUpdater>();
 
-      services.AddTransient<ICommandStateRepository, CommandStateRepository>();
       services.AddTransient<ICommandService, CommandService>();
     }
 

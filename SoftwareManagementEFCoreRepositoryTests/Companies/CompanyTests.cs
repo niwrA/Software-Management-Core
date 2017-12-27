@@ -189,7 +189,6 @@ namespace SoftwareManagementEFCoreRepositoryTests.Companies
                 Assert.Equal(environmentName, environmentState.Name);
             }
         }
-
     }
     public class CompanyStateBuilder : EntityStateBuilder<CompanyState>
     {

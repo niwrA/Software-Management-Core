@@ -11,6 +11,9 @@ using ContactsShared;
 using CompaniesShared;
 using EmploymentsShared;
 using ProjectRoleAssignmentsShared;
+using DesignsShared;
+using LinksShared;
+using FilesShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -216,7 +219,7 @@ namespace SoftwareManagementEFCoreRepository
   }
   // just because the repositories can each be separate, doesn't mean we always want to
   public interface IMainRepository : IProductStateRepository, IContactStateRepository,
-      IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository
+      IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository, IDesignStateRepository, ILinkStateRepository, IFileStateRepository, IProjectRoleAssignmentStateRepository
   { }
   public class MainRepository : IMainRepository
   {
@@ -567,6 +570,136 @@ namespace SoftwareManagementEFCoreRepository
     }
 
     public ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IDesignState CreateDesignState(Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEpicElementState CreateEpicElementState(Guid designGuid, Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IDesignState GetDesignState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IDesignState> GetDesignStates()
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteDesignState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEntityElementState CreateEntityElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IPropertyElementState CreatePropertyElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ICommandElementState CreateCommandElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ILinkState CreateLinkState(Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ILinkState GetLinkState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<ILinkState> GetLinkStates()
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<ILinkState> GetLinkStatesForGuid(Guid forGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteLinkState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IFileState CreateFileState(Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IFileState GetFileState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IFileState> GetFileStates()
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IFileState> GetFileStatesForGuid(Guid forGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteFileState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid companyRoleGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IProjectRoleAssignmentState GetProjectRoleAssignmentState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByProjectRoleGuid(Guid companyRoleGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IContactState> GetContactsByProjectRoleGuid(Guid companyRoleGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProjectRoleAssignmentState(Guid entityGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentStates()
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IContactState> GetContactsByProjectGuid(Guid guid)
     {
       throw new NotImplementedException();
     }
