@@ -32,7 +32,7 @@ namespace SoftwareManagementMongoDbCoreRepository
   {
     public Guid CompanyGuid { get; set; }
     public string Url { get; set; }
-    public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+    public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; } = new List<ICompanyEnvironmentHardwareState>() as ICollection<ICompanyEnvironmentHardwareState>;
   }
 
   [BsonIgnoreExtraElements]
@@ -214,7 +214,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
     public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid, string hardwareName)
     {
-      var hardwareState = state.HardwareStates.FirstOrDefault(s => s.Guid == hardwareGuid); // todo: work with Single and catch errors?
+      var hardwareState = state.HardwareStates?.FirstOrDefault(s => s.Guid == hardwareGuid); // todo: work with Single and catch errors?
       if (hardwareState == null)
       {
         hardwareState = new CompanyEnvironmentHardwareState { Guid = hardwareGuid, EnvironmentGuid = state.Guid, Name = hardwareName };

@@ -128,7 +128,7 @@ namespace CompaniesShared
     public ICompanyEnvironment GetEnvironment(Guid guid)
     {
       var state = _repo.GetEnvironmentState(this.Guid, guid);
-      return new CompanyEnvironment(state);
+      return new CompanyEnvironment(state, _repo);
     }
   }
   public class CompanyEnvironment : ICompanyEnvironment

@@ -297,7 +297,7 @@ namespace SoftwareManagementEFCoreRepository
     public IEnumerable<IProductState> GetProductStates()
     {
       // todo: make a separate readonly repo for the query part of CQRS
-      return _context.ProductStates.AsNoTracking().ToList();
+      return _context.ProductStates.Include(s => s.ProductVersionStates).Include(s => s.ProductIssueStates).Include(s => s.ProductFeatureStates).AsNoTracking().ToList();
     }
 
     public IEnumerable<IProjectState> GetProjectStates()
@@ -349,9 +349,9 @@ namespace SoftwareManagementEFCoreRepository
       return newState;
 
     }
-    public ICompanyEnvironmentHardwareState CreateCompanyEnvironmentHardwareState(Guid companyGuid, Guid guid, string name)
+    public ICompanyEnvironmentHardwareState CreateCompanyEnvironmentHardwareState(Guid companyGuid, Guid environmentGUid, Guid guid, string name)
     {
-      var newState = new CompanyEnvironmentHardwareState { CompanyGuid = companyGuid, Guid = guid, Name = name };
+      var newState = new CompanyEnvironmentHardwareState { CompanyGuid = companyGuid, EnvironmentGuid = environmentGUid, Guid = guid, Name = name };
       _context.CompanyEnvironmentHardwareStates.Add(newState);
       return newState;
 
@@ -422,13 +422,13 @@ namespace SoftwareManagementEFCoreRepository
 
     public ICompanyState GetCompanyState(Guid guid)
     {
-      var state = _context.CompanyStates.Include(i => i.CompanyRoleStates).SingleOrDefault(s => s.Guid == guid);
+      var state = _context.CompanyStates.Include(i => i.CompanyRoleStates).Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates).SingleOrDefault(s => s.Guid == guid);
       return state;
     }
 
     public IEnumerable<ICompanyState> GetCompanyStates()
     {
-      return _context.CompanyStates.Include(i => i.CompanyRoleStates).AsNoTracking().ToList();
+      return _context.CompanyStates.Include(i => i.CompanyRoleStates).Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates).AsNoTracking().ToList();
     }
 
     public void DeleteCompanyState(Guid guid)
@@ -521,7 +521,7 @@ namespace SoftwareManagementEFCoreRepository
 
     public ICompanyEnvironmentState GetEnvironmentState(Guid companyGuid, Guid environmentGuid)
     {
-      throw new NotImplementedException();
+      return _context.CompanyEnvironmentStates.Include(i => i.HardwareStates).SingleOrDefault(s => s.Guid == environmentGuid);
     }
 
     public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
@@ -554,19 +554,19 @@ namespace SoftwareManagementEFCoreRepository
       var state = companyEnvironmentState.HardwareStates.SingleOrDefault(s => s.Guid == hardwareGuid);
       if (state == null)
       {
-        state = CreateCompanyEnvironmentHardwareState(companyEnvironmentState.CompanyGuid, companyEnvironmentState.Guid, hardwareName);
+        state = CreateCompanyEnvironmentHardwareState(companyEnvironmentState.CompanyGuid, companyEnvironmentState.Guid, hardwareGuid, hardwareName);
       }
       return state;
     }
 
     public void RemoveHardwareFromEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
     {
-      throw new NotImplementedException();
-    }
-
-    ICompanyEnvironmentHardwareState ICompanyStateRepository.AddHardwareToEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid, string hardwareName)
-    {
-      throw new NotImplementedException();
+      var hardwareState = state.HardwareStates?.SingleOrDefault(s => s.Guid == hardwareGuid);
+      if (hardwareState != null)
+      {
+        state.HardwareStates.Remove(hardwareState);
+        _context.CompanyEnvironmentHardwareStates.Remove((CompanyEnvironmentHardwareState)hardwareState);
+      }
     }
 
     public ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)

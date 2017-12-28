@@ -23,7 +23,7 @@ namespace CompaniesShared
       base.Execute();
     }
   }
-  public class RenameHardwareCommand : HardwareCommand
+  public class RenameCompanyEnvironmentHardwareCommand : HardwareCommand
   {
     public string OriginalName { get; set; }
     public string Name { get; set; }

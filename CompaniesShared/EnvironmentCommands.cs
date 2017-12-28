@@ -12,7 +12,7 @@ namespace CompaniesShared
         public Guid EnvironmentGuid { get; set; }
     }
 
-    public class RenameEnvironmentCommand : EnvironmentCommand
+    public class RenameCompanyEnvironmentCommand : EnvironmentCommand
     {
         public string OriginalName { get; set; }
         public string Name { get; set; }
@@ -25,7 +25,7 @@ namespace CompaniesShared
         }
     }
 
-    public class ChangeUrlForEnvironmentCommand : EnvironmentCommand
+    public class ChangeUrlForCompanyEnvironmentCommand : EnvironmentCommand
     {
         public string OriginalUrl { get; set; }
         public string Url { get; set; }

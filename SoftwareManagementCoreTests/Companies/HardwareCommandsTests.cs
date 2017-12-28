@@ -15,8 +15,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "RenameHardwareCommand")]
     public void RenameCommand()
     {
-      var sutBuilder = new HardwareCommandBuilder<RenameHardwareCommand>();
-      var sut = sutBuilder.Build() as RenameHardwareCommand;
+      var sutBuilder = new HardwareCommandBuilder<RenameCompanyEnvironmentHardwareCommand>();
+      var sut = sutBuilder.Build() as RenameCompanyEnvironmentHardwareCommand;
 
       sut.Name = "New Name";
       sut.OriginalName = "Original Name";

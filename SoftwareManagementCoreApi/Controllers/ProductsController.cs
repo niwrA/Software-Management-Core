@@ -65,8 +65,8 @@ namespace SoftwareManagementCoreApi.Controllers
         public string Name { get { return _state.Name; } }
         public string Description {  get { return _state.Description; } }
         public string BusinessCase { get { return _state.BusinessCase; } }
-        public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates.Select(s => new ProductVersionDto(s)).ToList(); } }
-        public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates.Select(s => new ProductFeatureDto(s)).ToList(); } }
+        public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates?.Select(s => new ProductVersionDto(s)).ToList(); } }
+        public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates?.Select(s => new ProductFeatureDto(s)).ToList(); } }
         public ICollection<ProductIssueDto> Issues { get { return _state.ProductIssueStates?.Select(s => new ProductIssueDto(s)).ToList(); } }
     }
 

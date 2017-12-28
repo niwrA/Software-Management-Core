@@ -80,7 +80,8 @@ namespace SoftwareManagementCoreWeb.Controllers
             var propertyElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "PropertyElement", Processor = _designService };
             var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
             var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
-            var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Environment", Processor = _companyService };
+            var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironment", Processor = _companyService };
+            var hardwareConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironmentHardware", Processor = _companyService };
             var linksConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "LinksShared", Entity = "Link", Processor = _linkService };
             var filesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = _fileService };
             var codeGenConfig = new ProcessorConfig { Assembly = "CodeGenCSharpUpdaterCore", NameSpace = "CodeGenShared", Entity = "CodeGen", Processor = _codeGenService };
@@ -101,6 +102,7 @@ namespace SoftwareManagementCoreWeb.Controllers
             _commandManager.AddConfig(contactsConfig);
             _commandManager.AddConfig(companiesConfig);
             _commandManager.AddConfig(environmentsConfig);
+            _commandManager.AddConfig(hardwareConfig);
             _commandManager.AddConfig(employmentsConfig);
             _commandManager.AddConfig(projectRoleAssignmentsConfig);
             _commandManager.AddConfig(linksConfig);

@@ -11,55 +11,55 @@ using Xunit;
 namespace SoftwareManagementMongoDbCoreRepositoryTests
 {
   [Trait("MongoDb", "CompanyState")]
-  class CompanyStateRepositoryTests
+  public class CompanyStateRepositoryTests
+  {
+    [Fact(DisplayName = "AddCompanyEnvironmentState")]
+    public void CanAddCompanyEnvironmentState()
     {
-        [Fact(DisplayName = "AddCompanyEnvironmentState")]
-        public void CanAddCompanyEnvironmentState()
-        {
-            var sutBuilder = new SutBuilder().WithCompanyCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var environmentGuid = Guid.NewGuid();
-            var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
-            var state = sut.AddEnvironmentToCompanyState(guid, environmentGuid, "testenvironmentstate");
+      var sutBuilder = new SutBuilder().WithCompanyCollection();
+      var sut = sutBuilder.Build();
+      var guid = Guid.NewGuid();
+      var environmentGuid = Guid.NewGuid();
+      var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
+      var state = sut.AddEnvironmentToCompanyState(guid, environmentGuid, "testenvironmentstate");
 
-            sut.PersistChanges();
+      sut.PersistChanges();
 
-            sutBuilder.CompanyStateCollection.Verify(s => s.InsertMany(
-                It.Is<ICollection<CompanyState>>(
-                    l => l.Contains(companyState) &&
-                    l.Count == 1 &&
-                    l.First().CompanyEnvironmentStates.Contains(state) &&
-                    l.First().CompanyEnvironmentStates.Count == 1),
-                null, CancellationToken.None), Times.Once,
-                "InsertMany was not called with the expected state");
-        }
+      sutBuilder.CompanyStateCollection.Verify(s => s.InsertMany(
+          It.Is<ICollection<CompanyState>>(
+              l => l.Contains(companyState) &&
+              l.Count == 1 &&
+              l.First().CompanyEnvironmentStates.Contains(state) &&
+              l.First().CompanyEnvironmentStates.Count == 1),
+          null, CancellationToken.None), Times.Once,
+          "InsertMany was not called with the expected state");
+    }
 
-        [Fact(DisplayName = "DeleteCompanyEnvironmentState", Skip = "In progress")]
-        public void CanDeleteCompanyEnvironmentState()
-        {
-            var sutBuilder = new SutBuilder().WithCompanyCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var environmentGuid = Guid.NewGuid();
-            var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
+    [Fact(DisplayName = "DeleteCompanyEnvironmentState", Skip = "In progress")]
+    public void CanDeleteCompanyEnvironmentState()
+    {
+      var sutBuilder = new SutBuilder().WithCompanyCollection();
+      var sut = sutBuilder.Build();
+      var guid = Guid.NewGuid();
+      var environmentGuid = Guid.NewGuid();
+      var companyState = (CompanyState)sut.CreateCompanyState(guid, "testcompanystate");
 
-            sut.PersistChanges();
+      sut.PersistChanges();
 
-        }
+    }
 
-        [Fact(DisplayName = "CanGetEnvironmentState", Skip = "In progress")]
-        public void CanGetEnvironmentState()
-        {
-            var sutBuilder = new SutBuilder().WithCompanyCollection();
-            var sut = sutBuilder.Build();
-            var guid = Guid.NewGuid();
-            var environmentGuid = Guid.NewGuid();
+    [Fact(DisplayName = "CanGetEnvironmentState", Skip = "In progress")]
+    public void CanGetEnvironmentState()
+    {
+      var sutBuilder = new SutBuilder().WithCompanyCollection();
+      var sut = sutBuilder.Build();
+      var guid = Guid.NewGuid();
+      var environmentGuid = Guid.NewGuid();
 
-            // todo: setup mock for GetCompanyState
+      // todo: setup mock for GetCompanyState
 
-            sut.GetEnvironmentState(guid, environmentGuid);
-        }
+      sut.GetEnvironmentState(guid, environmentGuid);
+    }
 
     // todo: this tests tests too much, makes previous tests unnecessary
     [Fact(DisplayName = "AddCompanyEnvironmentHardwareState")]
@@ -90,36 +90,36 @@ namespace SoftwareManagementMongoDbCoreRepositoryTests
 
 
     public class SutBuilder
+    {
+      private Mock<IMongoDatabase> _databaseMock;
+      private Mock<IMongoClient> _clientMock;
+
+      public Mock<IMongoDatabase> Database { get { return _databaseMock; } }
+      public Mock<IMongoClient> Client { get { return _clientMock; } }
+      public Mock<IMongoCollection<CompanyState>> CompanyStateCollection { get; private set; }
+
+      public CompanyStateRepository Build()
+      {
+        _clientMock = new Mock<IMongoClient>();
+        _databaseMock = new Mock<IMongoDatabase>();
+
+        if (CompanyStateCollection != null)
         {
-            private Mock<IMongoDatabase> _databaseMock;
-            private Mock<IMongoClient> _clientMock;
-
-            public Mock<IMongoDatabase> Database { get { return _databaseMock; } }
-            public Mock<IMongoClient> Client { get { return _clientMock; } }
-            public Mock<IMongoCollection<CompanyState>> CompanyStateCollection { get; private set; }
-
-            public CompanyStateRepository Build()
-            {
-                _clientMock = new Mock<IMongoClient>();
-                _databaseMock = new Mock<IMongoDatabase>();
-
-                if (CompanyStateCollection != null)
-                {
-                    _databaseMock.Setup(s => s.GetCollection<CompanyState>("CompanyStates", null)).Returns(CompanyStateCollection.Object);
-                }
-
-                _clientMock.Setup(s => s.GetDatabase("SoftwareManagement", null)).Returns(_databaseMock.Object);
-
-                var sut = new CompanyStateRepository(_clientMock.Object);
-                return sut;
-            }
-            public SutBuilder WithCompanyCollection()
-            {
-                CompanyStateCollection = new Mock<IMongoCollection<CompanyState>>();
-                return this;
-            }
+          _databaseMock.Setup(s => s.GetCollection<CompanyState>("CompanyStates", null)).Returns(CompanyStateCollection.Object);
         }
 
+        _clientMock.Setup(s => s.GetDatabase("SoftwareManagement", null)).Returns(_databaseMock.Object);
 
+        var sut = new CompanyStateRepository(_clientMock.Object);
+        return sut;
+      }
+      public SutBuilder WithCompanyCollection()
+      {
+        CompanyStateCollection = new Mock<IMongoCollection<CompanyState>>();
+        return this;
+      }
     }
+
+
+  }
 }

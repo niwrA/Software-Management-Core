@@ -15,8 +15,8 @@ namespace SoftwareManagementCoreTests.Companies
         [Fact(DisplayName = "RenameEnvironmentCommand")]
         public void RenameCommand()
         {
-            var sutBuilder = new EnvironmentCommandBuilder<RenameEnvironmentCommand>();
-            var sut = sutBuilder.Build() as RenameEnvironmentCommand;
+            var sutBuilder = new EnvironmentCommandBuilder<RenameCompanyEnvironmentCommand>();
+            var sut = sutBuilder.Build() as RenameCompanyEnvironmentCommand;
 
             sut.Name = "New Name";
             sut.OriginalName = "Original Name";
