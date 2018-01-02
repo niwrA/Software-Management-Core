@@ -40,6 +40,7 @@ namespace SoftwareManagementMongoDbCoreRepository
   {
     public Guid CompanyGuid { get; set; }
     public Guid EnvironmentGuid { get; set; }
+    public string IpAddress{ get; set; }
   }
 
   public class CompanyStateRepository : ICompanyStateRepository

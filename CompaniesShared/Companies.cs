@@ -32,6 +32,7 @@ namespace CompaniesShared
   {
     Guid EnvironmentGuid { get; set; }
     Guid CompanyGuid { get; set; }
+    string IpAddress { get; set; }
   }
   public interface ICompanyStateRepository : IEntityRepository
   {
@@ -70,10 +71,12 @@ namespace CompaniesShared
     ICompanyEnvironmentHardware GetHardware(Guid hardwareGuid);
     void RemoveHardware(Guid hardwareGuid);
   }
-  public interface ICompanyEnvironmentHardware: IEntity
+  public interface ICompanyEnvironmentHardware : IEntity
   {
     Guid EnvironmentGuid { get; }
     Guid CompanyGuid { get; }
+
+    void ChangeIpAddress(string ipAddress, string originalIpAddress);
   }
 
   public class Company : ICompany
@@ -212,17 +215,35 @@ namespace CompaniesShared
     }
     public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
 
-    public Guid CompanyGuid => throw new NotImplementedException();
+    public Guid CompanyGuid { get { return _state.CompanyGuid; } }
 
-    public Guid Guid => throw new NotImplementedException();
+    public Guid Guid { get { return _state.Guid; } }
 
-    public string Name => throw new NotImplementedException();
+    public string Name { get { return _state.Name; } }
 
-    public DateTime CreatedOn => throw new NotImplementedException();
+    public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
     public void Rename(string name, string originalName)
     {
-      throw new NotImplementedException();
+      if (_state.Name == originalName)
+      {
+        _state.Name = name;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
+    }
+    public void ChangeIpAddress(string ipAddress, string originalIpAddress)
+    {
+      if (_state.IpAddress == originalIpAddress)
+      {
+        _state.IpAddress = ipAddress;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
     }
   }
   public class CompanyService : ICompanyService

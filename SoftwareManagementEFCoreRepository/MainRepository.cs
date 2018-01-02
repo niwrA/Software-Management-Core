@@ -166,6 +166,7 @@ namespace SoftwareManagementEFCoreRepository
   {
     public Guid EnvironmentGuid { get; set; }
     public Guid CompanyGuid { get; set; }
+    public string IpAddress { get; set; }
   }
   public class ProjectState : NamedEntityState, IProjectState
   {
@@ -561,7 +562,7 @@ namespace SoftwareManagementEFCoreRepository
 
     public void RemoveHardwareFromEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
     {
-      var hardwareState = state.HardwareStates?.SingleOrDefault(s => s.Guid == hardwareGuid);
+      var hardwareState = GetHardwareForEnvironmentState(state, hardwareGuid);
       if (hardwareState != null)
       {
         state.HardwareStates.Remove(hardwareState);
@@ -571,7 +572,7 @@ namespace SoftwareManagementEFCoreRepository
 
     public ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
     {
-      throw new NotImplementedException();
+      return state.HardwareStates?.SingleOrDefault(s => s.Guid == hardwareGuid);
     }
 
     public IDesignState CreateDesignState(Guid guid, string name)

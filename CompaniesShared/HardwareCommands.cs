@@ -36,6 +36,19 @@ namespace CompaniesShared
       base.Execute();
     }
   }
+  public class ChangeIpAddressForCompanyEnvironmentHardwareCommand : HardwareCommand
+  {
+    public string OriginalIpAddress { get; set; }
+    public string IpAddress { get; set; }
+    public override void Execute()
+    {
+      var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var environment = root.GetEnvironment(EnvironmentGuid);
+      var hardware = environment.GetHardware(this.HardwareGuid);
+      hardware.ChangeIpAddress(IpAddress, this.OriginalIpAddress);
+      base.Execute();
+    }
+  }
   public class RemoveHardwareFromCompanyEnvironmentCommand : HardwareCommand
   {
     public override void Execute()

@@ -42,6 +42,7 @@ namespace SoftwareManagementCoreApi.Controllers
     }
     public Guid Guid { get { return _state.Guid; } }
     public string Name { get { return _state.Name; } }
+    public string IpAddress { get { return _state.IpAddress; } }
     public Guid CompanyGuid { get { return _state.CompanyGuid; } }
     public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
   }

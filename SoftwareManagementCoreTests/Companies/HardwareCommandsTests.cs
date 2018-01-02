@@ -24,7 +24,18 @@ namespace SoftwareManagementCoreTests.Companies
 
       sutBuilder.HardwareMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
     }
+    [Fact(DisplayName = "ChangeIpAddressForHardwareCommand")]
+    public void ChangeIpAddressForCommand()
+    {
+      var sutBuilder = new HardwareCommandBuilder<ChangeIpAddressForCompanyEnvironmentHardwareCommand>();
+      var sut = sutBuilder.Build() as ChangeIpAddressForCompanyEnvironmentHardwareCommand;
 
+      sut.IpAddress = "New IP";
+      sut.OriginalIpAddress = "Original IP";
+      sut.Execute();
+
+      sutBuilder.HardwareMock.Verify(s => s.ChangeIpAddress(sut.IpAddress, sut.OriginalIpAddress), Times.Once);
+    }
     [Fact(DisplayName = "AddHardwareToCompanyEnvironmentCommand")]
     public void AddHardwareToCompanyEnvironmentCommand()
     {
