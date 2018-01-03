@@ -39,6 +39,8 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<CompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     public DbSet<CompanyEnvironmentHardwareState> CompanyEnvironmentHardwareStates { get; set; }
     public DbSet<ProjectRoleAssignmentState> ProjectRoleAssignmentStates { get; set; }
+    public DbSet<LinkState> LinkStates { get; set; }
+    public DbSet<FileState> FileStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -76,6 +78,12 @@ namespace SoftwareManagementEFCoreRepository
         .HasMany(h => (ICollection<CompanyEnvironmentHardwareState>)h.HardwareStates)
         .WithOne()
         .HasForeignKey(p => p.EnvironmentGuid);
+
+      modelBuilder.Entity<LinkState>()
+        .HasIndex(i => i.ForGuid);
+
+      modelBuilder.Entity<FileState>()
+        .HasIndex(i => i.ForGuid);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -204,6 +212,40 @@ namespace SoftwareManagementEFCoreRepository
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public string ContactName { get; set; }
+  }
+
+  public class LinkState : ILinkState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public Guid EntityGuid { get; set; }
+    public string Url { get; set; }
+    public Guid ForGuid { get; set; }
+    public string Description { get; set; }
+    public string ImageUrl { get; set; }
+    public string SiteName { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
+  public class FileState : IFileState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public Guid EntityGuid { get; set; } // todo: not used. Maybe fill with main entity? Otherwise remove.
+
+    public string FolderName { get; set; }
+
+    public Guid ForGuid { get; set; }
+    public string ForType { get; set; }
+    public string Description { get; set; }
+    public string Type { get; set; }
+    public string FileName { get; set; }
+    public string ContentType { get; set; }
+    public long Size { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
   }
 
   public class CommandState : ICommandState
@@ -617,52 +659,64 @@ namespace SoftwareManagementEFCoreRepository
 
     public ILinkState CreateLinkState(Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var state = new LinkState { Guid = guid, Name = name };
+      _context.LinkStates.Add(state);
+      return state;
     }
 
     public ILinkState GetLinkState(Guid guid)
     {
-      throw new NotImplementedException();
+      return _context.LinkStates.SingleOrDefault(s => s.Guid == guid);
     }
 
     public IEnumerable<ILinkState> GetLinkStates()
     {
-      throw new NotImplementedException();
+      return _context.LinkStates.AsNoTracking().ToList();
     }
 
     public IEnumerable<ILinkState> GetLinkStatesForGuid(Guid forGuid)
     {
-      throw new NotImplementedException();
+      return _context.LinkStates.Where(s => s.ForGuid == forGuid).AsNoTracking().ToList();
     }
 
     public void DeleteLinkState(Guid guid)
     {
-      throw new NotImplementedException();
+      var state = GetLinkState(guid);
+      if (state != null)
+      {
+        _context.LinkStates.Remove((LinkState)state);
+      }
     }
 
     public IFileState CreateFileState(Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var state = new FileState { Guid = guid, Name = name };
+      _context.FileStates.Add(state);
+      return state;
     }
 
     public IFileState GetFileState(Guid guid)
     {
-      throw new NotImplementedException();
+      return _context.FileStates.SingleOrDefault(s => s.Guid == guid);
     }
 
     public IEnumerable<IFileState> GetFileStates()
     {
-      throw new NotImplementedException();
+      return _context.FileStates.AsNoTracking().ToList();
     }
 
     public IEnumerable<IFileState> GetFileStatesForGuid(Guid forGuid)
     {
-      throw new NotImplementedException();
+      return _context.FileStates.Where(s => s.ForGuid == forGuid).AsNoTracking().ToList();
     }
 
     public void DeleteFileState(Guid guid)
     {
-      throw new NotImplementedException();
+      var state = GetFileState(guid);
+      if (state != null)
+      {
+        _context.FileStates.Remove((FileState)state);
+      }
     }
 
     public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid companyRoleGuid)

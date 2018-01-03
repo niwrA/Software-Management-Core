@@ -35,17 +35,17 @@ namespace SoftwareManagementCoreApi.Controllers
     [Route("api/[controller]")]
     public class FilesController : Controller
     {
-        private IFileStateRepository _linkStateRepository;
+        private IFileStateRepository _fileStateRepository;
 
-        public FilesController(IFileStateRepository productStateRepository)
+        public FilesController(IFileStateRepository stateRepository)
         {
-            _linkStateRepository = productStateRepository;
+            _fileStateRepository = stateRepository;
         }
         // GET: api/products
         [HttpGet]
         public IEnumerable<FileDto> Get()
         {
-            var states = _linkStateRepository.GetFileStates();
+            var states = _fileStateRepository.GetFileStates();
             var dtos = states.Select(s => new FileDto(s)).ToList();
             return dtos;
         }
@@ -54,7 +54,7 @@ namespace SoftwareManagementCoreApi.Controllers
         [HttpGet("{guid}")]
         public FileDto Get(Guid guid)
         {
-            var state = _linkStateRepository.GetFileState(guid);
+            var state = _fileStateRepository.GetFileState(guid);
             return new FileDto(state);
         }
 
@@ -62,7 +62,7 @@ namespace SoftwareManagementCoreApi.Controllers
         [HttpGet("forGuid/{forGuid}")]
         public IEnumerable<FileDto> GetForGuid(Guid forGuid)
         {
-            var states = _linkStateRepository.GetFileStatesForGuid(forGuid);
+            var states = _fileStateRepository.GetFileStatesForGuid(forGuid);
             var dtos = states.Select(s => new FileDto(s)).ToList();
             return dtos;
         }

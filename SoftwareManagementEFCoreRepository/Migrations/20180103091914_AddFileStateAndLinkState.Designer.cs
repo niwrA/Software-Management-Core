@@ -11,9 +11,10 @@ using System;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20180103091914_AddFileStateAndLinkState")]
+    partial class AddFileStateAndLinkState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,8 +189,6 @@ namespace SoftwareManagementEFCoreRepository.Migrations
                     b.Property<Guid>("EntityGuid");
 
                     b.Property<string>("FileName");
-
-                    b.Property<string>("FolderName");
 
                     b.Property<Guid>("ForGuid");
 
