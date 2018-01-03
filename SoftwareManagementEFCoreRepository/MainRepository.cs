@@ -41,6 +41,7 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<ProjectRoleAssignmentState> ProjectRoleAssignmentStates { get; set; }
     public DbSet<LinkState> LinkStates { get; set; }
     public DbSet<FileState> FileStates { get; set; }
+    public DbSet<ProductIssueState> ProductIssueStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -323,14 +324,14 @@ namespace SoftwareManagementEFCoreRepository
 
     public IProductState GetProductState(Guid guid)
     {
-      return _context.ProductStates.Find(guid);
+      return _context.ProductStates.Include(s => s.ProductFeatureStates).Include(i => i.ProductIssueStates).Include(i => i.ProductVersionStates).SingleOrDefault(s=>s.Guid == guid);
     }
 
     public IProjectState GetProjectState(Guid guid)
     {
       return _context.ProjectStates.Include(s => s.ProjectRoleStates).SingleOrDefault(s => s.Guid == guid);
     }
-
+    // todo: separate read-only repository
     public IProjectState GetProjectStateReadOnly(Guid guid)
     {
       return _context.ProjectStates.Include(s => s.ProjectRoleStates).AsNoTracking().SingleOrDefault(s => s.Guid == guid);
@@ -506,19 +507,19 @@ namespace SoftwareManagementEFCoreRepository
     public IEnumerable<IEmploymentState> GetEmploymentsByCompanyRoleGuid(Guid companyRoleGuid)
     {
       var states = _context.EmploymentStates.AsNoTracking().Where(w => w.CompanyRoleGuid == companyRoleGuid).ToList();
-      return states as ICollection<IEmploymentState>;
+      return states;
     }
 
     public IEnumerable<IEmploymentState> GetEmploymentsByContactGuid(Guid contactGuid)
     {
       var states = _context.EmploymentStates.AsNoTracking().Where(w => w.ContactGuid == contactGuid).ToList();
-      return states as ICollection<IEmploymentState>;
+      return states;
     }
 
     public IEnumerable<IEmploymentState> GetEmploymentStates()
     {
       var states = _context.EmploymentStates.AsNoTracking().ToList();
-      return states as ICollection<IEmploymentState>;
+      return states;
     }
 
     public IEnumerable<ICommandState> GetCommandStates(Guid guid)
@@ -569,27 +570,54 @@ namespace SoftwareManagementEFCoreRepository
 
     public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
     {
-      throw new NotImplementedException();
+      var state = new ProductFeatureState { Guid = productFeatureGuid, ProductGuid = guid, Name = name };
+      _context.ProductFeatureStates.Add(state);
+      return state;
+    }
+    private ProductFeatureState GetProductFeatureState(Guid guid)
+    {
+      return _context.ProductFeatureStates.SingleOrDefault(s => s.Guid == guid);
     }
 
     public void DeleteProductFeatureState(Guid productGuid, Guid guid)
     {
-      throw new NotImplementedException();
+      var state = GetProductFeatureState(guid);
+      if (state != null)
+      {
+        _context.ProductFeatureStates.Remove(state);
+      }
+    }
+    private ProductVersionState GetProductVersionState(Guid guid)
+    {
+      return _context.ProductVersionStates.SingleOrDefault(s => s.Guid == guid);
     }
 
     public void DeleteProductVersionState(Guid productGuid, Guid guid)
     {
-      throw new NotImplementedException();
+      var state = GetProductVersionState(guid);
+      if (state != null)
+      {
+        _context.ProductVersionStates.Remove(state);
+      }
     }
-
+    private ProductIssueState GetProductIssueState(Guid guid)
+    {
+      return _context.ProductIssueStates.SingleOrDefault(s => s.Guid == guid);
+    }
     public IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var state = new ProductIssueState { Guid = guid, ProductGuid = productGuid, Name = name };
+      _context.ProductIssueStates.Add(state);
+      return state;
     }
 
     public void DeleteProductIssueState(Guid productGuid, Guid guid)
     {
-      throw new NotImplementedException();
+      var state = GetProductIssueState(guid);
+      if (state != null)
+      {
+        _context.ProductIssueStates.Remove(state);
+      }
     }
 
     public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid hardwareGuid, string hardwareName)
@@ -719,44 +747,52 @@ namespace SoftwareManagementEFCoreRepository
       }
     }
 
-    public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid companyRoleGuid)
+    public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid projectRoleGuid)
     {
-      throw new NotImplementedException();
+      var state = new ProjectRoleAssignmentState { Guid = guid, ContactGuid = contactGuid, ProjectGuid = projectGuid, ProjectRoleGuid = projectRoleGuid};
+      _context.ProjectRoleAssignmentStates.Add(state);
+      return state;
     }
 
     public IProjectRoleAssignmentState GetProjectRoleAssignmentState(Guid guid)
     {
-      throw new NotImplementedException();
+      return _context.ProjectRoleAssignmentStates.SingleOrDefault(s => s.Guid == guid);
     }
 
-    public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByProjectRoleGuid(Guid companyRoleGuid)
+    public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByProjectRoleGuid(Guid projectRoleGuid)
     {
-      throw new NotImplementedException();
+      return _context.ProjectRoleAssignmentStates.Where(s => s.ProjectRoleGuid == projectRoleGuid).AsNoTracking().ToList();
     }
 
     public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentsByContactGuid(Guid contactGuid)
     {
-      throw new NotImplementedException();
+      return _context.ProjectRoleAssignmentStates.Where(s => s.ContactGuid == contactGuid).AsNoTracking().ToList();
     }
 
-    public IEnumerable<IContactState> GetContactsByProjectRoleGuid(Guid companyRoleGuid)
+    public IEnumerable<IContactState> GetContactsByProjectRoleGuid(Guid projectRoleGuid)
     {
-      throw new NotImplementedException();
+      var contactGuids = _context.ProjectRoleAssignmentStates.Where(s => s.ProjectRoleGuid == projectRoleGuid).AsNoTracking().Select(s=>s.ContactGuid).ToList();
+      return _context.ContactStates.Where(s => contactGuids.Contains(s.Guid)).AsNoTracking().ToList();
     }
 
     public void DeleteProjectRoleAssignmentState(Guid entityGuid)
     {
-      throw new NotImplementedException();
+      var state = GetProjectRoleAssignmentState(entityGuid);
+      if(state != null)
+      {
+        _context.ProjectRoleAssignmentStates.Remove((ProjectRoleAssignmentState)state);
+      }
     }
 
     public IEnumerable<IProjectRoleAssignmentState> GetProjectRoleAssignmentStates()
     {
-      throw new NotImplementedException();
+      return _context.ProjectRoleAssignmentStates.AsNoTracking().ToList();
     }
 
     public IEnumerable<IContactState> GetContactsByProjectGuid(Guid guid)
     {
-      throw new NotImplementedException();
+      var contactGuids = _context.ProjectRoleAssignmentStates.Where(s => s.ProjectGuid == guid).AsNoTracking().Select(s => s.ContactGuid).ToList();
+      return _context.ContactStates.Where(s => contactGuids.Contains(s.Guid)).AsNoTracking().ToList();
     }
   }
 }

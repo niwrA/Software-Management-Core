@@ -38,7 +38,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public IEnumerable<EmploymentDto> Get()
         {
             var states = _employmentStateRepository.GetEmploymentStates();
-            var dtos = states.Select(s => new EmploymentDto(s)).ToList();
+            var dtos = states?.Select(s => new EmploymentDto(s)).ToList();
             return dtos;
         }
 

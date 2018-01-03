@@ -11,9 +11,10 @@ using System;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20180103141718_AddProductIssueStates")]
+    partial class AddProductIssueStates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
