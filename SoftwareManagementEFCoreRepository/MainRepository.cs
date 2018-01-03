@@ -38,6 +38,8 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<EmploymentState> EmploymentStates { get; set; }
     public DbSet<CompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
     public DbSet<CompanyEnvironmentHardwareState> CompanyEnvironmentHardwareStates { get; set; }
+    public DbSet<CompanyEnvironmentAccountState> CompanyEnvironmentAccountStates { get; set; }
+    public DbSet<CompanyEnvironmentDatabaseState> CompanyEnvironmentDatabaseStates { get; set; }
     public DbSet<ProjectRoleAssignmentState> ProjectRoleAssignmentStates { get; set; }
     public DbSet<LinkState> LinkStates { get; set; }
     public DbSet<FileState> FileStates { get; set; }
@@ -77,6 +79,16 @@ namespace SoftwareManagementEFCoreRepository
 
       modelBuilder.Entity<CompanyEnvironmentState>()
         .HasMany(h => (ICollection<CompanyEnvironmentHardwareState>)h.HardwareStates)
+        .WithOne()
+        .HasForeignKey(p => p.EnvironmentGuid);
+
+      modelBuilder.Entity<CompanyEnvironmentState>()
+        .HasMany(h => (ICollection<CompanyEnvironmentAccountState>)h.AccountStates)
+        .WithOne()
+        .HasForeignKey(p => p.EnvironmentGuid);
+
+      modelBuilder.Entity<CompanyEnvironmentState>()
+        .HasMany(h => (ICollection<CompanyEnvironmentDatabaseState>)h.DatabaseStates)
         .WithOne()
         .HasForeignKey(p => p.EnvironmentGuid);
 
@@ -170,6 +182,8 @@ namespace SoftwareManagementEFCoreRepository
     public Guid CompanyGuid { get; set; }
     public string Url { get; set; }
     public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+    public ICollection<ICompanyEnvironmentAccountState> AccountStates { get; set; }
+    public ICollection<ICompanyEnvironmentDatabaseState> DatabaseStates { get; set; }
   }
   public class CompanyEnvironmentHardwareState : NamedEntityState, ICompanyEnvironmentHardwareState
   {
@@ -177,6 +191,17 @@ namespace SoftwareManagementEFCoreRepository
     public Guid CompanyGuid { get; set; }
     public string IpAddress { get; set; }
   }
+  public class CompanyEnvironmentAccountState : NamedEntityState, ICompanyEnvironmentAccountState
+  {
+    public Guid EnvironmentGuid { get; set; }
+    public Guid CompanyGuid { get; set; }
+  }
+  public class CompanyEnvironmentDatabaseState : NamedEntityState, ICompanyEnvironmentDatabaseState
+  {
+    public Guid EnvironmentGuid { get; set; }
+    public Guid CompanyGuid { get; set; }
+  }
+
   public class ProjectState : NamedEntityState, IProjectState
   {
     public ProjectState()
@@ -393,14 +418,6 @@ namespace SoftwareManagementEFCoreRepository
       return newState;
 
     }
-    public ICompanyEnvironmentHardwareState CreateCompanyEnvironmentHardwareState(Guid companyGuid, Guid environmentGUid, Guid guid, string name)
-    {
-      var newState = new CompanyEnvironmentHardwareState { CompanyGuid = companyGuid, EnvironmentGuid = environmentGUid, Guid = guid, Name = name };
-      _context.CompanyEnvironmentHardwareStates.Add(newState);
-      return newState;
-
-    }
-
     public ICompanyRoleState AddRoleToCompanyState(Guid companyGuid, Guid companyRoleGuid, string companyRoleName)
     {
       var companyState = GetCompanyState(companyGuid);
@@ -619,10 +636,17 @@ namespace SoftwareManagementEFCoreRepository
         _context.ProductIssueStates.Remove(state);
       }
     }
+    public ICompanyEnvironmentHardwareState CreateCompanyEnvironmentHardwareState(Guid companyGuid, Guid environmentGUid, Guid guid, string name)
+    {
+      var newState = new CompanyEnvironmentHardwareState { CompanyGuid = companyGuid, EnvironmentGuid = environmentGUid, Guid = guid, Name = name };
+      _context.CompanyEnvironmentHardwareStates.Add(newState);
+      return newState;
+
+    }
 
     public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid hardwareGuid, string hardwareName)
     {
-      var state = companyEnvironmentState.HardwareStates.SingleOrDefault(s => s.Guid == hardwareGuid);
+      var state = GetHardwareForEnvironmentState(companyEnvironmentState, hardwareGuid);
       if (state == null)
       {
         state = CreateCompanyEnvironmentHardwareState(companyEnvironmentState.CompanyGuid, companyEnvironmentState.Guid, hardwareGuid, hardwareName);
@@ -793,6 +817,68 @@ namespace SoftwareManagementEFCoreRepository
     {
       var contactGuids = _context.ProjectRoleAssignmentStates.Where(s => s.ProjectGuid == guid).AsNoTracking().Select(s => s.ContactGuid).ToList();
       return _context.ContactStates.Where(s => contactGuids.Contains(s.Guid)).AsNoTracking().ToList();
+    }
+    public ICompanyEnvironmentAccountState CreateCompanyEnvironmentAccountState(Guid companyGuid, Guid environmentGUid, Guid guid, string name)
+    {
+      var newState = new CompanyEnvironmentAccountState { CompanyGuid = companyGuid, EnvironmentGuid = environmentGUid, Guid = guid, Name = name };
+      _context.CompanyEnvironmentAccountStates.Add(newState);
+      return newState;
+    }
+
+    public ICompanyEnvironmentAccountState AddAccountToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid accountGuid, string accountName)
+    {
+      var state = GetAccountForEnvironmentState(companyEnvironmentState, accountGuid);
+      if (state == null)
+      {
+        state = CreateCompanyEnvironmentAccountState(companyEnvironmentState.CompanyGuid, companyEnvironmentState.Guid, accountGuid, accountName);
+      }
+      return state;
+    }
+
+    public void RemoveAccountFromEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid accountGuid)
+    {
+      var state = GetAccountForEnvironmentState(companyEnvironmentState, accountGuid);
+      if (state != null)
+      {
+        companyEnvironmentState.AccountStates.Remove(state);
+        _context.CompanyEnvironmentAccountStates.Remove((CompanyEnvironmentAccountState)state);
+      }
+    }
+
+    public ICompanyEnvironmentAccountState GetAccountForEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid)
+    {
+      return state.AccountStates?.SingleOrDefault(s => s.Guid == accountGuid);
+    }
+    public ICompanyEnvironmentDatabaseState CreateCompanyEnvironmentDatabaseState(Guid companyGuid, Guid environmentGUid, Guid guid, string name)
+    {
+      var newState = new CompanyEnvironmentDatabaseState { CompanyGuid = companyGuid, EnvironmentGuid = environmentGUid, Guid = guid, Name = name };
+      _context.CompanyEnvironmentDatabaseStates.Add(newState);
+      return newState;
+    }
+
+    public ICompanyEnvironmentDatabaseState AddDatabaseToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid databaseGuid, string databaseName)
+    {
+      var state = GetDatabaseForEnvironmentState(companyEnvironmentState, databaseGuid);
+      if (state == null)
+      {
+        state = CreateCompanyEnvironmentDatabaseState(companyEnvironmentState.CompanyGuid, companyEnvironmentState.Guid, databaseGuid, databaseName);
+      }
+      return state;
+    }
+
+    public void RemoveDatabaseFromEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid databaseGuid)
+    {
+      var state = GetDatabaseForEnvironmentState(companyEnvironmentState, databaseGuid);
+      if (state != null)
+      {
+        companyEnvironmentState.DatabaseStates.Remove(state);
+        _context.CompanyEnvironmentDatabaseStates.Remove((CompanyEnvironmentDatabaseState)state);
+      }
+    }
+
+    public ICompanyEnvironmentDatabaseState GetDatabaseForEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid)
+    {
+      return state.DatabaseStates?.SingleOrDefault(s => s.Guid == databaseGuid);
     }
   }
 }

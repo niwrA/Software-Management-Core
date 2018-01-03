@@ -5,25 +5,25 @@ using System.Text;
 
 namespace CompaniesShared
 {
-  public abstract class DatabaseCommand : EnvironmentCommand
+  public abstract class AccountCommand : EnvironmentCommand
   {
-    public DatabaseCommand() : base() { }
-    public DatabaseCommand(ICommandStateRepository repo) : base(repo) { }
-    public Guid DatabaseGuid { get; set; }
+    public AccountCommand() : base() { }
+    public AccountCommand(ICommandStateRepository repo) : base(repo) { }
+    public Guid AccountGuid { get; set; }
   }
-  public class AddDatabaseToCompanyEnvironmentCommand : DatabaseCommand
+  public class AddAccountToCompanyEnvironmentCommand : AccountCommand
   {
-    public string DatabaseName { get; set; }
+    public string AccountName { get; set; }
     public override void Execute()
     {
       var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
       var environment = company.GetEnvironment(this.EnvironmentGuid);
-      environment.AddDatabase(DatabaseGuid, DatabaseName);
+      environment.AddAccount(AccountGuid, AccountName);
 
       base.Execute();
     }
   }
-  public class RenameCompanyEnvironmentDatabaseCommand : DatabaseCommand
+  public class RenameCompanyEnvironmentAccountCommand : AccountCommand
   {
     public string OriginalName { get; set; }
     public string Name { get; set; }
@@ -31,18 +31,18 @@ namespace CompaniesShared
     {
       var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
       var environment = root.GetEnvironment(EnvironmentGuid);
-      var database = environment.GetDatabase(this.DatabaseGuid);
-      database.Rename(Name, this.OriginalName);
+      var account = environment.GetAccount(this.AccountGuid);
+      account.Rename(Name, this.OriginalName);
       base.Execute();
     }
   }
-  public class RemoveDatabaseFromCompanyEnvironmentCommand : DatabaseCommand
+  public class RemoveAccountFromCompanyEnvironmentCommand : AccountCommand
   {
     public override void Execute()
     {
       var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
       var environment = company.GetEnvironment(this.EnvironmentGuid);
-      environment.RemoveDatabase(this.DatabaseGuid);
+      environment.RemoveAccount(this.AccountGuid);
       base.Execute();
     }
   }

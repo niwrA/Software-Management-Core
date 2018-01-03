@@ -22,7 +22,6 @@ namespace SoftwareManagementCoreApi.Controllers
   public class CompanyEnvironmentDto
   {
     private ICompanyEnvironmentState _state;
-    private List<CompanyEnvironmentHardwareDto> _companyEnvironmentHardware;
     public CompanyEnvironmentDto(ICompanyEnvironmentState state)
     {
       _state = state;
@@ -31,7 +30,9 @@ namespace SoftwareManagementCoreApi.Controllers
     public string Name { get { return _state.Name; } }
     public string Url { get { return _state.Url; } }
     public Guid CompanyGuid { get { return _state.CompanyGuid; } }
-    public List<CompanyEnvironmentHardwareDto> Hardware{ get { return _state.HardwareStates.Select(s => new CompanyEnvironmentHardwareDto(s)).ToList(); } }
+    public List<CompanyEnvironmentHardwareDto> Hardware{ get { return _state.HardwareStates?.Select(s => new CompanyEnvironmentHardwareDto(s)).ToList(); } }
+    public List<CompanyEnvironmentAccountDto> Accounts { get { return _state.AccountStates?.Select(s => new CompanyEnvironmentAccountDto(s)).ToList(); } }
+    public List<CompanyEnvironmentDatabaseDto> Databases { get { return _state.DatabaseStates?.Select(s => new CompanyEnvironmentDatabaseDto(s)).ToList(); } }
   }
   public class CompanyEnvironmentHardwareDto
   {
@@ -46,6 +47,31 @@ namespace SoftwareManagementCoreApi.Controllers
     public Guid CompanyGuid { get { return _state.CompanyGuid; } }
     public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
   }
+  public class CompanyEnvironmentAccountDto
+  {
+    private ICompanyEnvironmentAccountState _state;
+    public CompanyEnvironmentAccountDto(ICompanyEnvironmentAccountState state)
+    {
+      _state = state;
+    }
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public Guid CompanyGuid { get { return _state.CompanyGuid; } }
+    public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
+  }
+  public class CompanyEnvironmentDatabaseDto
+  {
+    private ICompanyEnvironmentDatabaseState _state;
+    public CompanyEnvironmentDatabaseDto(ICompanyEnvironmentDatabaseState state)
+    {
+      _state = state;
+    }
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public Guid CompanyGuid { get { return _state.CompanyGuid; } }
+    public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
+  }
+
   public class CompanyDto
   {
     private ICompanyState _state;

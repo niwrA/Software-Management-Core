@@ -33,6 +33,8 @@ namespace SoftwareManagementMongoDbCoreRepository
     public Guid CompanyGuid { get; set; }
     public string Url { get; set; }
     public ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; } = new List<ICompanyEnvironmentHardwareState>() as ICollection<ICompanyEnvironmentHardwareState>;
+    public ICollection<ICompanyEnvironmentAccountState> AccountStates { get; set; } = new List<ICompanyEnvironmentAccountState>() as ICollection<ICompanyEnvironmentAccountState>;
+    public ICollection<ICompanyEnvironmentDatabaseState> DatabaseStates { get; set; } = new List<ICompanyEnvironmentDatabaseState>() as ICollection<ICompanyEnvironmentDatabaseState>;
   }
 
   [BsonIgnoreExtraElements]
@@ -40,7 +42,7 @@ namespace SoftwareManagementMongoDbCoreRepository
   {
     public Guid CompanyGuid { get; set; }
     public Guid EnvironmentGuid { get; set; }
-    public string IpAddress{ get; set; }
+    public string IpAddress { get; set; }
   }
 
   public class CompanyStateRepository : ICompanyStateRepository
@@ -236,6 +238,36 @@ namespace SoftwareManagementMongoDbCoreRepository
     public ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid)
     {
       return state.HardwareStates.FirstOrDefault(s => s.Guid == hardwareGuid); // todo: work with Single and catch errors?
+    }
+
+    public ICompanyEnvironmentAccountState AddAccountToEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid, string accountName)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void RemoveAccountFromEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ICompanyEnvironmentAccountState GetAccountForEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ICompanyEnvironmentDatabaseState AddDatabaseToEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid, string databaseName)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void RemoveDatabaseFromEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ICompanyEnvironmentDatabaseState GetDatabaseForEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid)
+    {
+      throw new NotImplementedException();
     }
   }
   // todo: not yet used, so use or remove

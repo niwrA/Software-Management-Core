@@ -9,10 +9,11 @@
     <Import_RootNamespace>CompaniesShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DatabaseCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CompanyCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Companies.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DatabaseCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EnvironmentCommands.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AccountCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HardwareCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProductInstallationCommands.cs" />
   </ItemGroup>

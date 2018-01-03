@@ -27,12 +27,24 @@ namespace CompaniesShared
     Guid CompanyGuid { get; set; }
     string Url { get; set; }
     ICollection<ICompanyEnvironmentHardwareState> HardwareStates { get; set; }
+    ICollection<ICompanyEnvironmentAccountState> AccountStates { get; set; }
+    ICollection<ICompanyEnvironmentDatabaseState> DatabaseStates { get; set; }
   }
   public interface ICompanyEnvironmentHardwareState : INamedEntityState
   {
     Guid EnvironmentGuid { get; set; }
     Guid CompanyGuid { get; set; }
     string IpAddress { get; set; }
+  }
+  public interface ICompanyEnvironmentDatabaseState : INamedEntityState
+  {
+    Guid EnvironmentGuid { get; set; }
+    Guid CompanyGuid { get; set; }
+  }
+  public interface ICompanyEnvironmentAccountState : INamedEntityState
+  {
+    Guid EnvironmentGuid { get; set; }
+    Guid CompanyGuid { get; set; }
   }
   public interface ICompanyStateRepository : IEntityRepository
   {
@@ -48,6 +60,12 @@ namespace CompaniesShared
     ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid, string hardwareName);
     void RemoveHardwareFromEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid);
     ICompanyEnvironmentHardwareState GetHardwareForEnvironmentState(ICompanyEnvironmentState state, Guid hardwareGuid);
+    ICompanyEnvironmentAccountState AddAccountToEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid, string accountName);
+    void RemoveAccountFromEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid);
+    ICompanyEnvironmentAccountState GetAccountForEnvironmentState(ICompanyEnvironmentState state, Guid accountGuid);
+    ICompanyEnvironmentDatabaseState AddDatabaseToEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid, string databaseName);
+    void RemoveDatabaseFromEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid);
+    ICompanyEnvironmentDatabaseState GetDatabaseForEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid);
   }
   public interface IEntity
   {
@@ -66,19 +84,33 @@ namespace CompaniesShared
   }
   public interface ICompanyEnvironment : IEntity
   {
+    void AddAccount(Guid accountGuid, string accountName);
+    void AddDatabase(Guid databaseGuid, string databaseName);
     void AddHardware(Guid hardwareGuid, string hardwareName);
     void ChangeUrl(string url, string originalUrl);
+    ICompanyEnvironmentAccount GetAccount(Guid accountGuid);
+    ICompanyEnvironmentDatabase GetDatabase(Guid databaseGuid);
     ICompanyEnvironmentHardware GetHardware(Guid hardwareGuid);
+    void RemoveAccount(Guid accountGuid);
+    void RemoveDatabase(Guid databaseGuid);
     void RemoveHardware(Guid hardwareGuid);
   }
   public interface ICompanyEnvironmentHardware : IEntity
   {
     Guid EnvironmentGuid { get; }
     Guid CompanyGuid { get; }
-
     void ChangeIpAddress(string ipAddress, string originalIpAddress);
   }
-
+  public interface ICompanyEnvironmentAccount : IEntity
+  {
+    Guid EnvironmentGuid { get; }
+    Guid CompanyGuid { get; }
+  }
+  public interface ICompanyEnvironmentDatabase : IEntity
+  {
+    Guid EnvironmentGuid { get; }
+    Guid CompanyGuid { get; }
+  }
   public class Company : ICompany
   {
     private ICompanyState _state;
@@ -138,7 +170,6 @@ namespace CompaniesShared
   {
     private ICompanyEnvironmentState _state;
     private ICompanyStateRepository _repo;
-
     public CompanyEnvironment(ICompanyEnvironmentState state)
     {
       _state = state;
@@ -152,6 +183,15 @@ namespace CompaniesShared
     public string Name { get { return _state.Name; } }
     public DateTime CreatedOn { get { return _state.CreatedOn; } }
 
+    public void AddAccount(Guid accountGuid, string accountName)
+    {
+      _repo.AddAccountToEnvironmentState(_state, accountGuid, accountName);
+    }
+
+    public void AddDatabase(Guid databaseGuid, string databaseName)
+    {
+      _repo.AddDatabaseToEnvironmentState(_state, databaseGuid, databaseName);
+    }
 
     public void AddHardware(Guid hardwareGuid, string hardwareName)
     {
@@ -170,10 +210,32 @@ namespace CompaniesShared
       }
     }
 
+    public ICompanyEnvironmentAccount GetAccount(Guid accountGuid)
+    {
+      var state = _repo.GetAccountForEnvironmentState(_state, accountGuid);
+      return new CompanyEnvironmentAccount(state);
+    }
+
+    public ICompanyEnvironmentDatabase GetDatabase(Guid databaseGuid)
+    {
+      var state = _repo.GetDatabaseForEnvironmentState(_state, databaseGuid);
+      return new CompanyEnvironmentDatabase(state);
+    }
+
     public ICompanyEnvironmentHardware GetHardware(Guid hardwareGuid)
     {
       var state = _repo.GetHardwareForEnvironmentState(_state, hardwareGuid);
       return new CompanyEnvironmentHardware(state);
+    }
+
+    public void RemoveAccount(Guid accountGuid)
+    {
+      _repo.RemoveAccountFromEnvironmentState(_state, accountGuid);
+    }
+
+    public void RemoveDatabase(Guid databaseGuid)
+    {
+      _repo.RemoveDatabaseFromEnvironmentState(_state, databaseGuid);
     }
 
     public void RemoveHardware(Guid hardwareGuid)
@@ -192,7 +254,6 @@ namespace CompaniesShared
         // todo: implement concurrency policy
       }
     }
-
 
     public void Url(string url, string originalUrl)
     {
@@ -234,6 +295,7 @@ namespace CompaniesShared
         // todo: implement concurrency policy
       }
     }
+
     public void ChangeIpAddress(string ipAddress, string originalIpAddress)
     {
       if (_state.IpAddress == originalIpAddress)
@@ -246,6 +308,66 @@ namespace CompaniesShared
       }
     }
   }
+  public class CompanyEnvironmentDatabase : ICompanyEnvironmentDatabase
+  {
+    private ICompanyEnvironmentDatabaseState _state;
+    public CompanyEnvironmentDatabase(ICompanyEnvironmentDatabaseState state)
+    {
+      _state = state;
+    }
+    public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
+
+    public Guid CompanyGuid { get { return _state.CompanyGuid; } }
+
+    public Guid Guid { get { return _state.Guid; } }
+
+    public string Name { get { return _state.Name; } }
+
+    public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+    public void Rename(string name, string originalName)
+    {
+      if (_state.Name == originalName)
+      {
+        _state.Name = name;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
+    }
+  }
+
+  public class CompanyEnvironmentAccount : ICompanyEnvironmentAccount
+  {
+    private ICompanyEnvironmentAccountState _state;
+    public CompanyEnvironmentAccount(ICompanyEnvironmentAccountState state)
+    {
+      _state = state;
+    }
+    public Guid EnvironmentGuid { get { return _state.EnvironmentGuid; } }
+
+    public Guid CompanyGuid { get { return _state.CompanyGuid; } }
+
+    public Guid Guid { get { return _state.Guid; } }
+
+    public string Name { get { return _state.Name; } }
+
+    public DateTime CreatedOn { get { return _state.CreatedOn; } }
+
+    public void Rename(string name, string originalName)
+    {
+      if (_state.Name == originalName)
+      {
+        _state.Name = name;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
+    }
+  }
+
   public class CompanyService : ICompanyService
   {
     private IDateTimeProvider _dateTimeProvider;
