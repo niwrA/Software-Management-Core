@@ -44,6 +44,12 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<LinkState> LinkStates { get; set; }
     public DbSet<FileState> FileStates { get; set; }
     public DbSet<ProductIssueState> ProductIssueStates { get; set; }
+    public DbSet<DesignState> DesignStates { get; set; }
+    public DbSet<DesignElementState> DesignElementStates { get; set; }
+    public DbSet<EpicElementState> EpicElementStates { get; set; }
+    public DbSet<EntityElementState> EntityElementStates { get; set; }
+    public DbSet<PropertyElementState> PropertyElementStates { get; set; }
+    public DbSet<CommandElementState> CommandElementStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,6 +103,24 @@ namespace SoftwareManagementEFCoreRepository
 
       modelBuilder.Entity<FileState>()
         .HasIndex(i => i.ForGuid);
+
+      modelBuilder.Entity<DesignState>()
+       .HasMany(h => (ICollection<EpicElementState>)h.EpicElementStates)
+       .WithOne()
+       .HasForeignKey(p => p.DesignGuid);
+      modelBuilder.Entity<EpicElementState>()
+       .HasMany(h => (ICollection<EntityElementState>)h.EntityElementStates)
+       .WithOne()
+       .HasForeignKey(p => p.EpicElementGuid);
+      modelBuilder.Entity<EntityElementState>()
+       .HasMany(h => (ICollection<PropertyElementState>)h.PropertyElementStates)
+       .WithOne()
+       .HasForeignKey(p => p.EntityElementGuid);
+      modelBuilder.Entity<EntityElementState>()
+       .HasMany(h => (ICollection<CommandElementState>)h.CommandElementStates)
+       .WithOne()
+       .HasForeignKey(p => p.EntityElementGuid);
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -273,7 +297,74 @@ namespace SoftwareManagementEFCoreRepository
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
   }
-
+  public class DesignState : IDesignState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public string Description { get; set; }
+    public ICollection<IEpicElementState> EpicElementStates { get; set; } = new List<IEpicElementState>();
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
+  public class DesignElementState : IDesignElementState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public string Description { get; set; }
+    public Guid DesignGuid { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
+  public class EpicElementState : IEpicElementState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public ICollection<IEntityElementState> EntityElementStates { get; set; }
+    public string Description { get; set; }
+    public Guid DesignGuid { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
+  public class PropertyElementState : IPropertyElementState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public Guid EpicElementGuid { get; set; }
+    public Guid EntityElementGuid { get; set; }
+    public string Description { get; set; }
+    public Guid DesignGuid { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
+  public class EntityElementState : IEntityElementState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public ICollection<IPropertyElementState> PropertyElementStates { get; set; }
+    public ICollection<ICommandElementState> CommandElementStates { get; set; }
+    public Guid EpicElementGuid { get; set; }
+    public string Description { get; set; }
+    public Guid DesignGuid { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
+  public class CommandElementState : ICommandElementState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public Guid EpicElementGuid { get; set; }
+    public Guid EntityElementGuid { get; set; }
+    public string Description { get; set; }
+    public Guid DesignGuid { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+  }
   public class CommandState : ICommandState
   {
     [Key]
@@ -349,7 +440,7 @@ namespace SoftwareManagementEFCoreRepository
 
     public IProductState GetProductState(Guid guid)
     {
-      return _context.ProductStates.Include(s => s.ProductFeatureStates).Include(i => i.ProductIssueStates).Include(i => i.ProductVersionStates).SingleOrDefault(s=>s.Guid == guid);
+      return _context.ProductStates.Include(s => s.ProductFeatureStates).Include(i => i.ProductIssueStates).Include(i => i.ProductVersionStates).SingleOrDefault(s => s.Guid == guid);
     }
 
     public IProjectState GetProjectState(Guid guid)
@@ -366,7 +457,11 @@ namespace SoftwareManagementEFCoreRepository
     public IEnumerable<IProductState> GetProductStates()
     {
       // todo: make a separate readonly repo for the query part of CQRS
-      return _context.ProductStates.Include(s => s.ProductVersionStates).Include(s => s.ProductIssueStates).Include(s => s.ProductFeatureStates).AsNoTracking().ToList();
+      return _context.ProductStates
+        .Include(s => s.ProductVersionStates)
+        .Include(s => s.ProductIssueStates)
+        .Include(s => s.ProductFeatureStates)
+        .AsNoTracking().ToList();
     }
 
     public IEnumerable<IProjectState> GetProjectStates()
@@ -483,13 +578,21 @@ namespace SoftwareManagementEFCoreRepository
 
     public ICompanyState GetCompanyState(Guid guid)
     {
-      var state = _context.CompanyStates.Include(i => i.CompanyRoleStates).Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates).SingleOrDefault(s => s.Guid == guid);
+      var state = _context.CompanyStates.Include(i => i.CompanyRoleStates)
+        .Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates)
+        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.DatabaseStates)
+        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.AccountStates)
+        .SingleOrDefault(s => s.Guid == guid);
       return state;
     }
 
     public IEnumerable<ICompanyState> GetCompanyStates()
     {
-      return _context.CompanyStates.Include(i => i.CompanyRoleStates).Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates).AsNoTracking().ToList();
+      return _context.CompanyStates.Include(i => i.CompanyRoleStates)
+        .Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates)
+        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.DatabaseStates)
+        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.AccountStates)
+        .AsNoTracking().ToList();
     }
 
     public void DeleteCompanyState(Guid guid)
@@ -641,7 +744,6 @@ namespace SoftwareManagementEFCoreRepository
       var newState = new CompanyEnvironmentHardwareState { CompanyGuid = companyGuid, EnvironmentGuid = environmentGUid, Guid = guid, Name = name };
       _context.CompanyEnvironmentHardwareStates.Add(newState);
       return newState;
-
     }
 
     public ICompanyEnvironmentHardwareState AddHardwareToEnvironmentState(ICompanyEnvironmentState companyEnvironmentState, Guid hardwareGuid, string hardwareName)
@@ -671,42 +773,62 @@ namespace SoftwareManagementEFCoreRepository
 
     public IDesignState CreateDesignState(Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var newState = new DesignState { Guid = guid, Name = name };
+      _context.DesignStates.Add(newState);
+      return newState;
     }
 
     public IEpicElementState CreateEpicElementState(Guid designGuid, Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var newState = new EpicElementState { Guid = guid, DesignGuid = designGuid, Name = name };
+      _context.EpicElementStates.Add(newState);
+      return newState;
     }
 
     public IDesignState GetDesignState(Guid guid)
     {
-      throw new NotImplementedException();
+      return _context.DesignStates
+        .Include(i => i.EpicElementStates).ThenInclude(ti => ti.EntityElementStates).ThenInclude(ti => ti.PropertyElementStates)
+        .Include(i => i.EpicElementStates).ThenInclude(ti => ti.EntityElementStates).ThenInclude(ti => ti.CommandElementStates)
+        .SingleOrDefault(s => s.Guid == guid);
     }
 
     public IEnumerable<IDesignState> GetDesignStates()
     {
-      throw new NotImplementedException();
+      return _context.DesignStates
+        .Include(i => i.EpicElementStates).ThenInclude(ti => ti.EntityElementStates).ThenInclude(ti => ti.PropertyElementStates)
+        .Include(i => i.EpicElementStates).ThenInclude(ti => ti.EntityElementStates).ThenInclude(ti => ti.CommandElementStates)
+        .AsNoTracking().ToList();
     }
-
+    // todo: does this need to enable cascaded delete to remove all children?
     public void DeleteDesignState(Guid guid)
     {
-      throw new NotImplementedException();
+      var state = _context.DesignStates.SingleOrDefault(s => s.Guid == guid);
+      if (state != null)
+      {
+        _context.DesignStates.Remove(state);
+      }
     }
 
     public IEntityElementState CreateEntityElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, string name)
     {
-      throw new NotImplementedException();
+      var newState = new EntityElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
+      _context.EntityElementStates.Add(newState);
+      return newState;
     }
 
     public IPropertyElementState CreatePropertyElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var newState = new PropertyElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
+      _context.PropertyElementStates.Add(newState);
+      return newState;
     }
 
     public ICommandElementState CreateCommandElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name)
     {
-      throw new NotImplementedException();
+      var newState = new CommandElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
+      _context.CommandElementStates.Add(newState);
+      return newState;
     }
 
     public ILinkState CreateLinkState(Guid guid, string name)
@@ -773,7 +895,7 @@ namespace SoftwareManagementEFCoreRepository
 
     public IProjectRoleAssignmentState CreateProjectRoleAssignmentState(Guid guid, Guid contactGuid, Guid projectGuid, Guid projectRoleGuid)
     {
-      var state = new ProjectRoleAssignmentState { Guid = guid, ContactGuid = contactGuid, ProjectGuid = projectGuid, ProjectRoleGuid = projectRoleGuid};
+      var state = new ProjectRoleAssignmentState { Guid = guid, ContactGuid = contactGuid, ProjectGuid = projectGuid, ProjectRoleGuid = projectRoleGuid };
       _context.ProjectRoleAssignmentStates.Add(state);
       return state;
     }
@@ -795,14 +917,14 @@ namespace SoftwareManagementEFCoreRepository
 
     public IEnumerable<IContactState> GetContactsByProjectRoleGuid(Guid projectRoleGuid)
     {
-      var contactGuids = _context.ProjectRoleAssignmentStates.Where(s => s.ProjectRoleGuid == projectRoleGuid).AsNoTracking().Select(s=>s.ContactGuid).ToList();
+      var contactGuids = _context.ProjectRoleAssignmentStates.Where(s => s.ProjectRoleGuid == projectRoleGuid).AsNoTracking().Select(s => s.ContactGuid).ToList();
       return _context.ContactStates.Where(s => contactGuids.Contains(s.Guid)).AsNoTracking().ToList();
     }
 
     public void DeleteProjectRoleAssignmentState(Guid entityGuid)
     {
       var state = GetProjectRoleAssignmentState(entityGuid);
-      if(state != null)
+      if (state != null)
       {
         _context.ProjectRoleAssignmentStates.Remove((ProjectRoleAssignmentState)state);
       }

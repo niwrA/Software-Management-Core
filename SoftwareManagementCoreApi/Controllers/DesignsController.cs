@@ -47,8 +47,8 @@ namespace SoftwareManagementCoreApi.Controllers
         public EntityElementDto(IEntityElementState state)
         {
             _state = state;
-            PropertyElements = state.PropertyElementStates.Select(s => new PropertyElementDto(s)).ToList();
-            CommandElements = state.CommandElementStates.Select(s => new CommandElementDto(s)).ToList();
+            PropertyElements = state.PropertyElementStates?.Select(s => new PropertyElementDto(s)).ToList();
+            CommandElements = state.CommandElementStates?.Select(s => new CommandElementDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public Guid DesignGuid { get { return _state.DesignGuid; } }
@@ -68,7 +68,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public EpicElementDto(IEpicElementState state)
         {
             _state = state;
-            EntityElements = state.EntityElementStates.Select(s => new EntityElementDto(s)).ToList();
+            EntityElements = state.EntityElementStates?.Select(s => new EntityElementDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public Guid DesignGuid { get { return _state.DesignGuid; } }
@@ -86,7 +86,7 @@ namespace SoftwareManagementCoreApi.Controllers
         public DesignDto(IDesignState state)
         {
             _state = state;
-            EpicElements = state.EpicElementStates.Select(s => new EpicElementDto(s)).ToList();
+            EpicElements = state.EpicElementStates?.Select(s => new EpicElementDto(s)).ToList();
         }
         public Guid Guid { get { return _state.Guid; } }
         public string Name { get { return _state.Name; } }
