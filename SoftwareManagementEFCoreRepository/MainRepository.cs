@@ -819,14 +819,14 @@ namespace SoftwareManagementEFCoreRepository
 
     public IPropertyElementState CreatePropertyElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name)
     {
-      var newState = new PropertyElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
+      var newState = new PropertyElementState { Guid = guid, EntityElementGuid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
       _context.PropertyElementStates.Add(newState);
       return newState;
     }
 
     public ICommandElementState CreateCommandElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, Guid guid, string name)
     {
-      var newState = new CommandElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
+      var newState = new CommandElementState { Guid = guid, EntityElementGuid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
       _context.CommandElementStates.Add(newState);
       return newState;
     }

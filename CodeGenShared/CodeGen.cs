@@ -275,7 +275,7 @@ namespace CodeGenShared
         //        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core\";
 
         // todo: factor out this public property and use the one in fileIO
-        public string SolutionRoot = @"C:\PROJECTS\Software-Management-Core";
+        public string SolutionRoot = @"C:\development\SoftwareManagement\Software-Management-Core";
         public string TemplateEntityName = "Link";
         public string TemplateEntitiesName = "Links";
         public IList<ICustomDocument> Documents { get; set; }
