@@ -72,6 +72,32 @@ namespace SoftwareManagementCoreTests
       stateMock.VerifySet(t => t.Name = "new");
     }
 
+    [Fact(DisplayName = "ChangeCodeFor")]
+    public void CanChangeCodeForCompany()
+    {
+      var stateMock = new Mock<ICompanyState>();
+      var sut = new Company(stateMock.Object);
+
+      stateMock.Setup(s => s.Code).Returns("old");
+
+      sut.ChangeCode("new", "old");
+
+      stateMock.VerifySet(t => t.Code = "new");
+    }
+
+    [Fact(DisplayName = "ChangeExternalIdFor")]
+    public void CanChangeExternalIdForCompany()
+    {
+      var stateMock = new Mock<ICompanyState>();
+      var sut = new Company(stateMock.Object);
+
+      stateMock.Setup(s => s.ExternalId).Returns("old");
+
+      sut.ChangeExternalId("new", "old");
+
+      stateMock.VerifySet(t => t.ExternalId = "new");
+    }
+
     [Fact(DisplayName = "CanAddRoleToCompany")]
     public void CanAddRoleToCompany()
     {

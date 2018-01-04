@@ -372,6 +372,7 @@ namespace SoftwareManagementEFCoreRepository
     [Key]
     public Guid Guid { get; set; }
     public Guid EntityGuid { get; set; }
+    public string Entity { get; set; }
     public string CommandTypeId { get; set; }
     public DateTime? ExecutedOn { get; set; }
     public string ParametersJson { get; set; }
@@ -594,7 +595,7 @@ namespace SoftwareManagementEFCoreRepository
         .Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates)
         .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.DatabaseStates)
         .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.AccountStates)
-        .AsNoTracking().ToList();
+        .AsNoTracking().OrderBy(o => o.Name).ToList();
     }
 
     public void DeleteCompanyState(Guid guid)
@@ -1003,6 +1004,12 @@ namespace SoftwareManagementEFCoreRepository
     public ICompanyEnvironmentDatabaseState GetDatabaseForEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid)
     {
       return state.DatabaseStates?.SingleOrDefault(s => s.Guid == databaseGuid);
+    }
+
+    public IEnumerable<ICommandState> GetUnprocessedCommandStates()
+    {
+      var states = _context.CommandStates.Where(w => w.ExecutedOn == null).OrderByDescending(o => o.ReceivedOn);
+      return states;
     }
   }
 }

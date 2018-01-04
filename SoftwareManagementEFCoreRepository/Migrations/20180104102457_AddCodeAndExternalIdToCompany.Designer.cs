@@ -11,9 +11,10 @@ using System;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20180104102457_AddCodeAndExternalIdToCompany")]
+    partial class AddCodeAndExternalIdToCompany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,8 +55,6 @@ namespace SoftwareManagementEFCoreRepository.Migrations
                     b.Property<string>("CommandTypeId");
 
                     b.Property<DateTime>("CreatedOn");
-
-                    b.Property<string>("Entity");
 
                     b.Property<Guid>("EntityGuid");
 

@@ -26,6 +26,7 @@ using DesignsShared;
 using CodeGenShared;
 using CodeGen;
 using FilesShared;
+using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace SoftwareManagementCoreApi
 {
@@ -59,7 +60,6 @@ namespace SoftwareManagementCoreApi
         options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
       });
       services.AddMvc();
-
       #region "EntityFramework Configuration with SQL Server"
       var connection = $"{Configuration["ConnectionStrings:EntityFramework"]}";
       services.AddDbContext<SoftwareManagementEFCoreRepository.MainContext>(options => options.UseSqlServer(connection));

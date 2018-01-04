@@ -47,6 +47,30 @@ namespace SoftwareManagementCoreTests.Companies
 
       sutBuilder.CompanyMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
     }
+    [Fact(DisplayName = "ChangeCodeForCompanyCommand")]
+    public void ChangeCodeForCommand()
+    {
+      var sutBuilder = new CompanyCommandBuilder<ChangeCodeForCompanyCommand>();
+      var sut = sutBuilder.Build();
+
+      sut.Code = "New Code";
+      sut.OriginalCode = "Original Code";
+      sut.Execute();
+
+      sutBuilder.CompanyMock.Verify(s => s.ChangeCode(sut.Code, sut.OriginalCode), Times.Once);
+    }
+    [Fact(DisplayName = "ChangeExternalIdForCompanyCommand")]
+    public void ChangeExternalIdForCommand()
+    {
+      var sutBuilder = new CompanyCommandBuilder<ChangeExternalIdForCompanyCommand>();
+      var sut = sutBuilder.Build();
+
+      sut.ExternalId = "New ExternalId";
+      sut.OriginalExternalId = "Original ExternalId";
+      sut.Execute();
+
+      sutBuilder.CompanyMock.Verify(s => s.ChangeExternalId(sut.ExternalId, sut.OriginalExternalId), Times.Once);
+    }
 
     [Fact(DisplayName = "AddRoleToCompanyCommand")]
     public void AddRoleToCompanyCommand()

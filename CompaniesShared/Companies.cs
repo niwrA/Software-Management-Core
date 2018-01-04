@@ -83,6 +83,9 @@ namespace CompaniesShared
     void AddEnvironmentToCompany(Guid environmentGuid, string environmentName);
     void RemoveEnvironmentFromCompany(Guid environmentGuid);
     ICompanyEnvironment GetEnvironment(Guid guid);
+    void ChangeCode(string code, string originalCode);
+    void ChangeExternalId(string externalId, string originalExternalId);
+
     string ExternalId { get; }
     string Code { get; }
   }
@@ -138,6 +141,28 @@ namespace CompaniesShared
       if (_state.Name == originalName)
       {
         _state.Name = name;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
+    }
+    public void ChangeCode(string code, string originalCode)
+    {
+      if (_state.Code == originalCode)
+      {
+        _state.Code = code;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
+    }
+    public void ChangeExternalId(string externalId, string originalExternalId)
+    {
+      if (_state.ExternalId == originalExternalId)
+      {
+        _state.ExternalId = externalId;
       }
       else
       {

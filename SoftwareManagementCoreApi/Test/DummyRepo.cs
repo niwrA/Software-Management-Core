@@ -7,85 +7,65 @@ using System.Threading.Tasks;
 
 namespace SoftwareManagementCoreApi.Test
 {
-    public class ProductStateRepositoryFake : IProductStateRepository
+  public class ProductStateRepositoryFake : IProductStateRepository
+  {
+    public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
     {
-        public IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IProductState CreateProductState(Guid guid, string name)
-        {
-            throw new NotImplementedException();
-        }
-        public IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteProductFeatureState(Guid productGuid, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteProductIssueState(Guid productGuid, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteProductState(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeleteProductVersionState(Guid productGuid, Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IProductState GetProductState(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<IProductState> GetProductStates()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PersistChanges()
-        {
-            //throw new NotImplementedException();
-        }
-
-        public Task PersistChangesAsync()
-        {
-            throw new NotImplementedException();
-        }
+      throw new NotImplementedException();
     }
 
-    public class CommandStateRepositoryFake : ICommandStateRepository
+    public IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name)
     {
-
-        public ICommandState CreateCommandState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<ICommandState> GetCommandStates(Guid entityGuid)
-        {
-            throw new NotImplementedException();
-        }        
-
-        public void PersistChanges()
-        {
-            throw new NotImplementedException();
-        }
-
+      throw new NotImplementedException();
     }
+
+    public IProductState CreateProductState(Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+    public IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProductFeatureState(Guid productGuid, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProductIssueState(Guid productGuid, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProductState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProductVersionState(Guid productGuid, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IProductState GetProductState(Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<IProductState> GetProductStates()
+    {
+      throw new NotImplementedException();
+    }
+
+    public void PersistChanges()
+    {
+      //throw new NotImplementedException();
+    }
+
+    public Task PersistChangesAsync()
+    {
+      throw new NotImplementedException();
+    }
+  }
 }
