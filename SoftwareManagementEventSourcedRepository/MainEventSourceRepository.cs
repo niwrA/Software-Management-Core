@@ -28,6 +28,8 @@ namespace SoftwareManagementEventSourceRepository
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
     public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
+    public string ExternalId { get; set; }
+    public string Code { get; set; }
   }
   public class CompanyRoleState : ICompanyRoleState
   {

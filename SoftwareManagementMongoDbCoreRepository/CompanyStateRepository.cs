@@ -21,6 +21,8 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
     public ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
     public ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
+    public string ExternalId { get; set; }
+    public string Code { get; set; }
   }
   [BsonIgnoreExtraElements]
   public class CompanyRoleState : NamedEntityState, ICompanyRoleState

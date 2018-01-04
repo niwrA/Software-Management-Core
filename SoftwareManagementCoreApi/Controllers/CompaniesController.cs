@@ -30,7 +30,7 @@ namespace SoftwareManagementCoreApi.Controllers
     public string Name { get { return _state.Name; } }
     public string Url { get { return _state.Url; } }
     public Guid CompanyGuid { get { return _state.CompanyGuid; } }
-    public List<CompanyEnvironmentHardwareDto> Hardware{ get { return _state.HardwareStates?.Select(s => new CompanyEnvironmentHardwareDto(s)).ToList(); } }
+    public List<CompanyEnvironmentHardwareDto> Hardware { get { return _state.HardwareStates?.Select(s => new CompanyEnvironmentHardwareDto(s)).ToList(); } }
     public List<CompanyEnvironmentAccountDto> Accounts { get { return _state.AccountStates?.Select(s => new CompanyEnvironmentAccountDto(s)).ToList(); } }
     public List<CompanyEnvironmentDatabaseDto> Databases { get { return _state.DatabaseStates?.Select(s => new CompanyEnvironmentDatabaseDto(s)).ToList(); } }
   }
@@ -88,33 +88,34 @@ namespace SoftwareManagementCoreApi.Controllers
     public string Name { get { return _state.Name; } }
     public List<CompanyRoleDto> Roles { get { return _companyRoles; } }
     public List<CompanyEnvironmentDto> Environments { get { return _companyEnvironments; } }
-
+    public string ExternalId { get { return _state.ExternalId; } }
+    public string Code { get { return _state.Code; } }
   }
 
-  [Route("api/[controller]")]
-  public class CompaniesController : Controller
-  {
-    private ICompanyStateRepository _companyStateRepository;
+    [Route("api/[controller]")]
+    public class CompaniesController : Controller
+    {
+      private ICompanyStateRepository _companyStateRepository;
 
-    public CompaniesController(ICompanyStateRepository companyStateRepository)
-    {
-      _companyStateRepository = companyStateRepository;
-    }
-    // GET: api/products
-    [HttpGet]
-    public IEnumerable<CompanyDto> Get()
-    {
-      var states = _companyStateRepository.GetCompanyStates();
-      var dtos = states.Select(s => new CompanyDto(s)).ToList();
-      return dtos;
-    }
+      public CompaniesController(ICompanyStateRepository companyStateRepository)
+      {
+        _companyStateRepository = companyStateRepository;
+      }
+      // GET: api/products
+      [HttpGet]
+      public IEnumerable<CompanyDto> Get()
+      {
+        var states = _companyStateRepository.GetCompanyStates();
+        var dtos = states.Select(s => new CompanyDto(s)).ToList();
+        return dtos;
+      }
 
-    // GET api/products/5
-    [HttpGet("{guid}")]
-    public CompanyDto Get(Guid guid)
-    {
-      var state = _companyStateRepository.GetCompanyState(guid);
-      return new CompanyDto(state);
+      // GET api/products/5
+      [HttpGet("{guid}")]
+      public CompanyDto Get(Guid guid)
+      {
+        var state = _companyStateRepository.GetCompanyState(guid);
+        return new CompanyDto(state);
+      }
     }
   }
-}

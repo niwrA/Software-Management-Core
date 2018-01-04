@@ -18,6 +18,8 @@ namespace CompaniesShared
   {
     ICollection<ICompanyRoleState> CompanyRoleStates { get; set; }
     ICollection<ICompanyEnvironmentState> CompanyEnvironmentStates { get; set; }
+    string ExternalId { get; set; }
+    string Code { get; set; }
   }
   public interface ICompanyRoleState : INamedEntityState
   {
@@ -81,6 +83,8 @@ namespace CompaniesShared
     void AddEnvironmentToCompany(Guid environmentGuid, string environmentName);
     void RemoveEnvironmentFromCompany(Guid environmentGuid);
     ICompanyEnvironment GetEnvironment(Guid guid);
+    string ExternalId { get; }
+    string Code { get; }
   }
   public interface ICompanyEnvironment : IEntity
   {
@@ -164,6 +168,20 @@ namespace CompaniesShared
     {
       var state = _repo.GetEnvironmentState(this.Guid, guid);
       return new CompanyEnvironment(state, _repo);
+    }
+    public string ExternalId
+    {
+      get
+      {
+        return _state.ExternalId;
+      }
+    }
+    public string Code
+    {
+      get
+      {
+        return _state.Code;
+      }
     }
   }
   public class CompanyEnvironment : ICompanyEnvironment
