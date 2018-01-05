@@ -21,6 +21,24 @@ using FilesShared;
 
 namespace SoftwareManagementCoreWeb.Controllers
 {
+  public class CommandReadOnlyDto
+  {
+    private ICommandState _state;
+    public CommandReadOnlyDto(ICommandState state)
+    {
+      _state = state;
+    }
+    public Guid Guid {  get { return _state.Guid; } }
+    public string Name { get { return _state.CommandTypeId.Replace(_state.Entity + "Command", ""); } }
+    public string Entity { get { return _state.Entity; } }
+    public string ParametersJson { get { return _state.ParametersJson; } }
+    public Guid EntityGuid {  get { return _state.EntityGuid; } }
+    public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
+    public string ReceivedOn { get { return _state.ReceivedOn.HasValue ? _state.ReceivedOn.Value.ToString("yyyy-MM-dd") : ""; } }
+    public string ExecutedOn { get { return _state.ExecutedOn.HasValue ? _state.ExecutedOn.Value.ToString("yyyy-MM-dd") : ""; } }
+    public string UserName { get { return _state.UserName; } }
+
+  }
   public class CommandBatchResults
   {
     public bool Success { get; set; }
@@ -43,11 +61,11 @@ namespace SoftwareManagementCoreWeb.Controllers
 
     private IEmploymentService _employmentService;
     private IProjectRoleAssignmentService _projectRoleAssignmentService;
-
+    private ICommandStateRepository _commandStateRepository;
     private ICommandService _commandManager;
     private ICodeGenService _codeGenService;
 
-    public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService, IFileService fileService, IDesignService designService, ICodeGenService codeGenService)
+    public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService, IFileService fileService, IDesignService designService, ICodeGenService codeGenService, ICommandStateRepository commandStateRepository)
     {
       _commandManager = commandManager;
 
@@ -62,6 +80,8 @@ namespace SoftwareManagementCoreWeb.Controllers
 
       _employmentService = employmentService;
       _projectRoleAssignmentService = projectRoleAssignmentService;
+
+      _commandStateRepository = commandStateRepository;
 
       ConfigureCommandManager();
     }
@@ -112,9 +132,19 @@ namespace SoftwareManagementCoreWeb.Controllers
 
     // GET: api/commands
     [HttpGet]
-    public IEnumerable<ICommandState> Get()
+    public IEnumerable<CommandReadOnlyDto> Get()
     {
-      return new List<ICommandState>();
+      var states = _commandStateRepository.GetCommandStates();
+      var dtos = states.Select(s => new CommandReadOnlyDto(s)).ToList();
+      return dtos;
+    }
+    // GET api/links/forguid/5
+    [HttpGet("forGuid/{forGuid}")]
+    public IEnumerable<CommandReadOnlyDto> GetForGuid(Guid forGuid)
+    {
+      var states = _commandStateRepository.GetCommandStates(forGuid);
+      var dtos = states.Select(s => new CommandReadOnlyDto(s)).ToList();
+      return dtos;
     }
     [HttpGet]
     [Route("executenew")]

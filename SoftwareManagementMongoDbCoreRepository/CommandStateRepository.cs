@@ -129,5 +129,14 @@ namespace SoftwareManagementMongoDbCoreRepository
 
       return states;
     }
+
+    public IEnumerable<ICommandState> GetCommandStates()
+    {
+      var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
+      var filter = new BsonDocument();
+      var states = collection.Find(filter);
+
+      return states?.ToList();
+    }
   }
 }
