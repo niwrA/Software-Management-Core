@@ -251,7 +251,7 @@ namespace CommandsShared
       this.EntityGuid = state.EntityGuid;
       this.Entity = state.Entity; // todo: add to state and store in database
       this.ExecutedOn = state.ExecutedOn;
-      this.Name = state.CommandTypeId.Replace(state.Entity + "Command", ""); // we already have the proper name, so perhaps this can be done more cleanly,
+      this.Name = state.CommandTypeId?.Replace(state.Entity + "Command", ""); // we already have the proper name, so perhaps this can be done more cleanly,
       this.Username = state.UserName;
       // or we should save the CommandTypeId differently into the CommandState Table, ie. without EntityCommand suffix
       this.ParametersJson = state.ParametersJson;
