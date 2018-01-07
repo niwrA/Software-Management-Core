@@ -13,6 +13,11 @@ Windows
 
 3. Setup a database as below (MongoDb with docker is probably easiest)
 
+Switch to the desired database by commenting/uncommenting the appropriate lines in SetupDI (Dependency Injection). 
+
+   SetupMongoDbDI(services); // uncommnent to use MongoDb
+   // SetupSQLServerDbDI(services); // comment to use MongoDb
+
 SQL Server
 If you wan to use SQL Server: 
 
