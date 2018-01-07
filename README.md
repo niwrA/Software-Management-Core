@@ -15,9 +15,10 @@ Windows
 
 Switch to the desired database by commenting/uncommenting the appropriate lines in SetupDI (Dependency Injection). 
 
+```csharp
    SetupMongoDbDI(services); // uncommnent to use MongoDb
    // SetupSQLServerDbDI(services); // comment to use MongoDb
-
+```
 SQL Server
 If you wan to use SQL Server: 
 
