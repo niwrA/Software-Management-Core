@@ -9,96 +9,115 @@ using ProductsShared;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
-    public class ProductVersionDto
+  public class ProductVersionDto
+  {
+    private IProductVersionState _state;
+    public ProductVersionDto(IProductVersionState state)
     {
-        private IProductVersionState _state;
-        public ProductVersionDto(IProductVersionState state)
-        {
-            _state = state;
-        }
-        public Guid Guid { get { return _state.Guid; } }
-        public string Name { get { return _state.Name; } }
-        public int Major {  get { return _state.Major; } }
-        public int Minor {  get { return _state.Minor; } }
-        public int Revision {  get { return _state.Revision; } }
-        public int Build {  get { return _state.Build; } }
-        public Guid ProductGuid { get { return _state.ProductGuid; } }
+      _state = state;
     }
-    public class ProductFeatureDto
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public int Major { get { return _state.Major; } }
+    public int Minor { get { return _state.Minor; } }
+    public int Revision { get { return _state.Revision; } }
+    public int Build { get { return _state.Build; } }
+    public Guid ProductGuid { get { return _state.ProductGuid; } }
+  }
+  public class ProductFeatureConfigOptionDto
+  {
+    private IProductFeatureConfigOptionState _state;
+
+    public ProductFeatureConfigOptionDto(IProductFeatureConfigOptionState state)
     {
-        private IProductFeatureState _state;
-        public ProductFeatureDto(IProductFeatureState state)
-        {
-            _state = state;
-        }
-        public Guid Guid { get { return _state.Guid; } }
-        public string Name { get { return _state.Name; } }
-        public string Description { get { return _state.Description; } }
-        public bool IsRequest { get { return _state.IsRequest; } }
-        public Guid ProductGuid { get { return _state.ProductGuid; } }
-        public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
-        public Guid? RequestedForVersionGuid { get { return _state.RequestedForVersionGuid; } }
+      _state = state;
     }
-    public class ProductIssueDto
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public string DefaultValue { get { return _state.DefaultValue; } }
+    public string Description { get { return _state.Description; } }
+    public bool IsDefaultOption { get { return _state.IsDefaultOption; } }
+    public bool IsOptionForParent { get { return _state.IsOptionForParent; } }
+    public Guid? ParentGuid { get { return _state.ParentGuid; } }
+    public string Path { get { return _state.Path; } }
+    public Guid ProductFeatureGuid { get { return _state.ProductFeatureGuid; } }
+  }
+  public class ProductFeatureDto
+  {
+    private IProductFeatureState _state;
+    public ProductFeatureDto(IProductFeatureState state)
     {
-        private IProductIssueState _state;
-        public ProductIssueDto(IProductIssueState state)
-        {
-            _state = state;
-        }
-        public Guid Guid { get { return _state.Guid; } }
-        public string Name { get { return _state.Name; } }
-        public string Description { get { return _state.Description; } }
-        public Guid ProductGuid { get { return _state.ProductGuid; } }
-        public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+      _state = state;
     }
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public string Description { get { return _state.Description; } }
+    public bool IsRequest { get { return _state.IsRequest; } }
+    public Guid ProductGuid { get { return _state.ProductGuid; } }
+    public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+    public Guid? RequestedForVersionGuid { get { return _state.RequestedForVersionGuid; } }
+    public ICollection<ProductFeatureConfigOptionDto> ConfigOptions { get { return _state.ProductFeatureConfigOptionStates?.Select(s => new ProductFeatureConfigOptionDto(s)).ToList(); } }
+  }
+  public class ProductIssueDto
+  {
+    private IProductIssueState _state;
+    public ProductIssueDto(IProductIssueState state)
+    {
+      _state = state;
+    }
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public string Description { get { return _state.Description; } }
+    public Guid ProductGuid { get { return _state.ProductGuid; } }
+    public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+  }
 
 
-    public class ProductDto
+  public class ProductDto
+  {
+    private IProductState _state;
+    public ProductDto(IProductState state)
     {
-        private IProductState _state;
-        public ProductDto(IProductState state)
-        {
-            _state = state;
-        }
-        public Guid Guid { get { return _state.Guid; } }
-        public string Name { get { return _state.Name; } }
-        public string Description {  get { return _state.Description; } }
-        public string BusinessCase { get { return _state.BusinessCase; } }
-        public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates?.Select(s => new ProductVersionDto(s)).ToList(); } }
-        public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates?.Select(s => new ProductFeatureDto(s)).ToList(); } }
-        public ICollection<ProductIssueDto> Issues { get { return _state.ProductIssueStates?.Select(s => new ProductIssueDto(s)).ToList(); } }
+      _state = state;
+    }
+    public Guid Guid { get { return _state.Guid; } }
+    public string Name { get { return _state.Name; } }
+    public string Description { get { return _state.Description; } }
+    public string BusinessCase { get { return _state.BusinessCase; } }
+    public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates?.Select(s => new ProductVersionDto(s)).ToList(); } }
+    public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates?.Select(s => new ProductFeatureDto(s)).ToList(); } }
+    public ICollection<ProductIssueDto> Issues { get { return _state.ProductIssueStates?.Select(s => new ProductIssueDto(s)).ToList(); } }
+  }
+
+  [Route("api/[controller]")]
+  public class ProductsController : Controller
+  {
+    private IProductStateRepository _productStateRepository;
+
+    public ProductsController(IProductStateRepository productStateRepository)
+    {
+      _productStateRepository = productStateRepository;
+    }
+    // GET: api/products
+    [HttpGet]
+    public IEnumerable<ProductDto> Get()
+    {
+      var states = _productStateRepository.GetProductStates();
+      var dtos = states.Select(s => new ProductDto(s)).ToList();
+      return dtos;
     }
 
-    [Route("api/[controller]")]
-    public class ProductsController : Controller
+    // GET api/products/5
+    [HttpGet("{guid}")]
+    public ProductDto Get(Guid guid)
     {
-        private IProductStateRepository _productStateRepository;
-
-        public ProductsController(IProductStateRepository productStateRepository)
-        {
-            _productStateRepository = productStateRepository;
-        }
-        // GET: api/products
-        [HttpGet]
-        public IEnumerable<ProductDto> Get()
-        {
-            var states = _productStateRepository.GetProductStates();
-            var dtos = states.Select(s => new ProductDto(s)).ToList();
-            return dtos;
-        }
-
-        // GET api/products/5
-        [HttpGet("{guid}")]
-        public ProductDto Get(Guid guid)
-        {
-            var state = _productStateRepository.GetProductState(guid);
-            if (state != null)
-            {
-                var dto = new ProductDto(state);
-                return dto;
-            }
-            return null;
-        }
+      var state = _productStateRepository.GetProductState(guid);
+      if (state != null)
+      {
+        var dto = new ProductDto(state);
+        return dto;
+      }
+      return null;
     }
+  }
 }
