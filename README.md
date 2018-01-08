@@ -13,6 +13,12 @@ Windows
 
 3. Setup a database as below (MongoDb with docker is probably easiest)
 
+Switch to the desired database by commenting/uncommenting the appropriate lines in SetupDI (Dependency Injection). 
+
+```csharp
+   SetupMongoDbDI(services); // uncommnent to use MongoDb
+   // SetupSQLServerDbDI(services); // comment to use MongoDb
+```
 SQL Server
 If you wan to use SQL Server: 
 
@@ -20,7 +26,7 @@ If you wan to use SQL Server:
 
 - Open the project and change the connection string in both the api and entityframeworkcore projects
 
-- Open the Package Manager console in Visual Studio, select the EntityFrameworkCore project, and run Update-Database to create and/or migrate the database to the latest version. 
+- Open the Package Manager console in Visual Studio, and run Update-Database to create and/or migrate the database to the latest version (make sure the Api\SoftwareManagementCoreApi is the default project here)
 
 MongoDb
 If you want to use MongoDb (currently in development): install MongoDB using the default port, or use a Docker install, like this:
