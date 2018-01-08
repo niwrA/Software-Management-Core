@@ -371,5 +371,30 @@ namespace SoftwareManagementEventSourceRepository
     {
       throw new NotImplementedException();
     }
+
+    public IProductFeatureConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState state, Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IProductFeatureConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void MoveProductFeatureConfigOption(IProductFeatureConfigOptionState state, Guid parentGuid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void MakeDefaultFeatureConfigOptionState(IProductFeatureConfigOptionState state)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

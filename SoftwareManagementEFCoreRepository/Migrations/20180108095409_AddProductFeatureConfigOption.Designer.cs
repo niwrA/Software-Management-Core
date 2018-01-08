@@ -11,9 +11,10 @@ using System;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20180108095409_AddProductFeatureConfigOption")]
+    partial class AddProductFeatureConfigOption
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -408,12 +409,6 @@ namespace SoftwareManagementEFCoreRepository.Migrations
                     b.Property<DateTime>("CreatedOn");
 
                     b.Property<string>("DefaultValue");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDefaultOption");
-
-                    b.Property<bool>("IsOptionForParent");
 
                     b.Property<string>("Name");
 

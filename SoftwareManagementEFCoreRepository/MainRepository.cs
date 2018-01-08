@@ -50,6 +50,7 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<EntityElementState> EntityElementStates { get; set; }
     public DbSet<PropertyElementState> PropertyElementStates { get; set; }
     public DbSet<CommandElementState> CommandElementStates { get; set; }
+    public DbSet<ProductFeatureConfigOptionState> ProductFeatureConfigOptionStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,6 +98,11 @@ namespace SoftwareManagementEFCoreRepository
         .HasMany(h => (ICollection<CompanyEnvironmentDatabaseState>)h.DatabaseStates)
         .WithOne()
         .HasForeignKey(p => p.EnvironmentGuid);
+
+      modelBuilder.Entity<ProductFeatureState>()
+        .HasMany(h => (ICollection<ProductFeatureConfigOptionState>)h.ProductFeatureConfigOptionStates)
+        .WithOne()
+        .HasForeignKey(p => p.ProductFeatureGuid);
 
       modelBuilder.Entity<LinkState>()
         .HasIndex(i => i.ForGuid);
@@ -156,6 +162,17 @@ namespace SoftwareManagementEFCoreRepository
     public bool IsRequest { get; set; }
     public Guid? FirstVersionGuid { get; set; }
     public Guid? RequestedForVersionGuid { get; set; }
+    public ICollection<IProductFeatureConfigOptionState> ProductFeatureConfigOptionStates { get; set; }
+  }
+  public class ProductFeatureConfigOptionState : NamedEntityState, IProductFeatureConfigOptionState
+  {
+    public Guid ProductFeatureGuid { get; set; }
+    public Guid? ParentGuid { get; set; }
+    public string Path { get; set; }
+    public string DefaultValue { get; set; }
+    public string Description { get; set; }
+    public bool IsDefaultOption { get; set; }
+    public bool IsOptionForParent { get; set; }
   }
   public class ProductIssueState : NamedEntityState, IProductIssueState
   {
@@ -740,6 +757,7 @@ namespace SoftwareManagementEFCoreRepository
       return state;
     }
 
+    // todo: this needs to delete from the selected feature state as well?
     public void DeleteProductIssueState(Guid productGuid, Guid guid)
     {
       var state = GetProductIssueState(guid);
@@ -1016,6 +1034,49 @@ namespace SoftwareManagementEFCoreRepository
     {
       var states = _context.CommandStates.Where(w => w.ExecutedOn == null).OrderByDescending(o => o.ReceivedOn);
       return states;
+    }
+
+    public IProductFeatureConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState productFeatureState, Guid guid, string name)
+    {
+      var newState = new ProductFeatureConfigOptionState { Guid = guid, Name = name, ProductFeatureGuid = productFeatureState.Guid };
+      this._context.ProductFeatureConfigOptionStates.Add(newState);
+      productFeatureState.ProductFeatureConfigOptionStates.Add(newState);
+      return newState;
+    }
+
+    public IProductFeatureConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    {
+      return state.ProductFeatureConfigOptionStates.SingleOrDefault(s => s.Guid == guid);
+    }
+
+    public void DeleteProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    {
+      var stateToDelete = GetProductFeatureConfigOptionState(state, guid);
+      state.ProductFeatureConfigOptionStates.Remove(stateToDelete);
+      _context.ProductFeatureConfigOptionStates.Remove((ProductFeatureConfigOptionState)stateToDelete);
+    }
+
+    // todo: is this enough? May cause problems when validating before object is refreshed,
+    // should we expose the Parent state object here? (we don't currently so no problem yet)
+    public void MoveProductFeatureConfigOption(IProductFeatureConfigOptionState state, Guid parentGuid)
+    {
+      state.ParentGuid = parentGuid;
+    }
+
+    public void MakeDefaultFeatureConfigOptionState(IProductFeatureConfigOptionState state)
+    {
+      if (state.ParentGuid != null)
+      {
+        var options = _context.ProductFeatureConfigOptionStates.Where(s=>s.ParentGuid == state.ParentGuid);
+        foreach(var option in options)
+        {
+          option.IsDefaultOption = (state.Guid == option.Guid);
+        }
+      }
+      else
+      {
+        // not possible to make default option. Exception?
+      }
     }
   }
 }
