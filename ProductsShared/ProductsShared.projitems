@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ProductCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProductFeatureCommands.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProductConfigOptionCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Products.cs" />
   </ItemGroup>
 </Project>
