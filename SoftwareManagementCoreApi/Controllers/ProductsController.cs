@@ -24,11 +24,11 @@ namespace SoftwareManagementCoreApi.Controllers
     public int Build { get { return _state.Build; } }
     public Guid ProductGuid { get { return _state.ProductGuid; } }
   }
-  public class ProductFeatureConfigOptionDto
+  public class ProductConfigOptionDto
   {
-    private IProductFeatureConfigOptionState _state;
+    private IProductConfigOptionState _state;
 
-    public ProductFeatureConfigOptionDto(IProductFeatureConfigOptionState state)
+    public ProductConfigOptionDto(IProductConfigOptionState state)
     {
       _state = state;
     }
@@ -40,7 +40,8 @@ namespace SoftwareManagementCoreApi.Controllers
     public bool IsOptionForParent { get { return _state.IsOptionForParent; } }
     public Guid? ParentGuid { get { return _state.ParentGuid; } }
     public string Path { get { return _state.Path; } }
-    public Guid ProductFeatureGuid { get { return _state.ProductFeatureGuid; } }
+    public Guid ProductGuid { get { return _state.ProductGuid; } }
+    public Guid? ProductFeatureGuid { get { return _state.ProductFeatureGuid; } }
   }
   public class ProductFeatureDto
   {
@@ -56,7 +57,6 @@ namespace SoftwareManagementCoreApi.Controllers
     public Guid ProductGuid { get { return _state.ProductGuid; } }
     public Guid? FirstVersionGuid { get { return _state.FirstVersionGuid; } }
     public Guid? RequestedForVersionGuid { get { return _state.RequestedForVersionGuid; } }
-    public ICollection<ProductFeatureConfigOptionDto> ConfigOptions { get { return _state.ProductFeatureConfigOptionStates?.Select(s => new ProductFeatureConfigOptionDto(s)).ToList(); } }
   }
   public class ProductIssueDto
   {
@@ -87,6 +87,7 @@ namespace SoftwareManagementCoreApi.Controllers
     public ICollection<ProductVersionDto> Versions { get { return _state.ProductVersionStates?.Select(s => new ProductVersionDto(s)).ToList(); } }
     public ICollection<ProductFeatureDto> Features { get { return _state.ProductFeatureStates?.Select(s => new ProductFeatureDto(s)).ToList(); } }
     public ICollection<ProductIssueDto> Issues { get { return _state.ProductIssueStates?.Select(s => new ProductIssueDto(s)).ToList(); } }
+    public ICollection<ProductConfigOptionDto> ConfigOptions { get { return _state.ProductConfigOptionStates?.Select(s => new ProductConfigOptionDto(s)).ToList(); } }
   }
 
   [Route("api/[controller]")]

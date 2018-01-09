@@ -14,46 +14,49 @@ namespace SoftwareManagementCoreTests.Products
     public void CanAddConfigOption()
     {
       var repoMock = new Mock<IProductStateRepository>();
-      var productFeatureStateMock = new Mock<IProductFeatureState>();
-      var sut = new ProductFeature(productFeatureStateMock.Object, repoMock.Object);
-      var stateMock = new Mock<IProductFeatureConfigOptionState>();
+      var productStateMock = new Mock<IProductState>();
+      var sut = new Product(productStateMock.Object, repoMock.Object);
+      var stateMock = new Mock<IProductConfigOptionState>();
       const string name = "new";
 
       var guid = Guid.NewGuid();
-      var productFeatureGuid = Guid.NewGuid();
+      var productGuid = Guid.NewGuid();
+      var featureGuid = Guid.NewGuid();
 
-      productFeatureStateMock.Setup(s => s.Guid).Returns(productFeatureGuid);
+      productStateMock.Setup(s => s.Guid).Returns(productGuid);
       stateMock.Setup(s => s.Guid).Returns(guid);
       stateMock.Setup(s => s.Name).Returns(name);
-      stateMock.Setup(s => s.ProductFeatureGuid).Returns(productFeatureGuid);
-      repoMock.Setup(t => t.CreateProductFeatureConfigOptionState(productFeatureStateMock.Object, guid, name)).Returns(stateMock.Object);
+      stateMock.Setup(s => s.ProductGuid).Returns(productGuid);
+      stateMock.Setup(s => s.ProductGuid).Returns(productGuid);
+      repoMock.Setup(t => t.CreateProductConfigOptionState(productStateMock.Object, featureGuid, guid, name)).Returns(stateMock.Object);
 
-      var result = sut.AddConfigOption(guid, name);
+      var result = sut.AddConfigOption(featureGuid, guid, name);
 
-      repoMock.Verify(t => t.CreateProductFeatureConfigOptionState(productFeatureStateMock.Object, guid, name), Times.Exactly(1));
+      repoMock.Verify(t => t.CreateProductConfigOptionState(productStateMock.Object, featureGuid, guid, name), Times.Exactly(1));
 
       Assert.Equal(guid, result.Guid);
       Assert.Equal(name, result.Name);
-      Assert.Equal(productFeatureGuid, result.ProductFeatureGuid);
+      Assert.Equal(productGuid, result.ProductGuid);
+      Assert.Equal(featureGuid, result.ProductFeatureGuid);
     }
     [Fact(DisplayName = "DeleteConfigOption Implements IRepository")]
     public void CanDeleteConfigOption()
     {
       var repoMock = new Mock<IProductStateRepository>();
-      var productFeatureStateMock = new Mock<IProductFeatureState>();
-      var sut = new ProductFeature(productFeatureStateMock.Object, repoMock.Object);
-      var stateMock = new Mock<IProductFeatureConfigOptionState>();
+      var productStateMock = new Mock<IProductState>();
+      var sut = new Product(productStateMock.Object, repoMock.Object);
+      var stateMock = new Mock<IProductConfigOptionState>();
 
       var guid = Guid.NewGuid();
       var productFeatureGuid = Guid.NewGuid();
 
-      productFeatureStateMock.Setup(s => s.Guid).Returns(productFeatureGuid);
+      productStateMock.Setup(s => s.Guid).Returns(productFeatureGuid);
       stateMock.Setup(s => s.Guid).Returns(guid);
       stateMock.Setup(s => s.ProductFeatureGuid).Returns(productFeatureGuid);
 
       sut.DeleteConfigOption(guid);
 
-      repoMock.Verify(t => t.DeleteProductFeatureConfigOptionState(productFeatureStateMock.Object, guid), Times.Exactly(1));
+      repoMock.Verify(t => t.DeleteProductConfigOptionState(productStateMock.Object, guid), Times.Exactly(1));
     }
   }
 }

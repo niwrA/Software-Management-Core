@@ -26,7 +26,6 @@ namespace SoftwareManagementMongoDbCoreRepository
     public bool IsRequest { get; set; }
     public Guid? FirstVersionGuid { get; set; }
     public Guid? RequestedForVersionGuid { get; set; }
-    public ICollection<IProductFeatureConfigOptionState> ProductFeatureConfigOptionStates { get; set; } = new List<IProductFeatureConfigOptionState>();
   }
   public class ProductIssueState : NamedEntityState, IProductIssueState
   {
@@ -49,6 +48,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     public ICollection<IProductIssueState> ProductIssueStates { get; set; }
+    public ICollection<IProductConfigOptionState> ProductConfigOptionStates { get; set; }
   }
 
   public class ProductStateRepository : IProductStateRepository
@@ -245,27 +245,27 @@ namespace SoftwareManagementMongoDbCoreRepository
       }
     }
 
-    public IProductFeatureConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState state, Guid guid, string name)
+    public void MakeDefaultConfigOptionState(IProductConfigOptionState state)
     {
       throw new NotImplementedException();
     }
 
-    public IProductFeatureConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    public IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid guid, string name)
     {
       throw new NotImplementedException();
     }
 
-    public void DeleteProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    public IProductConfigOptionState GetProductConfigOptionState(IProductState state, Guid guid)
     {
       throw new NotImplementedException();
     }
 
-    public void MoveProductFeatureConfigOption(IProductFeatureConfigOptionState state, Guid parentGuid)
+    public void DeleteProductConfigOptionState(IProductState state, Guid guid)
     {
-      state.ParentGuid = parentGuid;
+      throw new NotImplementedException();
     }
 
-    public void MakeDefaultFeatureConfigOptionState(IProductFeatureConfigOptionState state)
+    public void MoveProductConfigOption(IProductConfigOptionState state, Guid parentGuid)
     {
       throw new NotImplementedException();
     }

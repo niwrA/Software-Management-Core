@@ -4,11 +4,14 @@ using System.Text;
 
 namespace ProductsShared
 {
-  public class RenameProductFeatureCommand : ProductCommand
+  public abstract class ProductFeatureCommand : ProductCommand
+  {
+    public Guid ProductGuid { get; set; }
+  }
+  public class RenameProductFeatureCommand : ProductFeatureCommand
   {
     public string OriginalName { get; set; }
     public string Name { get; set; }
-    public Guid ProductGuid { get; set; }
     public override void Execute()
     {
       var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
@@ -17,10 +20,9 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class ChangeDescriptionOfProductFeatureCommand : ProductCommand
+  public class ChangeDescriptionOfProductFeatureCommand : ProductFeatureCommand
   {
     public string Description { get; set; }
-    public Guid ProductGuid { get; set; }
     public override void Execute()
     {
       var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
@@ -29,28 +31,25 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class AddConfigOptionToProductFeatureCommand : ProductCommand
+  public class AddConfigOptionToProductCommand : ProductCommand
   {
     public string Name { get; set; }
-    public Guid FeatureGuid { get; set; }
     public Guid ConfigGuid { get; set; }
+    public Guid? FeatureGuid { get; set; }
     public override void Execute()
     {
       var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      var feature = product.GetFeature(this.FeatureGuid);
-      feature.AddConfigOption(ConfigGuid, Name);
+      product.AddConfigOption(this.FeatureGuid, ConfigGuid, Name);
       base.Execute();
     }
   }
-  public class RemoveConfigOptionFromProductFeatureCommand : ProductCommand
+  public class RemoveConfigOptionFromProductCommand : ProductCommand
   {
-    public Guid FeatureGuid { get; set; }
     public Guid ConfigGuid { get; set; }
     public override void Execute()
     {
       var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      var feature = product.GetFeature(this.FeatureGuid);
-      feature.DeleteConfigOption(ConfigGuid);
+      product.DeleteConfigOption(ConfigGuid);
       base.Execute();
     }
   }

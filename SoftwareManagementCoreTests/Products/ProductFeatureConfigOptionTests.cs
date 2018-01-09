@@ -15,8 +15,8 @@ namespace SoftwareManagementCoreTests.Products
     public void CanChangeDefaultValue()
     {
       var repoMock = new Mock<IProductStateRepository>();
-      var stateMock = new Mock<IProductFeatureConfigOptionState>();
-      var sut = new ProductFeatureConfigOption(stateMock.Object, repoMock.Object);
+      var stateMock = new Mock<IProductConfigOptionState>();
+      var sut = new ProductConfigOption(stateMock.Object, repoMock.Object);
       const string value = "new";
       const string orgvalue = "old";
 
@@ -31,8 +31,8 @@ namespace SoftwareManagementCoreTests.Products
     public void CanChangeDescription()
     {
       var repoMock = new Mock<IProductStateRepository>();
-      var stateMock = new Mock<IProductFeatureConfigOptionState>();
-      var sut = new ProductFeatureConfigOption(stateMock.Object, repoMock.Object);
+      var stateMock = new Mock<IProductConfigOptionState>();
+      var sut = new ProductConfigOption(stateMock.Object, repoMock.Object);
       const string value = "new";
 
       sut.ChangeDescription(value);
@@ -63,7 +63,7 @@ namespace SoftwareManagementCoreTests.Products
 
       sut.MakeDefaultOption();
 
-      sutBuilder.RepoMock.Verify(t => t.MakeDefaultFeatureConfigOptionState(sutBuilder.StateMock.Object), Times.Exactly(1));
+      sutBuilder.RepoMock.Verify(t => t.MakeDefaultConfigOptionState(sutBuilder.StateMock.Object), Times.Exactly(1));
     }
     [Fact(DisplayName = "MoveToParent implements IRepository")]
     public void CanMoveToParent()
@@ -75,17 +75,17 @@ namespace SoftwareManagementCoreTests.Products
 
       sut.MoveToParent(guid, originalGuid);
 
-      sutBuilder.RepoMock.Verify(t => t.MoveProductFeatureConfigOption(sutBuilder.StateMock.Object, guid), Times.Exactly(1));
+      sutBuilder.RepoMock.Verify(t => t.MoveProductConfigOption(sutBuilder.StateMock.Object, guid), Times.Exactly(1));
     }
   }
 
   class ProductFeatureConfigOptionSutBuilder
   {
     public Mock<IProductStateRepository> RepoMock = new Mock<IProductStateRepository>();
-    public Mock<IProductFeatureConfigOptionState> StateMock = new Mock<IProductFeatureConfigOptionState>();
-    public IProductFeatureConfigOption Build()
+    public Mock<IProductConfigOptionState> StateMock = new Mock<IProductConfigOptionState>();
+    public IProductConfigOption Build()
     {
-      var sut = new ProductFeatureConfigOption(StateMock.Object, RepoMock.Object);
+      var sut = new ProductConfigOption(StateMock.Object, RepoMock.Object);
       return sut;
     }
     public ProductFeatureConfigOptionSutBuilder WithPath(string value, string orgvalue)

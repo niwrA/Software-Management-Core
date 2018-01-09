@@ -78,6 +78,7 @@ namespace SoftwareManagementEventSourceRepository
     public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     public ICollection<IProductIssueState> ProductIssueStates { get; set; }
+    public ICollection<IProductConfigOptionState> ProductConfigOptionStates { get; set; }
   }
   public class EventSourcedMainRepository : IContactStateRepository, ICompanyStateRepository, IProjectStateRepository, IProductStateRepository
   {
@@ -372,27 +373,47 @@ namespace SoftwareManagementEventSourceRepository
       throw new NotImplementedException();
     }
 
-    public IProductFeatureConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState state, Guid guid, string name)
+    public IProductConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState state, Guid guid, string name)
     {
       throw new NotImplementedException();
     }
 
-    public IProductFeatureConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    public IProductConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
     {
       throw new NotImplementedException();
     }
 
-    public void DeleteProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    public void DeleteProductConfigOptionState(IProductFeatureState state, Guid guid)
     {
       throw new NotImplementedException();
     }
 
-    public void MoveProductFeatureConfigOption(IProductFeatureConfigOptionState state, Guid parentGuid)
+    public void MoveProductFeatureConfigOption(IProductConfigOptionState state, Guid parentGuid)
     {
       throw new NotImplementedException();
     }
 
-    public void MakeDefaultFeatureConfigOptionState(IProductFeatureConfigOptionState state)
+    public void MakeDefaultConfigOptionState(IProductConfigOptionState state)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid guid, string name)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IProductConfigOptionState GetProductConfigOptionState(IProductState state, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void DeleteProductConfigOptionState(IProductState state, Guid guid)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void MoveProductConfigOption(IProductConfigOptionState state, Guid parentGuid)
     {
       throw new NotImplementedException();
     }

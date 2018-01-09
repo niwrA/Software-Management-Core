@@ -11,33 +11,32 @@ namespace SoftwareManagementCoreTests.Products
 {
   [Trait("Entity", "ProductFeature")]
   public class ProductFeatureCommandTests
+  {
+    [Fact(DisplayName = "AddConfigToProductCommand")]
+    public void AddConfigToProductCommand()
     {
-    [Fact(DisplayName = "AddConfigToFeatureCommand")]
-    public void AddConfigToFeatureCommand()
-    {
-      var sutBuilder = new ProductFeatureCommandBuilder<AddConfigOptionToProductFeatureCommand>();
-      var sut = sutBuilder.Build() as AddConfigOptionToProductFeatureCommand;
+      var sutBuilder = new ProductCommandBuilder<AddConfigOptionToProductCommand>();
+      var sut = sutBuilder.Build() as AddConfigOptionToProductCommand;
 
-      sut.Guid = sutBuilder.ProductMock.Object.Guid;
+      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
       sut.ConfigGuid = Guid.NewGuid();
-      sut.FeatureGuid = sutBuilder.ProductFeatureMock.Object.Guid;
+      sut.FeatureGuid = Guid.NewGuid();
       sut.Name = "New name";
       sut.Execute();
 
-      sutBuilder.ProductFeatureMock.Verify(s => s.AddConfigOption(sut.ConfigGuid, sut.Name), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.ConfigGuid, sut.Name), Times.Once);
     }
     [Fact(DisplayName = "RemoveConfigFromFeatureCommand")]
     public void RemoveConfigFromFeatureCommand()
     {
-      var sutBuilder = new ProductFeatureCommandBuilder<RemoveConfigOptionFromProductFeatureCommand>();
-      var sut = sutBuilder.Build() as RemoveConfigOptionFromProductFeatureCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveConfigOptionFromProductCommand>();
+      var sut = sutBuilder.Build() as RemoveConfigOptionFromProductCommand;
 
-      sut.Guid = sutBuilder.ProductMock.Object.Guid;
+      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
       sut.ConfigGuid = Guid.NewGuid();
-      sut.FeatureGuid = sutBuilder.ProductFeatureMock.Object.Guid;
       sut.Execute();
 
-      sutBuilder.ProductFeatureMock.Verify(s => s.DeleteConfigOption(sut.ConfigGuid), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.ConfigGuid), Times.Once);
     }
 
     [Fact(DisplayName = "ChangeDescriptionCommand")]
@@ -99,12 +98,6 @@ namespace SoftwareManagementCoreTests.Products
       ProductsMock.Setup(s => s.GetProduct(guid)).Returns(ProductMock.Object);
       return this;
     }
-    public ProductFeatureCommandBuilder<T> WithProductFeatureConfigOption(IProductFeatureConfigOption config)
-    {
-      ProductFeatureMock.Setup(s => s.GetConfigOption(config.Guid)).Returns(config);
-      return this;
-    }
-
   }
 
 }

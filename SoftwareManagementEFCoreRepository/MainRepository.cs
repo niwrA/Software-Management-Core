@@ -50,7 +50,7 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<EntityElementState> EntityElementStates { get; set; }
     public DbSet<PropertyElementState> PropertyElementStates { get; set; }
     public DbSet<CommandElementState> CommandElementStates { get; set; }
-    public DbSet<ProductFeatureConfigOptionState> ProductFeatureConfigOptionStates { get; set; }
+    public DbSet<ProductConfigOptionState> ProductConfigOptionStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -84,6 +84,11 @@ namespace SoftwareManagementEFCoreRepository
           .WithOne()
           .HasForeignKey(p => p.ProductGuid);
 
+      modelBuilder.Entity<ProductState>()
+          .HasMany(h => (ICollection<ProductConfigOptionState>)h.ProductConfigOptionStates)
+          .WithOne()
+          .HasForeignKey(p => p.ProductGuid);
+
       modelBuilder.Entity<CompanyEnvironmentState>()
         .HasMany(h => (ICollection<CompanyEnvironmentHardwareState>)h.HardwareStates)
         .WithOne()
@@ -98,11 +103,6 @@ namespace SoftwareManagementEFCoreRepository
         .HasMany(h => (ICollection<CompanyEnvironmentDatabaseState>)h.DatabaseStates)
         .WithOne()
         .HasForeignKey(p => p.EnvironmentGuid);
-
-      modelBuilder.Entity<ProductFeatureState>()
-        .HasMany(h => (ICollection<ProductFeatureConfigOptionState>)h.ProductFeatureConfigOptionStates)
-        .WithOne()
-        .HasForeignKey(p => p.ProductFeatureGuid);
 
       modelBuilder.Entity<LinkState>()
         .HasIndex(i => i.ForGuid);
@@ -162,11 +162,11 @@ namespace SoftwareManagementEFCoreRepository
     public bool IsRequest { get; set; }
     public Guid? FirstVersionGuid { get; set; }
     public Guid? RequestedForVersionGuid { get; set; }
-    public ICollection<IProductFeatureConfigOptionState> ProductFeatureConfigOptionStates { get; set; }
   }
-  public class ProductFeatureConfigOptionState : NamedEntityState, IProductFeatureConfigOptionState
+  public class ProductConfigOptionState : NamedEntityState, IProductConfigOptionState
   {
-    public Guid ProductFeatureGuid { get; set; }
+    public Guid ProductGuid { get; set; }
+    public Guid? ProductFeatureGuid { get; set; }
     public Guid? ParentGuid { get; set; }
     public string Path { get; set; }
     public string DefaultValue { get; set; }
@@ -188,6 +188,7 @@ namespace SoftwareManagementEFCoreRepository
     public ICollection<IProductVersionState> ProductVersionStates { get; set; }
     public ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     public ICollection<IProductIssueState> ProductIssueStates { get; set; }
+    public ICollection<IProductConfigOptionState> ProductConfigOptionStates { get; set; }
   }
 
   public class ProjectRoleState : NamedEntityState, IProjectRoleState
@@ -460,12 +461,19 @@ namespace SoftwareManagementEFCoreRepository
 
     public IProductState GetProductState(Guid guid)
     {
-      return _context.ProductStates.Include(s => s.ProductFeatureStates).Include(i => i.ProductIssueStates).Include(i => i.ProductVersionStates).SingleOrDefault(s => s.Guid == guid);
+      return _context.ProductStates
+        .Include(s => s.ProductFeatureStates)
+        .Include(i => i.ProductIssueStates)
+        .Include(i => i.ProductVersionStates)
+        .Include(i => i.ProductConfigOptionStates)
+        .SingleOrDefault(s => s.Guid == guid);
     }
 
     public IProjectState GetProjectState(Guid guid)
     {
-      return _context.ProjectStates.Include(s => s.ProjectRoleStates).SingleOrDefault(s => s.Guid == guid);
+      return _context.ProjectStates
+        .Include(s => s.ProjectRoleStates)
+        .SingleOrDefault(s => s.Guid == guid);
     }
     // todo: separate read-only repository
     public IProjectState GetProjectStateReadOnly(Guid guid)
@@ -481,6 +489,7 @@ namespace SoftwareManagementEFCoreRepository
         .Include(s => s.ProductVersionStates)
         .Include(s => s.ProductIssueStates)
         .Include(s => s.ProductFeatureStates)
+        .Include(i => i.ProductConfigOptionStates)
         .AsNoTracking().ToList();
     }
 
@@ -664,7 +673,7 @@ namespace SoftwareManagementEFCoreRepository
     public IEnumerable<ICommandState> GetCommandStates()
     {
       // todo: consider which date I want to use. Ideally the created on reflects the time the user created the command correctly. Ideally ...
-      var states = _context.CommandStates.AsNoTracking().OrderByDescending(o=>o.ExecutedOn).ThenByDescending(o=>o.CreatedOn).ToList();
+      var states = _context.CommandStates.AsNoTracking().OrderByDescending(o => o.ExecutedOn).ThenByDescending(o => o.CreatedOn).ToList();
       return states;
     }
 
@@ -1036,39 +1045,40 @@ namespace SoftwareManagementEFCoreRepository
       return states;
     }
 
-    public IProductFeatureConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState productFeatureState, Guid guid, string name)
+    public IProductConfigOptionState CreateProductConfigOptionState(IProductState productState, Guid? featureGuid, Guid guid, string name)
     {
-      var newState = new ProductFeatureConfigOptionState { Guid = guid, Name = name, ProductFeatureGuid = productFeatureState.Guid };
-      this._context.ProductFeatureConfigOptionStates.Add(newState);
-      productFeatureState.ProductFeatureConfigOptionStates.Add(newState);
+      var newState = new ProductConfigOptionState { Guid = guid, Name = name, ProductGuid = productState.Guid};
+      newState.ProductFeatureGuid = featureGuid;
+      this._context.ProductConfigOptionStates.Add(newState);
       return newState;
     }
 
-    public IProductFeatureConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    public IProductConfigOptionState GetProductConfigOptionState(IProductState state, Guid guid)
     {
-      return state.ProductFeatureConfigOptionStates.SingleOrDefault(s => s.Guid == guid);
+      return state.ProductConfigOptionStates.SingleOrDefault(s => s.Guid == guid);
     }
 
-    public void DeleteProductFeatureConfigOptionState(IProductFeatureState state, Guid guid)
+    public void DeleteProductConfigOptionState(IProductState state, Guid guid)
     {
-      var stateToDelete = GetProductFeatureConfigOptionState(state, guid);
-      state.ProductFeatureConfigOptionStates.Remove(stateToDelete);
-      _context.ProductFeatureConfigOptionStates.Remove((ProductFeatureConfigOptionState)stateToDelete);
+      var stateToDelete = GetProductConfigOptionState(state, guid);
+      state.ProductConfigOptionStates.Remove(stateToDelete);
+      // todo: remove from product?
+      _context.ProductConfigOptionStates.Remove((ProductConfigOptionState)stateToDelete);
     }
 
     // todo: is this enough? May cause problems when validating before object is refreshed,
     // should we expose the Parent state object here? (we don't currently so no problem yet)
-    public void MoveProductFeatureConfigOption(IProductFeatureConfigOptionState state, Guid parentGuid)
+    public void MoveProductConfigOption(IProductConfigOptionState state, Guid parentGuid)
     {
       state.ParentGuid = parentGuid;
     }
 
-    public void MakeDefaultFeatureConfigOptionState(IProductFeatureConfigOptionState state)
+    public void MakeDefaultConfigOptionState(IProductConfigOptionState state)
     {
       if (state.ParentGuid != null)
       {
-        var options = _context.ProductFeatureConfigOptionStates.Where(s=>s.ParentGuid == state.ParentGuid);
-        foreach(var option in options)
+        var options = _context.ProductConfigOptionStates.Where(s => s.ParentGuid == state.ParentGuid);
+        foreach (var option in options)
         {
           option.IsDefaultOption = (state.Guid == option.Guid);
         }

@@ -14,6 +14,7 @@ namespace ProductsShared
     ICollection<IProductVersionState> ProductVersionStates { get; set; }
     ICollection<IProductFeatureState> ProductFeatureStates { get; set; }
     ICollection<IProductIssueState> ProductIssueStates { get; set; }
+    ICollection<IProductConfigOptionState> ProductConfigOptionStates { get; set; }
   }
   public interface IProductVersionState : INamedEntityState
   {
@@ -30,7 +31,6 @@ namespace ProductsShared
     bool IsRequest { get; set; }
     Guid? FirstVersionGuid { get; set; }
     Guid? RequestedForVersionGuid { get; set; }
-    ICollection<IProductFeatureConfigOptionState> ProductFeatureConfigOptionStates { get; set; }
   }
   public interface IProductIssueState : INamedEntityState
   {
@@ -38,9 +38,10 @@ namespace ProductsShared
     Guid FirstVersionGuid { get; set; }
     Guid ProductGuid { get; set; }
   }
-  public interface IProductFeatureConfigOptionState : INamedEntityState
+  public interface IProductConfigOptionState : INamedEntityState
   {
-    Guid ProductFeatureGuid { get; set; }
+    Guid ProductGuid { get; set; }
+    Guid? ProductFeatureGuid { get; set; }
     Guid? ParentGuid { get; set; }
     string Path { get; set; }
     string Description { get; set; }
@@ -57,15 +58,15 @@ namespace ProductsShared
     void DeleteProductState(Guid guid);
     IProductVersionState CreateProductVersionState(Guid guid, Guid productVersionGuid, string name);
     IProductFeatureState CreateProductFeatureState(Guid guid, Guid productFeatureGuid, string name);
-    void MakeDefaultFeatureConfigOptionState(IProductFeatureConfigOptionState state);
+    void MakeDefaultConfigOptionState(IProductConfigOptionState state);
     void DeleteProductFeatureState(Guid productGuid, Guid guid);
     void DeleteProductVersionState(Guid productGuid, Guid guid);
     IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name);
     void DeleteProductIssueState(Guid productGuid, Guid guid);
-    IProductFeatureConfigOptionState CreateProductFeatureConfigOptionState(IProductFeatureState state, Guid guid, string name);
-    IProductFeatureConfigOptionState GetProductFeatureConfigOptionState(IProductFeatureState state, Guid guid);
-    void DeleteProductFeatureConfigOptionState(IProductFeatureState state, Guid guid);
-    void MoveProductFeatureConfigOption(IProductFeatureConfigOptionState state, Guid parentGuid);
+    IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid guid, string name);
+    IProductConfigOptionState GetProductConfigOptionState(IProductState state, Guid guid);
+    void DeleteProductConfigOptionState(IProductState state, Guid guid);
+    void MoveProductConfigOption(IProductConfigOptionState state, Guid parentGuid);
   }
   public interface IProductVersion : INamedEntity
   {
@@ -79,15 +80,12 @@ namespace ProductsShared
     void Rename(string name, string originalName);
     void ChangeDescription(string description);
     Guid? FirstVersionGuid { get; }
-    IProductFeatureConfigOption AddConfigOption(Guid guid, string name);
-    IProductFeatureConfigOption GetConfigOption(Guid guid);
-    void DeleteConfigOption(Guid guid);
-
   }
-  public interface IProductFeatureConfigOption : INamedEntity
+  public interface IProductConfigOption : INamedEntity
   {
     Guid? ParentGuid { get; }
-    Guid ProductFeatureGuid { get; }
+    Guid ProductGuid { get; }
+    Guid? ProductFeatureGuid { get; }
     string Path { get; }
     string DefaultValue { get; }
     bool IsOptionForParent { get; }
@@ -123,6 +121,9 @@ namespace ProductsShared
     void DeleteFeature(Guid guid);
     void DeleteVersion(Guid guid);
     void DeleteIssue(Guid guid);
+    IProductConfigOption AddConfigOption(Guid? featureGuid, Guid guid, string name);
+    IProductConfigOption GetConfigOption(Guid guid);
+    void DeleteConfigOption(Guid guid);
   }
   public class NamedEntity : INamedEntity
   {
@@ -238,6 +239,24 @@ namespace ProductsShared
       _repo.DeleteProductIssueState(this.Guid, guid);
     }
 
+    public IProductConfigOption AddConfigOption(Guid? featureGuid, Guid guid, string name)
+    {
+      var state = _repo.CreateProductConfigOptionState(this._state, featureGuid, guid, name);
+      var configOption = new ProductConfigOption(state, _repo);
+      return configOption;
+    }
+
+    public IProductConfigOption GetConfigOption(Guid guid)
+    {
+      var state = _repo.GetProductConfigOptionState(this._state, guid);
+      var productFeature = new ProductConfigOption(state, _repo);
+      return productFeature;
+    }
+
+    public void DeleteConfigOption(Guid guid)
+    {
+      _repo.DeleteProductConfigOptionState(_state, guid);
+    }
   }
 
   public class ProductVersion : NamedEntity, IProductVersion
@@ -282,25 +301,6 @@ namespace ProductsShared
     {
       _state.Description = description;
     }
-
-    public IProductFeatureConfigOption AddConfigOption(Guid guid, string name)
-    {
-      var state = _repo.CreateProductFeatureConfigOptionState(this._state, guid, name);
-      var productFeature = new ProductFeatureConfigOption(state, _repo);
-      return productFeature;
-    }
-
-    public IProductFeatureConfigOption GetConfigOption(Guid guid)
-    {
-      var state = _repo.GetProductFeatureConfigOptionState(this._state, guid);
-      var productFeature = new ProductFeatureConfigOption(state, _repo);
-      return productFeature;
-    }
-
-    public void DeleteConfigOption(Guid guid)
-    {
-      _repo.DeleteProductFeatureConfigOptionState(this._state, guid);
-    }
   }
   // todo: move rename to base class?
   public class ProductIssue : NamedEntity, IProductIssue
@@ -325,18 +325,19 @@ namespace ProductsShared
       _state.Description = description;
     }
   }
-  public class ProductFeatureConfigOption : NamedEntity, IProductFeatureConfigOption
+  public class ProductConfigOption : NamedEntity, IProductConfigOption
   {
-    private IProductFeatureConfigOptionState _state;
+    private IProductConfigOptionState _state;
     private IProductStateRepository _repo;
 
-    public ProductFeatureConfigOption(IProductFeatureConfigOptionState state, IProductStateRepository repo) : base(state)
+    public ProductConfigOption(IProductConfigOptionState state, IProductStateRepository repo) : base(state)
     {
       _state = state;
       _repo = repo;
     }
     public Guid? ParentGuid { get { return _state.ParentGuid; } }
-    public Guid ProductFeatureGuid { get { return _state.ProductFeatureGuid; } }
+    public Guid ProductGuid { get { return _state.ProductGuid; } }
+    public Guid? ProductFeatureGuid { get { return _state.ProductFeatureGuid; } }
 
     public string Path { get { return _state.Path; } }
 
@@ -369,7 +370,7 @@ namespace ProductsShared
     // todo: make other options false. Do this in command? Or call repository from here?
     public void MakeDefaultOption()
     {
-      _repo.MakeDefaultFeatureConfigOptionState(_state);
+      _repo.MakeDefaultConfigOptionState(_state);
     }
 
     // todo: may need to tell the repository?
@@ -377,7 +378,7 @@ namespace ProductsShared
     {
       if (_state.ParentGuid == originalParentGuid)
       {
-        _repo.MoveProductFeatureConfigOption(_state, parentGuid);
+        _repo.MoveProductConfigOption(_state, parentGuid);
       }
     }
 

@@ -11,9 +11,10 @@ using System;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20180109164816_CheckMissing")]
+    partial class CheckMissing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -400,7 +401,7 @@ namespace SoftwareManagementEFCoreRepository.Migrations
                     b.ToTable("LinkStates");
                 });
 
-            modelBuilder.Entity("SoftwareManagementEFCoreRepository.ProductConfigOptionState", b =>
+            modelBuilder.Entity("SoftwareManagementEFCoreRepository.ProductFeatureConfigOptionState", b =>
                 {
                     b.Property<Guid>("Guid")
                         .ValueGeneratedOnAdd();
@@ -429,9 +430,9 @@ namespace SoftwareManagementEFCoreRepository.Migrations
 
                     b.HasKey("Guid");
 
-                    b.HasIndex("ProductGuid");
+                    b.HasIndex("ProductFeatureGuid");
 
-                    b.ToTable("ProductConfigOptionStates");
+                    b.ToTable("ProductFeatureConfigOptionStates");
                 });
 
             modelBuilder.Entity("SoftwareManagementEFCoreRepository.ProductFeatureState", b =>
@@ -690,11 +691,11 @@ namespace SoftwareManagementEFCoreRepository.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SoftwareManagementEFCoreRepository.ProductConfigOptionState", b =>
+            modelBuilder.Entity("SoftwareManagementEFCoreRepository.ProductFeatureConfigOptionState", b =>
                 {
-                    b.HasOne("SoftwareManagementEFCoreRepository.ProductState")
-                        .WithMany("ProductConfigOptionStates")
-                        .HasForeignKey("ProductGuid")
+                    b.HasOne("SoftwareManagementEFCoreRepository.ProductFeatureState")
+                        .WithMany("ProductFeatureConfigOptionStates")
+                        .HasForeignKey("ProductFeatureGuid")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
