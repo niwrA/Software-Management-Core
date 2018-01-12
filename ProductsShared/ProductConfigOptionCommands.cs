@@ -44,4 +44,27 @@ namespace ProductsShared
       base.Execute();
     }
   }
+  public class AddChildToProductConfigOptionCommand : ProductConfigOptionCommand
+  {
+    public string Name { get; set; }
+    public Guid ParentGuid { get; set; }
+    public Guid? FeatureGuid { get; set; }
+    public override void Execute()
+    {
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      product.AddConfigOption(this.FeatureGuid, this.EntityGuid, Name, this.ParentGuid);
+      base.Execute();
+    }
+  }
+  public class RemoveChildFromProductConfigOptionCommand : ProductConfigOptionCommand
+  {
+    public Guid ChildGuid { get; set; }
+    public override void Execute()
+    {
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      product.DeleteConfigOption(ChildGuid);
+      base.Execute();
+    }
+  }
+
 }

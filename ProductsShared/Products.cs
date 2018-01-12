@@ -63,7 +63,7 @@ namespace ProductsShared
     void DeleteProductVersionState(Guid productGuid, Guid guid);
     IProductIssueState CreateProductIssueState(Guid productGuid, Guid guid, string name);
     void DeleteProductIssueState(Guid productGuid, Guid guid);
-    IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid guid, string name);
+    IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid? parentGuid, Guid guid, string name);
     IProductConfigOptionState GetProductConfigOptionState(IProductState state, Guid guid);
     void DeleteProductConfigOptionState(IProductState state, Guid guid);
     void MoveProductConfigOption(IProductConfigOptionState state, Guid parentGuid);
@@ -121,7 +121,7 @@ namespace ProductsShared
     void DeleteFeature(Guid guid);
     void DeleteVersion(Guid guid);
     void DeleteIssue(Guid guid);
-    IProductConfigOption AddConfigOption(Guid? featureGuid, Guid guid, string name);
+    IProductConfigOption AddConfigOption(Guid? featureGuid, Guid guid, string name, Guid? parentGuid);
     IProductConfigOption GetConfigOption(Guid guid);
     void DeleteConfigOption(Guid guid);
   }
@@ -239,9 +239,9 @@ namespace ProductsShared
       _repo.DeleteProductIssueState(this.Guid, guid);
     }
 
-    public IProductConfigOption AddConfigOption(Guid? featureGuid, Guid guid, string name)
+    public IProductConfigOption AddConfigOption(Guid? featureGuid, Guid guid, string name, Guid? parentGuid)
     {
-      var state = _repo.CreateProductConfigOptionState(this._state, featureGuid, guid, name);
+      var state = _repo.CreateProductConfigOptionState(this._state, featureGuid, parentGuid, guid, name);
       var configOption = new ProductConfigOption(state, _repo);
       return configOption;
     }

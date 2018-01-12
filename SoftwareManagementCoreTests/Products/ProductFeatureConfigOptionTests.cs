@@ -43,7 +43,7 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "ChangePath implements IRepository")]
     public void CanChangePath()
     {
-      var sutBuilder = new ProductFeatureConfigOptionSutBuilder();
+      var sutBuilder = new ProductConfigOptionSutBuilder();
       const string value = "new";
       const string orgvalue = "old";
       var sut = sutBuilder
@@ -58,7 +58,7 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "MakeDefaultOption implements IRepository")]
     public void CanMakeDefaultOption()
     {
-      var sutBuilder = new ProductFeatureConfigOptionSutBuilder();
+      var sutBuilder = new ProductConfigOptionSutBuilder();
       var sut = sutBuilder.Build();
 
       sut.MakeDefaultOption();
@@ -68,7 +68,7 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "MoveToParent implements IRepository")]
     public void CanMoveToParent()
     {
-      var sutBuilder = new ProductFeatureConfigOptionSutBuilder();
+      var sutBuilder = new ProductConfigOptionSutBuilder();
       var guid = Guid.NewGuid();
       var originalGuid = Guid.NewGuid();
       var sut = sutBuilder.WithParentGuid(originalGuid).Build();
@@ -77,9 +77,37 @@ namespace SoftwareManagementCoreTests.Products
 
       sutBuilder.RepoMock.Verify(t => t.MoveProductConfigOption(sutBuilder.StateMock.Object, guid), Times.Exactly(1));
     }
+    [Fact(DisplayName = "AddConfigChildToProductCommand")]
+    public void AddConfigChildToProductCommand()
+    {
+      var sutBuilder = new ProductCommandBuilder<AddChildToProductConfigOptionCommand>();
+      var sut = sutBuilder.Build();
+
+      sut.EntityGuid = Guid.NewGuid();
+      sut.ProductGuid = sutBuilder.ProductMock.Object.Guid;
+      sut.ParentGuid = Guid.NewGuid();
+      sut.FeatureGuid = Guid.NewGuid();
+      sut.Name = "New name";
+      sut.Execute();
+
+      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.EntityGuid, sut.Name, sut.ParentGuid), Times.Once);
+    }
+    [Fact(DisplayName = "RemoveConfigChildFromProducteCommand")]
+    public void RemoveConfigChildFromProducteCommand()
+    {
+      var sutBuilder = new ProductCommandBuilder<RemoveChildFromProductConfigOptionCommand>();
+      var sut = sutBuilder.Build();
+
+      sut.EntityGuid = Guid.NewGuid();
+      sut.ProductGuid = sutBuilder.ProductMock.Object.Guid;
+      sut.ChildGuid = Guid.NewGuid();
+      sut.Execute();
+
+      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.ChildGuid), Times.Once);
+    }
   }
 
-  class ProductFeatureConfigOptionSutBuilder
+  class ProductConfigOptionSutBuilder
   {
     public Mock<IProductStateRepository> RepoMock = new Mock<IProductStateRepository>();
     public Mock<IProductConfigOptionState> StateMock = new Mock<IProductConfigOptionState>();
@@ -88,13 +116,13 @@ namespace SoftwareManagementCoreTests.Products
       var sut = new ProductConfigOption(StateMock.Object, RepoMock.Object);
       return sut;
     }
-    public ProductFeatureConfigOptionSutBuilder WithPath(string value, string orgvalue)
+    public ProductConfigOptionSutBuilder WithPath(string value, string orgvalue)
     {
       StateMock.Setup(s => s.Path).Returns(orgvalue);
       return this;
     }
 
-    public ProductFeatureConfigOptionSutBuilder WithParentGuid(Guid originalGuid)
+    public ProductConfigOptionSutBuilder WithParentGuid(Guid originalGuid)
     {
       StateMock.Setup(s => s.ParentGuid).Returns(originalGuid);
       return this;

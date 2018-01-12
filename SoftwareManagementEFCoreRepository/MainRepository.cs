@@ -1045,10 +1045,11 @@ namespace SoftwareManagementEFCoreRepository
       return states;
     }
 
-    public IProductConfigOptionState CreateProductConfigOptionState(IProductState productState, Guid? featureGuid, Guid guid, string name)
+    public IProductConfigOptionState CreateProductConfigOptionState(IProductState productState, Guid? featureGuid, Guid? parentGuid, Guid guid, string name)
     {
       var newState = new ProductConfigOptionState { Guid = guid, Name = name, ProductGuid = productState.Guid};
       newState.ProductFeatureGuid = featureGuid;
+      newState.ParentGuid = parentGuid;
       this._context.ProductConfigOptionStates.Add(newState);
       return newState;
     }

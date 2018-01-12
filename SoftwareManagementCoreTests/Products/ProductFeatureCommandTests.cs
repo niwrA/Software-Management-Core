@@ -12,33 +12,6 @@ namespace SoftwareManagementCoreTests.Products
   [Trait("Entity", "ProductFeature")]
   public class ProductFeatureCommandTests
   {
-    [Fact(DisplayName = "AddConfigToProductCommand")]
-    public void AddConfigToProductCommand()
-    {
-      var sutBuilder = new ProductCommandBuilder<AddConfigOptionToProductCommand>();
-      var sut = sutBuilder.Build() as AddConfigOptionToProductCommand;
-
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ConfigGuid = Guid.NewGuid();
-      sut.FeatureGuid = Guid.NewGuid();
-      sut.Name = "New name";
-      sut.Execute();
-
-      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.ConfigGuid, sut.Name), Times.Once);
-    }
-    [Fact(DisplayName = "RemoveConfigFromFeatureCommand")]
-    public void RemoveConfigFromFeatureCommand()
-    {
-      var sutBuilder = new ProductCommandBuilder<RemoveConfigOptionFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveConfigOptionFromProductCommand;
-
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ConfigGuid = Guid.NewGuid();
-      sut.Execute();
-
-      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.ConfigGuid), Times.Once);
-    }
-
     [Fact(DisplayName = "ChangeDescriptionCommand")]
     public void ChangeDescriptionOfFeatureCommand()
     {

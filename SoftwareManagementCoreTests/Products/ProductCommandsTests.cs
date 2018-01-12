@@ -162,6 +162,32 @@ namespace SoftwareManagementCoreTests.Products
 
       sutBuilder.ProductMock.Verify(s => s.AddIssue(sut.ProductIssueGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
     }
+    [Fact(DisplayName = "AddConfigToProductCommand")]
+    public void AddConfigToProductCommand()
+    {
+      var sutBuilder = new ProductCommandBuilder<AddConfigOptionToProductCommand>();
+      var sut = sutBuilder.Build() as AddConfigOptionToProductCommand;
+
+      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
+      sut.ConfigGuid = Guid.NewGuid();
+      sut.FeatureGuid = Guid.NewGuid();
+      sut.Name = "New name";
+      sut.Execute();
+
+      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.ConfigGuid, sut.Name, null), Times.Once);
+    }
+    [Fact(DisplayName = "RemoveConfigFromFeatureCommand")]
+    public void RemoveConfigFromFeatureCommand()
+    {
+      var sutBuilder = new ProductCommandBuilder<RemoveConfigOptionFromProductCommand>();
+      var sut = sutBuilder.Build() as RemoveConfigOptionFromProductCommand;
+
+      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
+      sut.ConfigGuid = Guid.NewGuid();
+      sut.Execute();
+
+      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.ConfigGuid), Times.Once);
+    }
     [Fact]
     public void RequestFeatureForProductCommand()
     {
@@ -254,9 +280,9 @@ namespace SoftwareManagementCoreTests.Products
     public Mock<IProduct> ProductMock = new Mock<IProduct>();
     public Mock<IProductService> ProductsMock = new Mock<IProductService>();
 
-    public ICommand Build()
+    public T Build()
     {
-      var sut = new CommandBuilder<T>().Build(ProductsMock.Object);
+      T sut = new CommandBuilder<T>().Build(ProductsMock.Object);
 
       this.ProductMock.Setup(s => s.Guid).Returns(sut.EntityGuid);
 

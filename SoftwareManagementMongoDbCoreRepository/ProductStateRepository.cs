@@ -250,7 +250,7 @@ namespace SoftwareManagementMongoDbCoreRepository
       throw new NotImplementedException();
     }
 
-    public IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid guid, string name)
+    public IProductConfigOptionState CreateProductConfigOptionState(IProductState state, Guid? featureGuid, Guid? parentGuid, Guid guid, string name)
     {
       throw new NotImplementedException();
     }

@@ -31,27 +31,4 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class AddConfigOptionToProductCommand : ProductCommand
-  {
-    public string Name { get; set; }
-    public Guid ConfigGuid { get; set; }
-    public Guid? FeatureGuid { get; set; }
-    public override void Execute()
-    {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.AddConfigOption(this.FeatureGuid, ConfigGuid, Name);
-      base.Execute();
-    }
-  }
-  public class RemoveConfigOptionFromProductCommand : ProductCommand
-  {
-    public Guid ConfigGuid { get; set; }
-    public override void Execute()
-    {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.DeleteConfigOption(ConfigGuid);
-      base.Execute();
-    }
-  }
-
 }
