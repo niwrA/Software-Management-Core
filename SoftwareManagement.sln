@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareManagementCore", "SoftwareManagementCore\SoftwareManagementCore.csproj", "{201FF2B7-DF85-414E-8CCB-A76FFC261D6B}"
 EndProject
@@ -89,12 +89,17 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FilesShared", "FilesShared\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Technologies", "Technologies", "{64D0352F-F418-4107-A461-02B25300307A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProductInstallation", "ProductInstallation", "{4E9CA0D0-FE48-44E3-A5CC-A0186D010E8E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ProductInstallationShared", "ProductInstallationShared\ProductInstallationShared.shproj", "{5B371D6E-B08F-466E-A972-C68EF80D612B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CodeGenShared\CodeGenShared.projitems*{1bf33fc4-5819-4d02-9767-dfb67c976284}*SharedItemsImports = 13
 		DesignsShared\DesignsShared.projitems*{2a15930f-c1a9-4d21-9a16-9d41dae78b87}*SharedItemsImports = 13
 		EmploymentShared\EmploymentShared.projitems*{3ef38306-ddc8-42f9-923b-3dc288df5bf5}*SharedItemsImports = 13
 		ProductsShared\ProductsShared.projitems*{51dadd10-16bc-435e-a8ff-79d03f757bb7}*SharedItemsImports = 13
+		ProductInstallationShared\ProductInstallationShared.projitems*{5b371d6e-b08f-466e-a972-c68ef80d612b}*SharedItemsImports = 13
 		CompaniesShared\CompaniesShared.projitems*{61341421-bcc5-44ee-9fff-656e1e78e0e9}*SharedItemsImports = 13
 		ContactsShared\ContactsShared.projitems*{806e9edf-cb33-4509-a666-b13b1244058b}*SharedItemsImports = 13
 		DateTimeShared\DateTimeShared.projitems*{93ff6f34-93fa-4b1e-8828-3d056f144800}*SharedItemsImports = 13
@@ -290,6 +295,8 @@ Global
 		{4EBCA4F1-2276-45E8-A282-395A491250BD} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{EDC83ED4-6DC7-4CB0-890F-8756FBCB40AB} = {4EBCA4F1-2276-45E8-A282-395A491250BD}
 		{64D0352F-F418-4107-A461-02B25300307A} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{4E9CA0D0-FE48-44E3-A5CC-A0186D010E8E} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
+		{5B371D6E-B08F-466E-A972-C68EF80D612B} = {4E9CA0D0-FE48-44E3-A5CC-A0186D010E8E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5DF8C015-D64B-4A82-98B5-7A3CA6EEAF57}
