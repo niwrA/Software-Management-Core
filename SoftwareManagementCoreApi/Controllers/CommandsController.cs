@@ -16,6 +16,7 @@ using LinksShared;
 using DesignsShared;
 using CodeGenShared;
 using FilesShared;
+using ProductInstallationsShared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -61,11 +62,12 @@ namespace SoftwareManagementCoreWeb.Controllers
 
     private IEmploymentService _employmentService;
     private IProjectRoleAssignmentService _projectRoleAssignmentService;
+    private IProductInstallationService _productInstallationService;
     private ICommandStateRepository _commandStateRepository;
     private ICommandService _commandManager;
     private ICodeGenService _codeGenService;
 
-    public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, ILinkService linkService, IFileService fileService, IDesignService designService, ICodeGenService codeGenService, ICommandStateRepository commandStateRepository)
+    public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, IProductInstallationService productInstallationService, ILinkService linkService, IFileService fileService, IDesignService designService, ICodeGenService codeGenService, ICommandStateRepository commandStateRepository)
     {
       _commandManager = commandManager;
 
@@ -80,6 +82,7 @@ namespace SoftwareManagementCoreWeb.Controllers
 
       _employmentService = employmentService;
       _projectRoleAssignmentService = projectRoleAssignmentService;
+      _productInstallationService = productInstallationService;
 
       _commandStateRepository = commandStateRepository;
 
@@ -109,6 +112,7 @@ namespace SoftwareManagementCoreWeb.Controllers
 
       var employmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService };
       var projectRoleAssignmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectRoleAssignmentsShared", Entity = "ProjectRoleAssignment", Processor = _projectRoleAssignmentService };
+      var productInstallationsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductInstallationsShared", Entity = "ProductInstallation", Processor = _productInstallationService };
 
       _commandManager.AddConfig(projectsConfig);
       _commandManager.AddConfig(productsConfig);
@@ -127,6 +131,7 @@ namespace SoftwareManagementCoreWeb.Controllers
       _commandManager.AddConfig(hardwareConfig);
       _commandManager.AddConfig(employmentsConfig);
       _commandManager.AddConfig(projectRoleAssignmentsConfig);
+      _commandManager.AddConfig(productInstallationsConfig);
       _commandManager.AddConfig(linksConfig);
       _commandManager.AddConfig(filesConfig);
       _commandManager.AddConfig(codeGenConfig);

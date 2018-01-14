@@ -14,6 +14,7 @@ using ProjectRoleAssignmentsShared;
 using DesignsShared;
 using LinksShared;
 using FilesShared;
+using ProductInstallationsShared;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -51,6 +52,7 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<PropertyElementState> PropertyElementStates { get; set; }
     public DbSet<CommandElementState> CommandElementStates { get; set; }
     public DbSet<ProductConfigOptionState> ProductConfigOptionStates { get; set; }
+    public DbSet<ProductInstallationState> ProductInstallationStates{ get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -284,6 +286,20 @@ namespace SoftwareManagementEFCoreRepository
     public string ContactName { get; set; }
   }
 
+  public class ProductInstallationState : IProductInstallationState
+  {
+    [Key]
+    public Guid Guid { get; set; }
+    public Guid CompanyGuid { get; set; }
+    public Guid ProductGuid { get; set; }
+    public Guid? CompanyEnvironmentGuid { get; set; }
+    public Guid? ProductVersionGuid { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+  }
+
   public class LinkState : ILinkState
   {
     [Key]
@@ -400,7 +416,9 @@ namespace SoftwareManagementEFCoreRepository
   }
   // just because the repositories can each be separate, doesn't mean we always want to
   public interface IMainRepository : IProductStateRepository, IContactStateRepository,
-      IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository, IEmploymentStateRepository, IDesignStateRepository, ILinkStateRepository, IFileStateRepository, IProjectRoleAssignmentStateRepository
+      IProjectStateRepository, ICompanyStateRepository, ICommandStateRepository,
+    IEmploymentStateRepository, IDesignStateRepository, ILinkStateRepository,
+    IFileStateRepository, IProjectRoleAssignmentStateRepository, IProductInstallationStateRepository
   { }
   public class MainRepository : IMainRepository
   {
@@ -1047,7 +1065,7 @@ namespace SoftwareManagementEFCoreRepository
 
     public IProductConfigOptionState CreateProductConfigOptionState(IProductState productState, Guid? featureGuid, Guid? parentGuid, Guid guid, string name)
     {
-      var newState = new ProductConfigOptionState { Guid = guid, Name = name, ProductGuid = productState.Guid};
+      var newState = new ProductConfigOptionState { Guid = guid, Name = name, ProductGuid = productState.Guid };
       newState.ProductFeatureGuid = featureGuid;
       newState.ParentGuid = parentGuid;
       this._context.ProductConfigOptionStates.Add(newState);
@@ -1087,6 +1105,42 @@ namespace SoftwareManagementEFCoreRepository
       else
       {
         // not possible to make default option. Exception?
+      }
+    }
+
+    public IProductInstallationState CreateProductInstallationState(Guid guid, Guid companyGuid, Guid productGuid)
+    {
+      var state = new ProductInstallationState { Guid = guid, CompanyGuid = companyGuid, ProductGuid = productGuid };
+      _context.ProductInstallationStates.Add(state);
+      return state;
+    }
+
+    public IProductInstallationState GetProductInstallationState(Guid guid)
+    {
+      return _context.ProductInstallationStates.SingleOrDefault(s => s.Guid == guid);
+    }
+
+    public IEnumerable<IProductInstallationState> GetProductInstallationsByCompanyGuid(Guid companyGuid)
+    {
+      return _context.ProductInstallationStates.Where(s => s.CompanyGuid == companyGuid).AsNoTracking().ToList();
+    }
+
+    public IEnumerable<IProductInstallationState> GetProductInstallationsByProductGuid(Guid productGuid)
+    {
+      return _context.ProductInstallationStates.Where(s => s.ProductGuid == productGuid).AsNoTracking().ToList();
+    }
+
+    public IEnumerable<IProductInstallationState> GetProductInstallationStates()
+    {
+      return _context.ProductInstallationStates.AsNoTracking().ToList();
+    }
+
+    public void DeleteProductInstallationState(Guid entityGuid)
+    {
+      var state = GetProductInstallationState(entityGuid);
+      if (state != null)
+      {
+        _context.ProductInstallationStates.Remove((ProductInstallationState)state);
       }
     }
   }

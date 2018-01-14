@@ -27,6 +27,7 @@ using CodeGenShared;
 using CodeGen;
 using FilesShared;
 using Microsoft.AspNetCore.Server.IISIntegration;
+using ProductInstallationsShared;
 
 namespace SoftwareManagementCoreApi
 {
@@ -79,7 +80,7 @@ namespace SoftwareManagementCoreApi
       services.AddTransient<IEmploymentStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
       services.AddTransient<IProjectRoleAssignmentStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
       services.AddTransient<ICommandStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
-
+      services.AddTransient<IProductInstallationStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
     }
     private static void SetupMongoDbDI(IServiceCollection services)
     {
@@ -108,6 +109,7 @@ namespace SoftwareManagementCoreApi
       services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
       services.AddTransient<IProjectRoleAssignmentStateRepository, ProjectRoleAssignmentStateRepository>();
       services.AddTransient<ICommandStateRepository, CommandStateRepository>();
+      // todo: productinstallations
     }
     private static void SetupDI(IServiceCollection services)
     {
@@ -139,6 +141,7 @@ namespace SoftwareManagementCoreApi
       services.AddTransient<ICodeGenService, CSharpUpdater>();
 
       services.AddTransient<ICommandService, CommandService>();
+      services.AddTransient<IProductInstallationService, ProductInstallationService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
