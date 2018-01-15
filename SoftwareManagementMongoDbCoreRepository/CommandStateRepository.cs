@@ -23,7 +23,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
 
   [BsonIgnoreExtraElements]
-  public class EntityState : IEntityState
+  public class TimeStampedEntityState : ITimeStampedEntityState
   {
     [BsonId(IdGenerator = typeof(GuidGenerator))]
     public Guid Guid { get; set; }
@@ -32,13 +32,13 @@ namespace SoftwareManagementMongoDbCoreRepository
   }
 
   [BsonIgnoreExtraElements]
-  public class NamedEntityState : EntityState, IEntityState
+  public class NamedEntityState : TimeStampedEntityState, ITimeStampedEntityState
   {
     public string Name { get; set; }
   }
 
   [BsonIgnoreExtraElements]
-  public class CommandState : EntityState, ICommandState
+  public class CommandState : TimeStampedEntityState, ICommandState
   {
     public Guid EntityGuid { get; set; }
     public string Entity { get; set; }

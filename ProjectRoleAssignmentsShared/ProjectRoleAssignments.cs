@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ProjectRoleAssignmentsShared
 {
-    public interface IProjectRoleAssignmentState : IEntityState
+    public interface IProjectRoleAssignmentState : ITimeStampedEntityState
     {
         Guid ContactGuid { get; set; }
         Guid ProjectGuid { get; set; }

@@ -59,4 +59,16 @@ namespace ProductInstallationsShared
       base.Execute();
     }
   }
+
+  public class ChangeExternalIdOfProductInstallationCommand : ProductInstallationCommand
+  {
+    public string OriginalExternalId { get; set; }
+    public string ExternalId { get; set; }
+    public override void Execute()
+    {
+      var ProductInstallation = ((IProductInstallationService)base.CommandProcessor).GetProductInstallation(this.EntityGuid);
+      ProductInstallation.ChangeExternalId(this.ExternalId, this.OriginalExternalId);
+      base.Execute();
+    }
+  }
 }

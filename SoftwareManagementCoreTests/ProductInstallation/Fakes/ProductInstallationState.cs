@@ -19,7 +19,7 @@ namespace SoftwareManagementCoreTests.Fakes
       EndDate = DateTime.Now.Date.AddYears(1);
       CreatedOn = DateTime.Now;
       UpdatedOn = DateTime.Now;
-      ContactName = "Jane Smith";
+      ExternalId = "123abc";
     }
     public Guid Guid { get; set; }
     public Guid CompanyGuid { get; set; }
@@ -30,6 +30,6 @@ namespace SoftwareManagementCoreTests.Fakes
     public DateTime UpdatedOn { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    public string ContactName { get; set; }
+    public string ExternalId { get; set; }
   }
 }

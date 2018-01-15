@@ -149,7 +149,7 @@ namespace SoftwareManagementEFCoreRepositoryTests.Shared
             throw new NotImplementedException();
         }
     }
-    public class EntityStateBuilder<T> where T : IEntityState, new()
+    public class EntityStateBuilder<T> where T : ITimeStampedEntityState, new()
     {
         private Guid _guid;
         private string _name;

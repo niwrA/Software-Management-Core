@@ -6,7 +6,7 @@ using System.Text;
 
 namespace EmploymentsShared
 {
-    public interface IEmploymentState: IEntityState
+    public interface IEmploymentState: ITimeStampedEntityState
     {
         Guid ContactGuid { get; set; }
         Guid CompanyRoleGuid { get; set; }

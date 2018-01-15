@@ -14,7 +14,7 @@ namespace SoftwareManagementMongoDbCoreRepository
 
 
     [BsonIgnoreExtraElements]
-    public class EmploymentState : EntityState, IEmploymentState
+    public class EmploymentState : TimeStampedEntityState, IEmploymentState
     {
         public Guid ContactGuid { get; set; }
         public Guid CompanyRoleGuid { get; set; }

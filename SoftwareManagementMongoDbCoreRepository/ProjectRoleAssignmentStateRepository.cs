@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SoftwareManagementMongoDbCoreRepository
 {
     [BsonIgnoreExtraElements]
-    public class ProjectRoleAssignmentState : EntityState, IProjectRoleAssignmentState
+    public class ProjectRoleAssignmentState : TimeStampedEntityState, IProjectRoleAssignmentState
     {
         public Guid ContactGuid { get; set; }
         public Guid ProjectGuid { get; set; }

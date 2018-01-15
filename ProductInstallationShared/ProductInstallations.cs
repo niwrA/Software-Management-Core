@@ -1,19 +1,20 @@
 ﻿using CommandsShared;
+using DateTimeShared;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ProductInstallationsShared
 {
-  public interface IProductInstallationState
+  public interface IProductInstallationState: ITimeStampedEntityState
   {
-    Guid Guid { get; set; }
     Guid ProductGuid { get; set; }
     Guid? ProductVersionGuid { get; set; }
     Guid CompanyGuid { get; set; }
     Guid? CompanyEnvironmentGuid { get; set; }
     DateTime? StartDate { get; set; }
     DateTime? EndDate { get; set; }
+    string ExternalId { get; set; }
   }
   public interface IProductInstallationStateRepository
   {
@@ -36,10 +37,11 @@ namespace ProductInstallationsShared
     Guid? CompanyEnvironmentGuid { get; }
     DateTime? StartDate { get; }
     DateTime? EndDate { get; }
+    string ExternalId { get; }
 
     void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate);
     void ChangeEndDate(DateTime? endDate, DateTime? originalEndDate);
-
+    void ChangeExternalId(string externalId, string originalExternalId);
   }
   public class ProductInstallation : IProductInstallation
   {
@@ -60,6 +62,7 @@ namespace ProductInstallationsShared
     public Guid? CompanyEnvironmentGuid { get { return _state.CompanyEnvironmentGuid; } }
     public DateTime? StartDate { get { return _state.StartDate; } }
     public DateTime? EndDate { get { return _state.EndDate; } }
+    public string ExternalId { get { return _state.ExternalId; } }
 
     public void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate)
     {
@@ -75,6 +78,15 @@ namespace ProductInstallationsShared
         this._state.EndDate = endDate;
       }
     }
+
+    public void ChangeExternalId(string externalId, string originalExternalId)
+    {
+      if (_state.ExternalId == originalExternalId)
+      {
+        this._state.ExternalId = externalId;
+      }
+    }
+
   }
   public interface IProductInstallationService : ICommandProcessor
   {
@@ -87,9 +99,12 @@ namespace ProductInstallationsShared
   public class ProductInstallationService : IProductInstallationService
   {
     private IProductInstallationStateRepository _repo;
-    public ProductInstallationService(IProductInstallationStateRepository repo)
+    private IDateTimeProvider _dateTimeProvider;
+
+    public ProductInstallationService(IProductInstallationStateRepository repo, IDateTimeProvider dateTimeProvider)
     {
       _repo = repo;
+      _dateTimeProvider = dateTimeProvider;
     }
     public IProductInstallation CreateProductInstallation(Guid guid, Guid companyGuid, Guid productGuid, Guid? companyEnvironmentGuid, Guid? productVersionGuid, DateTime? startDate, DateTime? endDate)
     {
@@ -98,6 +113,8 @@ namespace ProductInstallationsShared
       state.EndDate = endDate;
       state.CompanyEnvironmentGuid = companyEnvironmentGuid;
       state.ProductVersionGuid = productVersionGuid;
+      state.CreatedOn = _dateTimeProvider.GetUtcDateTime();
+      state.UpdatedOn = state.CreatedOn;
       return new ProductInstallation(state, _repo);
     }
 

@@ -1,56 +1,69 @@
-﻿using ProductInstallationsShared;
+﻿using ProjectRoleAssignmentsShared;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace SoftwareManagementCoreTests.ProductInstallations
+namespace SoftwareManagementCoreTests.ProjectRoleAssignments
 {
-  [Trait("Category", "ProductInstallation")]
-  public class ProductInstallationTests
+  [Trait("Category", "ProjectRoleAssignment")]
+  public class ProjectRoleAssignmentTests
   {
     [Fact(DisplayName = "CanCreate")]
-    public void CanCreateProductInstallation()
+    public void CanCreateProjectRoleAssignment()
     {
-      var sutBuilder = new ProductInstallationSutBuilder();
+      var sutBuilder = new ProjectRoleAssignmentSutBuilder();
       var sut = sutBuilder.Build();
 
       Guid guid = Guid.NewGuid();
-      Guid companyGuid = Guid.NewGuid();
-      Guid productGuid = Guid.NewGuid();
-      Guid companyEnvironmentGuid = Guid.NewGuid();
-      Guid productVersionGuid = Guid.NewGuid();
+      Guid contactGuid = Guid.NewGuid();
+      Guid projectGuid = Guid.NewGuid();
+      Guid projectRoleAssignmentGuid = Guid.NewGuid();
 
       var startDate = DateTime.Now.Date as DateTime?;
-      var ProductInstallation = sut.CreateProductInstallation(guid, companyGuid, productGuid, companyEnvironmentGuid, productVersionGuid, startDate, null);
+      var projectroleassignment = sut.CreateProjectRoleAssignment(guid, contactGuid, projectGuid, projectRoleAssignmentGuid, startDate, null, null);
 
-      sutBuilder.RepoMock.Verify(v => v.CreateProductInstallationState(guid, companyGuid, productGuid), Times.Once);
+      sutBuilder.RepoMock.Verify(v => v.CreateProjectRoleAssignmentState(guid, contactGuid, projectGuid, projectRoleAssignmentGuid), Times.Once);
     }
 
     [Fact(DisplayName = "ReflectsState")]
-    public void ProductInstallationReflectsState()
+    public void ProjectRoleAssignmentReflectsState()
     {
-      var state = new Fakes.ProductInstallationState();
-      var sut = new ProductInstallation(state);
+      var state = new Fakes.ProjectRoleAssignmentState();
+      var sut = new ProjectRoleAssignment(state);
 
       Assert.Equal(state.Guid, sut.Guid);
-      Assert.Equal(state.CompanyGuid, sut.CompanyGuid);
-      Assert.Equal(state.CompanyEnvironmentGuid, sut.CompanyEnvironmentGuid);
-      Assert.Equal(state.ProductVersionGuid, sut.ProductVersionGuid);
+      Assert.Equal(state.ContactGuid, sut.ContactGuid);
+      Assert.Equal(state.ProjectRoleGuid, sut.ProjectRoleGuid);
       Assert.Equal(state.StartDate, sut.StartDate);
       Assert.Equal(state.EndDate, sut.EndDate);
+      Assert.Equal(state.ContactName, sut.ContactName);
     }
-
-    public class ProductInstallationSutBuilder
+    [Fact(DisplayName = "ChangeStartDate_UpdatesState")]
+    public void ChangeStartDate_UpdatesState()
     {
-      Mock<IProductInstallationStateRepository> _repo;
-      public Mock<IProductInstallationStateRepository> RepoMock { get { return _repo; } }
-      public ProductInstallationService Build()
+      var state = new Mock<IProjectRoleAssignmentState>();
+      var sut = new ProjectRoleAssignment(state.Object);
+
+      var dateTime = new DateTime(2017, 1, 1);
+      var originalDateTime = new DateTime(2016, 1, 1);
+
+      state.Setup(s => s.StartDate).Returns(originalDateTime);
+
+      sut.ChangeStartDate(dateTime, originalDateTime);
+
+      state.VerifySet(s => s.EndDate = dateTime);
+    }
+    public class ProjectRoleAssignmentSutBuilder
+    {
+      Mock<IProjectRoleAssignmentStateRepository> _repo;
+      public Mock<IProjectRoleAssignmentStateRepository> RepoMock { get { return _repo; } }
+      public ProjectRoleAssignmentService Build()
       {
-        _repo = new Mock<IProductInstallationStateRepository>();
-        _repo.Setup(s => s.CreateProductInstallationState(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(new Fakes.ProductInstallationState());
-        var sut = new ProductInstallationService(_repo.Object);
+        _repo = new Mock<IProjectRoleAssignmentStateRepository>();
+        _repo.Setup(s => s.CreateProjectRoleAssignmentState(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(new Fakes.ProjectRoleAssignmentState());
+        var sut = new ProjectRoleAssignmentService(_repo.Object);
         return sut;
       }
     }

@@ -140,13 +140,17 @@ namespace SoftwareManagementEFCoreRepository
       }
     }
   }
-  public abstract class NamedEntityState : INamedEntityState
+  public abstract class NamedEntityState : TimeStampedEntityState, INamedEntityState
+  {
+    public string Name { get; set; }
+  }
+  public abstract class TimeStampedEntityState: ITimeStampedEntityState
   {
     [Key]
     public Guid Guid { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
-    public string Name { get; set; }
+
   }
 
   public class ProductVersionState : NamedEntityState, IProductVersionState
@@ -272,32 +276,25 @@ namespace SoftwareManagementEFCoreRepository
     public string ContactName { get; set; }
   }
 
-  public class ProjectRoleAssignmentState : IProjectRoleAssignmentState
+  public class ProjectRoleAssignmentState : TimeStampedEntityState, IProjectRoleAssignmentState
   {
-    [Key]
-    public Guid Guid { get; set; }
     public Guid ContactGuid { get; set; }
     public Guid ProjectGuid { get; set; }
     public Guid ProjectRoleGuid { get; set; }
-    public DateTime CreatedOn { get; set; }
-    public DateTime UpdatedOn { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public string ContactName { get; set; }
   }
 
-  public class ProductInstallationState : IProductInstallationState
+  public class ProductInstallationState : TimeStampedEntityState, IProductInstallationState
   {
-    [Key]
-    public Guid Guid { get; set; }
     public Guid CompanyGuid { get; set; }
     public Guid ProductGuid { get; set; }
     public Guid? CompanyEnvironmentGuid { get; set; }
     public Guid? ProductVersionGuid { get; set; }
-    public DateTime CreatedOn { get; set; }
-    public DateTime UpdatedOn { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+    public string ExternalId { get; set; }
   }
 
   public class LinkState : ILinkState

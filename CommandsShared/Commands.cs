@@ -54,7 +54,7 @@ namespace CommandsShared
     IEnumerable<ICommandState> GetUnprocessedCommandStates();
   }
 
-  public interface IEntityState
+  public interface ITimeStampedEntityState
   {
     Guid Guid { get; set; }
     DateTime CreatedOn { get; set; }
@@ -68,7 +68,7 @@ namespace CommandsShared
     string Name { get; }
   }
 
-  public interface INamedEntityState : IEntityState
+  public interface INamedEntityState : ITimeStampedEntityState
   {
     string Name { get; set; }
   }
