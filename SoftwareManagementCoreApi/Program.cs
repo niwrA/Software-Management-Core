@@ -9,25 +9,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace SoftwareManagementCoreApi
 {
-    public class Program
+  public class Program
+  {
+
+    static public IConfigurationRoot Configuration { get; set; }
+
+    public static void Main(string[] args)
     {
-
-        static public IConfigurationRoot Configuration { get; set; }
-
-        public static void Main(string[] args)
-        {
-            BuildWebHost(args).Run();
-        }
-
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .ConfigureAppConfiguration((hostContext, config) =>
-                {
-            // delete all default configuration providers
-            config.Sources.Clear();
-                    config.AddJsonFile("myconfig.json", optional: true);
-                })
-                .Build();
+      BuildWebHost(args).Run();
     }
+
+    public static IWebHost BuildWebHost(string[] args) =>
+        WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            //.UseUrls("http://0.0.0.0:50274")
+//            .UseIISIntegration()
+            .ConfigureAppConfiguration((hostContext, config) =>
+            {
+              // delete all default configuration providers
+              config.Sources.Clear();
+              config.AddJsonFile("myconfig.json", optional: true);
+            })
+            .Build();
+  }
 }

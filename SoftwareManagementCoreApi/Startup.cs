@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using ProductsShared;
 using CommandsShared;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,9 @@ namespace SoftwareManagementCoreApi
       corsBuilder.AllowAnyOrigin(); // For anyone access.
                                     //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
       corsBuilder.AllowCredentials();
+      services.Configure<IISOptions>(options => {
+        options.AutomaticAuthentication = true;
+      });
 
       services.AddCors(options =>
       {

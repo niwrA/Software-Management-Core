@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductsShared;
 
@@ -91,6 +92,7 @@ namespace SoftwareManagementCoreApi.Controllers
   }
 
   [Route("api/[controller]")]
+  [AllowAnonymous]
   public class ProductsController : Controller
   {
     private IProductStateRepository _productStateRepository;

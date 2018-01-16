@@ -49,7 +49,7 @@ namespace SoftwareManagementCoreWeb.Controllers
 
   [EnableCors("SiteCorsPolicy")]
   [Route("api/[controller]")]
-  [AllowAnonymous]
+  [Authorize]
   public class CommandsController : Controller
   {
     private IProductService _productService;
@@ -185,6 +185,8 @@ namespace SoftwareManagementCoreWeb.Controllers
 
         foreach (var command in commands)
         {
+          // if we are in an authorized context, always record the authenticated user
+          if (User != null && User.Identity != null) { command.UserName = User.Identity.Name; }
           var typedCommand = _commandManager.ProcessCommand(command, command.State);
           command.ExecutedOn = typedCommand.ExecutedOn;
         }
