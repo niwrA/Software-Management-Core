@@ -49,7 +49,6 @@ namespace SoftwareManagementCoreWeb.Controllers
 
   [EnableCors("SiteCorsPolicy")]
   [Route("api/[controller]")]
-  [Authorize]
   public class CommandsController : Controller
   {
     private IProductService _productService;

@@ -64,9 +64,9 @@ namespace ProjectRoleAssignmentsShared
 
         public void ChangeStartDate(DateTime? startDate, DateTime? originalStartDate)
         {
-            if (_state.EndDate == originalStartDate)
+            if (_state.StartDate == originalStartDate)
             {
-                _state.EndDate = startDate;
+                _state.StartDate = startDate;
             }
         }
 

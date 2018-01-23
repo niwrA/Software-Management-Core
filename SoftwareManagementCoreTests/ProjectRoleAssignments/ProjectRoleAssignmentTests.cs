@@ -53,7 +53,7 @@ namespace SoftwareManagementCoreTests.ProjectRoleAssignments
 
       sut.ChangeStartDate(dateTime, originalDateTime);
 
-      state.VerifySet(s => s.EndDate = dateTime);
+      state.VerifySet(s => s.StartDate = dateTime);
     }
     public class ProjectRoleAssignmentSutBuilder
     {
