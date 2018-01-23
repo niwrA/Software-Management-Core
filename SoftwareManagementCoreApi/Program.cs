@@ -22,8 +22,8 @@ namespace SoftwareManagementCoreApi
     public static IWebHost BuildWebHost(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
             .UseStartup<Startup>()
-            //.UseUrls("http://0.0.0.0:50274")
-//            .UseIISIntegration()
+            .UseUrls("http://0.0.0.0:50274")
+            .UseIISIntegration()
             .ConfigureAppConfiguration((hostContext, config) =>
             {
               // delete all default configuration providers
