@@ -27,15 +27,15 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddAccountToCompanyEnvironmentCommand")]
     public void AddAccountToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new AccountCommandBuilder<AddAccountToCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as AddAccountToCompanyEnvironmentCommand;
+      var sutBuilder = new AccountCommandBuilder<CreateCompanyEnvironmentAccountCommand>();
+      var sut = sutBuilder.Build() as CreateCompanyEnvironmentAccountCommand;
 
       sut.AccountName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.AccountGuid = Guid.NewGuid();
+      sut.CompanyGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddAccount(sut.AccountGuid, sut.AccountName), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddAccount(sut.EntityGuid, sut.AccountName), Times.Once);
     }
     [Fact(DisplayName = "AddAccountToCompanyEnvironmentCommand")]
     public void RemoveAccountFromCompanyEnvironmentCommand()
@@ -44,10 +44,10 @@ namespace SoftwareManagementCoreTests.Companies
       var sut = sutBuilder.Build() as RemoveAccountFromCompanyEnvironmentCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.AccountGuid = Guid.NewGuid();
+      sut.CompanyGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveAccount(sut.AccountGuid), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveAccount(sut.EntityGuid), Times.Once);
     }
 
   }

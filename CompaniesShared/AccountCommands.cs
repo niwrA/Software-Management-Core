@@ -9,16 +9,16 @@ namespace CompaniesShared
   {
     public AccountCommand() : base() { }
     public AccountCommand(ICommandStateRepository repo) : base(repo) { }
-    public Guid AccountGuid { get; set; }
+    public Guid CompanyGuid { get; set; }
   }
-  public class AddAccountToCompanyEnvironmentCommand : AccountCommand
+  public class CreateCompanyEnvironmentAccountCommand : AccountCommand
   {
     public string AccountName { get; set; }
     public override void Execute()
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.CompanyGuid);
       var environment = company.GetEnvironment(this.EnvironmentGuid);
-      environment.AddAccount(AccountGuid, AccountName);
+      environment.AddAccount(this.EntityGuid, AccountName);
 
       base.Execute();
     }
@@ -29,9 +29,9 @@ namespace CompaniesShared
     public string Name { get; set; }
     public override void Execute()
     {
-      var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.CompanyGuid);
       var environment = root.GetEnvironment(EnvironmentGuid);
-      var account = environment.GetAccount(this.AccountGuid);
+      var account = environment.GetAccount(this.EntityGuid);
       account.Rename(Name, this.OriginalName);
       base.Execute();
     }
@@ -40,9 +40,9 @@ namespace CompaniesShared
   {
     public override void Execute()
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.CompanyGuid);
       var environment = company.GetEnvironment(this.EnvironmentGuid);
-      environment.RemoveAccount(this.AccountGuid);
+      environment.RemoveAccount(this.EntityGuid);
       base.Execute();
     }
   }
