@@ -29,11 +29,11 @@ namespace SoftwareManagementCoreWeb.Controllers
     {
       _state = state;
     }
-    public Guid Guid {  get { return _state.Guid; } }
+    public Guid Guid { get { return _state.Guid; } }
     public string Name { get { return _state.CommandTypeId.Replace(_state.Entity + "Command", ""); } }
     public string Entity { get { return _state.Entity; } }
     public string ParametersJson { get { return _state.ParametersJson; } }
-    public Guid EntityGuid {  get { return _state.EntityGuid; } }
+    public Guid EntityGuid { get { return _state.EntityGuid; } }
     public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
     public string ReceivedOn { get { return _state.ReceivedOn.HasValue ? _state.ReceivedOn.Value.ToString("yyyy-MM-dd") : ""; } }
     public string ExecutedOn { get { return _state.ExecutedOn.HasValue ? _state.ExecutedOn.Value.ToString("yyyy-MM-dd") : ""; } }
@@ -185,7 +185,13 @@ namespace SoftwareManagementCoreWeb.Controllers
         foreach (var command in commands)
         {
           // if we are in an authorized context, always record the authenticated user
-          if (User != null && User.Identity != null) { command.UserName = User.Identity.Name; }
+          if (User != null && User.Identity != null)
+          {
+            if (User.Identity.Name != null)
+            {
+              command.UserName = User.Identity.Name;
+            }
+          }
           var typedCommand = _commandManager.ProcessCommand(command, command.State);
           command.ExecutedOn = typedCommand.ExecutedOn;
         }
