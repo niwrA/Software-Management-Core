@@ -383,6 +383,7 @@ namespace SoftwareManagementEFCoreRepository
     public string Description { get; set; }
     public Guid DesignGuid { get; set; }
     public string Name { get; set; }
+    public Guid? ParentGuid { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
   }
@@ -861,9 +862,9 @@ namespace SoftwareManagementEFCoreRepository
       }
     }
 
-    public IEntityElementState CreateEntityElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, string name)
+    public IEntityElementState CreateEntityElementState(Guid designGuid, Guid epicGuid, Guid entityGuid, string name, Guid? parentGuid)
     {
-      var newState = new EntityElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name };
+      var newState = new EntityElementState { Guid = entityGuid, EpicElementGuid = epicGuid, DesignGuid = designGuid, Name = name, ParentGuid = parentGuid };
       _context.EntityElementStates.Add(newState);
       return newState;
     }

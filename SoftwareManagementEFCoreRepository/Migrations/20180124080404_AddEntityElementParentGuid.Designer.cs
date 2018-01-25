@@ -11,9 +11,10 @@ using System;
 namespace SoftwareManagementEFCoreRepository.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20180124080404_AddEntityElementParentGuid")]
+    partial class AddEntityElementParentGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

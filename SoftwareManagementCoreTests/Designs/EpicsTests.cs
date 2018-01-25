@@ -57,9 +57,9 @@ namespace SoftwareManagementCoreTests.Designs
             entityStateMock.Setup(s => s.DesignGuid).Returns(designGuid);
             entityStateMock.Setup(s => s.Name).Returns(name);
 
-            repoMock.Setup(t => t.CreateEntityElementState(designGuid, epicGuid, entityGuid, name)).Returns(entityStateMock.Object);
+            repoMock.Setup(t => t.CreateEntityElementState(designGuid, epicGuid, entityGuid, name, null)).Returns(entityStateMock.Object);
 
-            var sutResult = sut.AddEntityElement(entityGuid, name);
+            var sutResult = sut.AddEntityElement(entityGuid, name, null);
 
             Assert.Equal(entityGuid, sutResult.Guid);
             Assert.Equal(designGuid, sutResult.DesignGuid);
