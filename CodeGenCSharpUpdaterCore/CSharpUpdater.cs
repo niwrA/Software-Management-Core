@@ -26,7 +26,7 @@ namespace CodeGen
             var solutionRoot = _settings.SolutionRoot;
             if (_settings == null)
             {
-                _settings = new CodeGenSettings(updateActions.First().EntityName, updateActions.First().EntitiesName);
+                _settings = new CodeGenSettings(updateActions.First().RootEntitiesName, updateActions.First().EntityName, updateActions.First().EntitiesName);
             }
             foreach (var doc in _settings.Documents)
             {
@@ -129,10 +129,11 @@ namespace CodeGen
                 var hasChanged = false;
                 SyntaxNode newRoot = null;
                 string path = Path.Combine(solutionRoot, doc.Name);
-                if(doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot))
-                {
-                    doc.Update(solutionRoot,doc.Body);
-                }
+        // todo: just require existing, this moves to AddElemeent
+                //if(doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot))
+                //{
+                //    doc.Update(solutionRoot,doc.Body);
+                //}
                 //                CreateIfNecessary(entityName, entitiesName, solutionRoot, doc, path);
                 using (var stream = doc.GetStream(solutionRoot))
                 {
@@ -161,7 +162,8 @@ namespace CodeGen
                 var hasChanged = false;
                 SyntaxNode newRoot = null;
                 string path = Path.Combine(solutionRoot, doc.Name);
-                doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
+        // todo: move to AddEntity
+                // doc.CreateIfNotExisting(entityName, entitiesName, solutionRoot);
                 using (var stream = doc.GetStream(solutionRoot))
                 {
                     if (stream != null)

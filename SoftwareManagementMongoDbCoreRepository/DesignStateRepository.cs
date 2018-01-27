@@ -62,7 +62,9 @@ namespace SoftwareManagementMongoDbCoreRepository
     public Guid EpicElementGuid { get; set; }
     public string Description { get; set; }
     public string Name { get; set; }
+    public string PluralName { get; set; }
     public Guid? ParentGuid { get; set; }
+    public bool IsCollection { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
     public ICollection<ICommandElementState> CommandElementStates { get; set; }
@@ -91,6 +93,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     public Guid EntityElementGuid { get; set; }
     public string Description { get; set; }
     public string Name { get; set; }
+    public string DataType { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
   }

@@ -19,6 +19,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
     public Guid EpicElementGuid { get; set; }
     public Guid EntityElementGuid { get; set; }
     public string Name { get; set; } = "Property element Name";
+    public string DataType { get; set; }
   }
   public class CommandElementState : StateBase, ICommandElementState
   {
@@ -43,6 +44,8 @@ namespace SoftwareManagementCoreApiTests.Fakes
     public Guid DesignGuid { get; set; }
     public Guid EpicElementGuid { get; set; }
     public string Name { get; set; } = "Entity element Name";
+    public bool IsCollection { get; set; }
+    public string PluralName { get; set; }
     public Guid? ParentGuid { get; set; }
     public ICollection<IPropertyElementState> PropertyElementStates { get; set; }
     public ICollection<ICommandElementState> CommandElementStates { get; set; }

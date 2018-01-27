@@ -28,11 +28,14 @@ namespace DesignsShared
     ICollection<ICommandElementState> CommandElementStates { get; set; }
     Guid EpicElementGuid { get; set; }
     Guid? ParentGuid { get; set; }
+    bool IsCollection { get; set; }
+    string PluralName { get; set; }
   }
   public interface IPropertyElementState : IDesignElementState
   {
     Guid EpicElementGuid { get; set; }
     Guid EntityElementGuid { get; set; }
+    string DataType { get; set; }
   }
   public interface ICommandElementState : IDesignElementState
   {

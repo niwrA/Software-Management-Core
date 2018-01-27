@@ -52,7 +52,7 @@ namespace SoftwareManagementEFCoreRepository
     public DbSet<PropertyElementState> PropertyElementStates { get; set; }
     public DbSet<CommandElementState> CommandElementStates { get; set; }
     public DbSet<ProductConfigOptionState> ProductConfigOptionStates { get; set; }
-    public DbSet<ProductInstallationState> ProductInstallationStates{ get; set; }
+    public DbSet<ProductInstallationState> ProductInstallationStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -144,7 +144,7 @@ namespace SoftwareManagementEFCoreRepository
   {
     public string Name { get; set; }
   }
-  public abstract class TimeStampedEntityState: ITimeStampedEntityState
+  public abstract class TimeStampedEntityState : ITimeStampedEntityState
   {
     [Key]
     public Guid Guid { get; set; }
@@ -372,6 +372,11 @@ namespace SoftwareManagementEFCoreRepository
     public string Name { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
+    public string DataType
+    {
+      get;
+      set;
+    }
   }
   public class EntityElementState : IEntityElementState
   {
@@ -386,6 +391,16 @@ namespace SoftwareManagementEFCoreRepository
     public Guid? ParentGuid { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
+    public string PluralName
+    {
+      get;
+      set;
+    }
+    public bool IsCollection
+    {
+      get;
+      set;
+    }
   }
   public class CommandElementState : ICommandElementState
   {
