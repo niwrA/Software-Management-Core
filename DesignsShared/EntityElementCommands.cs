@@ -53,6 +53,33 @@ namespace DesignsShared
       base.Execute();
     }
   }
+  public class ChangePluralNameOfEntityElementCommand : EntityElementCommand
+  {
+    public string OriginalPluralName { get; set; }
+    public string PluralName { get; set; }
+    public override void Execute()
+    {
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var epic = design.GetEpicElement(this.EpicElementGuid);
+      var entity = epic.GetEntityElement(this.EntityGuid);
+      entity.ChangePluralName(this.PluralName, this.OriginalPluralName);
+      base.Execute();
+    }
+  }
+
+  public class ChangeIsCollectionForEntityElementCommand : EntityElementCommand
+  {
+    public bool IsCollection{ get; set; }
+    public override void Execute()
+    {
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var epic = design.GetEpicElement(this.EpicElementGuid);
+      var entity = epic.GetEntityElement(this.EntityGuid);
+      entity.ChangeIsCollection(this.IsCollection);
+      base.Execute();
+    }
+  }
+
   public class DeleteEntityElementCommand : EntityElementCommand
   {
     public override void Execute()

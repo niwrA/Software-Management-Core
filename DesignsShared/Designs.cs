@@ -73,6 +73,8 @@ namespace DesignsShared
   {
     Guid EpicGuid { get; }
     Guid EntityGuid { get; }
+
+    void ChangeDataType(string dataType, string originalDataType);
   }
   public interface ICommandElement : IElement
   {
@@ -82,12 +84,16 @@ namespace DesignsShared
   public interface IEntityElement : IElement
   {
     Guid EpicGuid { get; }
+    string PluralName { get; }
+    bool IsCollection { get; }
     ICommandElement AddCommandElement(Guid guid, string name);
     IPropertyElement AddPropertyElement(Guid guid, string name);
     IPropertyElement GetPropertyElement(Guid entityGuid);
     void DeleteCommandElement(Guid entityGuid);
     void DeletePropertyElement(Guid entityGuid);
     ICommandElement GetCommandElement(Guid entityGuid);
+    void ChangePluralName(string name, string originalName);
+    void ChangeIsCollection(bool isCollection);
   }
   public interface IEpicElement : IElement
   {
@@ -225,7 +231,8 @@ namespace DesignsShared
     private IEntityElementState _state;
     private IDesignStateRepository _repo;
     public Guid EpicGuid { get { return _state.EpicElementGuid; } }
-
+    public string PluralName { get { return _state.PluralName; } }
+    public bool IsCollection { get { return _state.IsCollection; } }
     public EntityElement(IEntityElementState state, IDesignStateRepository repo) : base(state)
     {
       _state = state;
@@ -268,6 +275,19 @@ namespace DesignsShared
       var state = _state.CommandElementStates.Single(s => s.Guid == entityGuid);
       _state.CommandElementStates.Remove(state);
     }
+
+    public void ChangePluralName(string name, string originalName)
+    {
+      if (_state.PluralName == originalName)
+      {
+        _state.PluralName = name;
+      }
+    }
+
+    public void ChangeIsCollection(bool isCollection)
+    {
+      _state.IsCollection = isCollection;
+    }
   }
   public class PropertyElement : ElementBase, IPropertyElement
   {
@@ -280,6 +300,14 @@ namespace DesignsShared
     {
       _state = state;
       _repo = repo;
+    }
+    public void ChangeDataType(string dataType, string originalDataType)
+    {
+      if (_state.DataType == originalDataType)
+      {
+        _state.DataType = dataType;
+      }
+      // todo: concurrency policy
     }
   }
   public class CommandElement : ElementBase, ICommandElement

@@ -38,6 +38,7 @@ namespace SoftwareManagementCoreApi.Controllers
     public Guid EntityElementGuid { get { return _state.EntityElementGuid; } }
     public string Name { get { return _state.Name; } }
     public string Description { get { return _state.Description; } }
+    public string DataType {  get { return _state.DataType; } }
     public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
     public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
   }
@@ -58,7 +59,8 @@ namespace SoftwareManagementCoreApi.Controllers
     public string Description { get { return _state.Description; } }
     public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
     public string UpdatedOn { get { return _state.UpdatedOn.ToString("yyyy-MM-dd"); } }
-
+    public bool IsCollection { get { return _state.IsCollection; } }
+    public string PluralName { get { return _state.PluralName; } }
     public ICollection<CommandElementDto> CommandElements { get; set; }
     public ICollection<PropertyElementDto> PropertyElements { get; set; }
   }
