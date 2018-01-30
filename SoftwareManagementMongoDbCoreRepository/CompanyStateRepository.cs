@@ -47,7 +47,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     public string IpAddress { get; set; }
   }
 
-  public class CompanyStateRepository : ICompanyStateRepository
+  public class CompanyStateRepository : ICompanyStateRepository, ICompanyStateReadOnlyRepository
   {
     private const string CompanyStatesCollection = "CompanyStates";
 

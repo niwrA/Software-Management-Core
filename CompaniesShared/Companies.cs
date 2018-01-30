@@ -69,6 +69,12 @@ namespace CompaniesShared
     void RemoveDatabaseFromEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid);
     ICompanyEnvironmentDatabaseState GetDatabaseForEnvironmentState(ICompanyEnvironmentState state, Guid databaseGuid);
   }
+  public interface ICompanyStateReadOnlyRepository : IEntityReadOnlyRepository
+  {
+    ICompanyState GetCompanyState(Guid guid);
+    IEnumerable<ICompanyState> GetCompanyStates();
+  }
+
   public interface IEntity
   {
     Guid Guid { get; }

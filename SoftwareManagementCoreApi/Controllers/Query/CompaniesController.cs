@@ -95,9 +95,9 @@ namespace SoftwareManagementCoreApi.Controllers
     [Route("api/[controller]")]
     public class CompaniesController : Controller
     {
-      private ICompanyStateRepository _companyStateRepository;
+      private ICompanyStateReadOnlyRepository _companyStateRepository;
 
-      public CompaniesController(ICompanyStateRepository companyStateRepository)
+      public CompaniesController(ICompanyStateReadOnlyRepository companyStateRepository)
       {
         _companyStateRepository = companyStateRepository;
       }

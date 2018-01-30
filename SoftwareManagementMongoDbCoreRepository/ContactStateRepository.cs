@@ -18,7 +18,7 @@ namespace SoftwareManagementMongoDbCoreRepository
         public Guid? AvatarFileGuid { get; set; }
         public string AvatarUrl { get; set; }
     }
-    public class ContactStateRepository: IContactStateRepository
+    public class ContactStateRepository: IContactStateRepository, IContactStateReadOnlyRepository
     {
         private const string ContactStatesCollection = "ContactStates";
 

@@ -29,9 +29,14 @@ using CodeGen;
 using FilesShared;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using ProductInstallationsShared;
+using Microsoft.AspNetCore.Http;
 
 namespace SoftwareManagementCoreApi
 {
+  public class SpaSettings
+  {
+
+  }
   public class Startup
   {
     public Startup(IHostingEnvironment env)
@@ -70,6 +75,7 @@ namespace SoftwareManagementCoreApi
       services.AddDbContext<SoftwareManagementEFCoreRepository.MainContext>(options => options.UseSqlServer(connection));
       #endregion
       SetupDI(services);
+
       // todo: setup so that both SQL server and MongoDb can be used at the same time and which one to use can be configured
     }
     private static void SetupSQLServerDbDI(IServiceCollection services)
@@ -78,7 +84,9 @@ namespace SoftwareManagementCoreApi
       services.AddTransient<IDesignStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
       services.AddTransient<IProjectStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
       services.AddTransient<IContactStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<IContactStateReadOnlyRepository, SoftwareManagementEFCoreRepository.MainReadOnlyRepository>();
       services.AddTransient<ICompanyStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
+      services.AddTransient<ICompanyStateReadOnlyRepository, SoftwareManagementEFCoreRepository.MainReadOnlyRepository>();
       services.AddTransient<ILinkStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
       services.AddTransient<IFileStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
       services.AddTransient<IEmploymentStateRepository, SoftwareManagementEFCoreRepository.MainRepository>();
@@ -107,7 +115,9 @@ namespace SoftwareManagementCoreApi
       services.AddTransient<IDesignStateRepository, DesignStateRepository>();
       services.AddTransient<IProjectStateRepository, ProjectStateRepository>();
       services.AddTransient<IContactStateRepository, ContactStateRepository>();
+      services.AddTransient<IContactStateReadOnlyRepository, ContactStateRepository>();
       services.AddTransient<ICompanyStateRepository, CompanyStateRepository>();
+      services.AddTransient<ICompanyStateReadOnlyRepository, CompanyStateRepository>();
       services.AddTransient<ILinkStateRepository, LinkStateRepository>();
       services.AddTransient<IFileStateRepository, FileStateRepository>();
       services.AddTransient<IEmploymentStateRepository, EmploymentStateRepository>();
@@ -157,6 +167,31 @@ namespace SoftwareManagementCoreApi
       app.UseCors("SiteCorsPolicy");
       app.UseStaticFiles();
       app.UseMvc();
+      var defaultPage = $"{Configuration["SpaSettings:DefaultPage"]}";
+
+      ConfigureRoutes(app, defaultPage);
+    }
+
+    private void ConfigureRoutes(IApplicationBuilder app, string defaultPage)
+    {
+      // If the route contains '.' then assume a file to be served
+      // and try to serve using StaticFiles
+      // if the route is spa route then let it fall through to the
+      // spa index file and have it resolved by the spa application
+      app.MapWhen(context => {
+        var path = context.Request.Path.Value;
+        return !path.Contains(".");
+      },
+      spa => {
+        spa.Use((context, next) =>
+        {
+          context.Request.Path = new PathString("/" + defaultPage);
+          return next();
+        });
+
+        spa.UseStaticFiles();
+      });
+
     }
   }
 }

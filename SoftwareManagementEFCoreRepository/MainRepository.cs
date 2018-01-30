@@ -576,10 +576,10 @@ namespace SoftwareManagementEFCoreRepository
     public ICompanyRoleState AddRoleToCompanyState(Guid companyGuid, Guid companyRoleGuid, string companyRoleName)
     {
       var companyState = GetCompanyState(companyGuid);
-      var roleState = companyState.CompanyRoleStates.SingleOrDefault(s => s.Guid == companyRoleGuid);
+      CompanyRoleState roleState = _context.CompanyRoleStates.SingleOrDefault(s => s.Guid == companyRoleGuid);
       if (roleState == null)
       {
-        roleState = CreateCompanyRoleState(companyGuid, companyRoleGuid, companyRoleName);
+        return CreateCompanyRoleState(companyGuid, companyRoleGuid, companyRoleName);
       }
       return roleState;
     }
@@ -587,11 +587,10 @@ namespace SoftwareManagementEFCoreRepository
     public void RemoveRoleFromCompanyState(Guid companyGuid, Guid companyRoleGuid)
     {
       var companyState = GetCompanyState(companyGuid);
-      var companyRoleState = companyState.CompanyRoleStates.SingleOrDefault(s => s.Guid == companyRoleGuid);
+      var companyRoleState = _context.CompanyRoleStates.SingleOrDefault(s => s.Guid == companyRoleGuid);
       if (companyRoleState != null)
       {
-        companyState.CompanyRoleStates.Remove(companyRoleState);
-        _context.CompanyRoleStates.Remove((CompanyRoleState)companyRoleState);
+        _context.CompanyRoleStates.Remove(companyRoleState);
       }
     }
 
@@ -618,11 +617,6 @@ namespace SoftwareManagementEFCoreRepository
       return state;
     }
 
-    public IEnumerable<IContactState> GetContactStates()
-    {
-      return _context.ContactStates.AsNoTracking().ToList();
-    }
-
     public void DeleteContactState(Guid guid)
     {
       var state = _context.ContactStates.Find(guid);
@@ -638,21 +632,13 @@ namespace SoftwareManagementEFCoreRepository
 
     public ICompanyState GetCompanyState(Guid guid)
     {
-      var state = _context.CompanyStates.Include(i => i.CompanyRoleStates)
-        .Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates)
-        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.DatabaseStates)
-        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.AccountStates)
-        .SingleOrDefault(s => s.Guid == guid);
+      var state = _context.CompanyStates.SingleOrDefault(s => s.Guid == guid);
       return state;
     }
 
     public IEnumerable<ICompanyState> GetCompanyStates()
     {
-      return _context.CompanyStates.Include(i => i.CompanyRoleStates)
-        .Include(i => i.CompanyEnvironmentStates).ThenInclude(ti => ti.HardwareStates)
-        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.DatabaseStates)
-        .Include(ti => ti.CompanyEnvironmentStates).ThenInclude(ti => ti.AccountStates)
-        .AsNoTracking().OrderBy(o => o.Name).ToList();
+      return _context.CompanyStates.AsNoTracking().OrderBy(o => o.Name).ToList();
     }
 
     public void DeleteCompanyState(Guid guid)

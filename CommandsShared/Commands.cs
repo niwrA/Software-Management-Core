@@ -78,6 +78,8 @@ namespace CommandsShared
     void PersistChanges();
     Task PersistChangesAsync();
   }
+  public interface IEntityReadOnlyRepository { }
+
   // defines the contract for entities compatible with commanding
   public interface ICommandableEntity
   {

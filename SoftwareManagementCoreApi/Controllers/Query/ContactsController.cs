@@ -27,9 +27,9 @@ namespace SoftwareManagementCoreApi.Controllers
     [Route("api/[controller]")]
     public class ContactsController : Controller
     {
-        private IContactStateRepository _contactStateRepository;
+        private IContactStateReadOnlyRepository _contactStateRepository;
 
-        public ContactsController(IContactStateRepository productStateRepository)
+        public ContactsController(IContactStateReadOnlyRepository productStateRepository)
         {
             _contactStateRepository = productStateRepository;
         }
