@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CommandsShared;
 using ProductsShared;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using ProjectsShared;
 using ContactsShared;
@@ -40,7 +38,7 @@ namespace SoftwareManagementCoreWeb.Controllers
     public string UserName { get { return _state.UserName; } }
 
   }
-  public class CommandBatchResults
+  public class CommandBatchResultsDto
   {
     public bool Success { get; set; }
     public IEnumerable<CommandDto> ExecutedCommands { get; set; }
@@ -90,50 +88,32 @@ namespace SoftwareManagementCoreWeb.Controllers
 
     private void ConfigureCommandManager()
     {
-      var projectsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService };
-      var productsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService };
-      var productFeaturesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductFeature", Processor = _productService };
-      var productIssuesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductIssue", Processor = _productService };
-      var productVersionsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductVersion", Processor = _productService };
-      var productConfigOptionConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductConfigOption", Processor = _productService };
-      var designsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "Design", Processor = _designService };
-      var epicElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EpicElement", Processor = _designService };
-      var entityElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EntityElement", Processor = _designService };
-      var commandElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "CommandElement", Processor = _designService };
-      var propertyElementConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "PropertyElement", Processor = _designService };
-      var contactsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService };
-      var companiesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService };
-      var environmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironment", Processor = _companyService };
-      var hardwareConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironmentHardware", Processor = _companyService };
-      var linksConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "LinksShared", Entity = "Link", Processor = _linkService };
-      var filesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = _fileService };
-      var codeGenConfig = new ProcessorConfig { Assembly = "CodeGenCSharpUpdaterCore", NameSpace = "CodeGenShared", Entity = "CodeGen", Processor = _codeGenService };
+      var processorConfigs = new List<IProcessorConfig>
+      {
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductFeature", Processor = _productService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductIssue", Processor = _productService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductVersion", Processor = _productService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductConfigOption", Processor = _productService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "Design", Processor = _designService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EpicElement", Processor = _designService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EntityElement", Processor = _designService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "CommandElement", Processor = _designService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "PropertyElement", Processor = _designService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironment", Processor = _companyService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironmentHardware", Processor = _companyService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "LinksShared", Entity = "Link", Processor = _linkService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = _fileService },
+        new ProcessorConfig { Assembly = "CodeGenCSharpUpdaterCore", NameSpace = "CodeGenShared", Entity = "CodeGen", Processor = _codeGenService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectRoleAssignmentsShared", Entity = "ProjectRoleAssignment", Processor = _projectRoleAssignmentService },
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductInstallationsShared", Entity = "ProductInstallation", Processor = _productInstallationService }
+      };
 
-      var employmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService };
-      var projectRoleAssignmentsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectRoleAssignmentsShared", Entity = "ProjectRoleAssignment", Processor = _projectRoleAssignmentService };
-      var productInstallationsConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductInstallationsShared", Entity = "ProductInstallation", Processor = _productInstallationService };
-
-      _commandManager.AddConfig(projectsConfig);
-      _commandManager.AddConfig(productsConfig);
-      _commandManager.AddConfig(productVersionsConfig);
-      _commandManager.AddConfig(productFeaturesConfig);
-      _commandManager.AddConfig(productIssuesConfig);
-      _commandManager.AddConfig(productConfigOptionConfig);
-      _commandManager.AddConfig(designsConfig);
-      _commandManager.AddConfig(epicElementConfig);
-      _commandManager.AddConfig(entityElementConfig);
-      _commandManager.AddConfig(commandElementConfig);
-      _commandManager.AddConfig(propertyElementConfig);
-      _commandManager.AddConfig(contactsConfig);
-      _commandManager.AddConfig(companiesConfig);
-      _commandManager.AddConfig(environmentsConfig);
-      _commandManager.AddConfig(hardwareConfig);
-      _commandManager.AddConfig(employmentsConfig);
-      _commandManager.AddConfig(projectRoleAssignmentsConfig);
-      _commandManager.AddConfig(productInstallationsConfig);
-      _commandManager.AddConfig(linksConfig);
-      _commandManager.AddConfig(filesConfig);
-      _commandManager.AddConfig(codeGenConfig);
+      _commandManager.AddProcessorConfigs(processorConfigs);
     }
 
     // GET: api/commands
@@ -154,9 +134,9 @@ namespace SoftwareManagementCoreWeb.Controllers
     }
     [HttpGet]
     [Route("executenew")]
-    public CommandBatchResults ExecuteNew()
+    public CommandBatchResultsDto ExecuteNew()
     {
-      var result = new CommandBatchResults();
+      var result = new CommandBatchResultsDto();
       var commands = _commandManager.GetUnprocessedCommands();
 
       ExecuteCommands(result, commands);
@@ -167,17 +147,18 @@ namespace SoftwareManagementCoreWeb.Controllers
     // POST api/commands/batch
     [HttpPost]
     [Route("batch")]
-    public CommandBatchResults Post([FromBody]IEnumerable<CommandDto> commands)
+    public CommandBatchResultsDto Post([FromBody]IEnumerable<CommandDto> commands)
     {
       // simple, direct execution of one or more commands, like a transaction
-      var result = new CommandBatchResults();
+      var result = new CommandBatchResultsDto();
 
       ExecuteCommands(result, commands);
 
       return result;
     }
 
-    private void ExecuteCommands(CommandBatchResults result, IEnumerable<CommandDto> commands)
+    // todo: perhaps also support an async pipeline that awaits execution of all commands in paralel
+    private void ExecuteCommands(CommandBatchResultsDto result, IEnumerable<CommandDto> commands)
     {
       try
       {
@@ -192,8 +173,12 @@ namespace SoftwareManagementCoreWeb.Controllers
               command.UserName = User.Identity.Name;
             }
           }
-          var typedCommand = _commandManager.ProcessCommand(command, command.State);
-          command.ExecutedOn = typedCommand.ExecutedOn;
+          var typedCommands = _commandManager.ProcessCommand(command, command.State);
+          // todo: return info per processor
+          foreach (var typedCommand in typedCommands)
+          {
+            command.ExecutedOn = typedCommand.ExecutedOn;
+          }
         }
 
         // these can be all the same contexts, but may also be different
@@ -218,6 +203,5 @@ namespace SoftwareManagementCoreWeb.Controllers
         result.Message = ex.Message;
       }
     }
-
   }
 }

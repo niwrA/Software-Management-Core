@@ -18,7 +18,7 @@ namespace SoftwareManagementCoreApiTests
         [Fact(DisplayName = "GetCompanies")]
         public void CanGetCompanies()
         {
-            var repo = new Mock<ICompanyStateRepository>();
+            var repo = new Mock<ICompanyStateReadOnlyRepository>();
             var companyState = new Fakes.CompanyState();
             repo.Setup(s => s.GetCompanyStates()).Returns(new List<ICompanyState> { companyState });
             var sut = new CompaniesController(repo.Object);
@@ -29,7 +29,7 @@ namespace SoftwareManagementCoreApiTests
         [Fact(DisplayName = "GetCompany")]
         public void CanGetCompany()
         {
-            var repo = new Mock<ICompanyStateRepository>();
+            var repo = new Mock<ICompanyStateReadOnlyRepository>();
             var companyState = new Fakes.CompanyState();
             repo.Setup(s => s.GetCompanyState(companyState.Guid)).Returns(companyState);
             var sut = new CompaniesController(repo.Object);

@@ -54,8 +54,9 @@ namespace SoftwareManagementCoreApiTests
       var projectCommand = new Fakes.RenameProjectCommand(projectCommandDto, commandRepo.Object);
       var productCommand = new Fakes.RenameProductCommand(productCommandDto, commandRepo.Object);
 
-      commandManager.Setup(s => s.ProcessCommand(projectCommandDto, null)).Returns(projectCommand);
-      commandManager.Setup(s => s.ProcessCommand(productCommandDto, null)).Returns(productCommand);
+      var commands = new List<ICommand> { projectCommand, productCommand };
+
+      commandManager.Setup(s => s.ProcessCommand(projectCommandDto, null)).Returns(commands);
 
       var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object, employmentsService.Object, companiesService.Object, projectRoleAssignmentsService.Object, productInstallationService.Object, linksService.Object, filesService.Object, designsService.Object, codeGenService.Object, commandRepo.Object);
       var sutResult = sut.Post(new List<CommandDto> { projectCommandDto, productCommandDto });

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using System.Linq;
 
 namespace SoftwareManagementCoreTests.Designs
 {
@@ -87,15 +88,15 @@ namespace SoftwareManagementCoreTests.Designs
       var name = "New Project";
 
       var sut = new CommandService(commandRepoMock.Object, new DateTimeProvider());
-      var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, Name = CommandTypes.Create.ToString(), ProcessorName = TestGlobals.Entity, Processor = designsMock.Object };
+      var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, CommandName = CommandTypes.Create.ToString(), Entity = TestGlobals.Entity, Processor = designsMock.Object };
 
-      sut.AddConfig(commandConfig);
+      sut.AddCommandConfigs(new List<ICommandConfig>() { commandConfig });
 
       var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Name = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
       var sutResult = sut.ProcessCommand(commandDto);
 
       designsMock.Verify(v => v.CreateDesign(guid, name), Times.Once);
-      Assert.Equal(commandDto.Entity, sutResult.Entity);
+      Assert.Equal(commandDto.Entity, sutResult.First().Entity);
     }
 
   }

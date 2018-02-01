@@ -11,6 +11,7 @@ using Xunit;
 
 namespace SoftwareManagementCoreTests.Commands
 {
+  [Trait("Entity", "Command")]
   public class CommandManagerTests
   {
     // todo: consider creating test specific commands
@@ -49,7 +50,7 @@ namespace SoftwareManagementCoreTests.Commands
         Entity = "Contact",
         Processor = processor
       };
-      sut.AddConfig(processorConfig);
+      sut.AddProcessorConfigs(new List<IProcessorConfig> { processorConfig });
 
       // create a new command to merge/apply
       // todo: make builder
@@ -87,5 +88,44 @@ namespace SoftwareManagementCoreTests.Commands
       Assert.Single(sutResult);
       Assert.Equal("Contact", sutResult.First().Entity);
     }
+
+    [Fact(DisplayName = "CommandManager_ProcessCommand_CanTargetMultipleProcessorsForOneCommand")]
+    // basically we are testing full event/commandsourcing here, restoring state
+    // from existing commands and applying new commands to that state
+    public void CommandManager_ProcessCommand_CanTargetMultipleProcessorsForOneCommand()
+    {
+      var dateTimeProvider = new Mock<IDateTimeProvider>().Object;
+      var processor1 = new Mock<IContactService>();
+      var processor2 = new Mock<IContactService>();
+      var processor3 = new Mock<IContactService>();
+      var processor4 = new Mock<IContactService>();
+
+      var repo = new Mock<ICommandStateRepository>();
+      repo.Setup(s => s.CreateCommandState()).Returns(new Fakes.CommandState());
+
+      var sut = new CommandService(repo.Object, dateTimeProvider);
+      var commandDto = new CommandDto { Entity = "Contact", Name = "Create", EntityGuid = Guid.NewGuid(), Guid = Guid.NewGuid() };
+
+      var configs = new List<ICommandConfig> {
+        new CommandConfig { CommandName = "Create", Entity = "Contact", NameSpace="ContactsShared", Assembly = "SoftwareManagementCore", Processor = processor1.Object },
+        new CommandConfig { CommandName = "Create", Entity = "Contact", NameSpace="ContactsShared", Assembly = "SoftwareManagementCore", Processor = processor2.Object }
+      };
+
+      var processorConfigs = new List<IProcessorConfig> {
+        new ProcessorConfig { Entity = "Contact", NameSpace="ContactsShared", Assembly = "SoftwareManagementCore", Processor = processor3.Object },
+        new ProcessorConfig { Entity = "Contact", NameSpace="ContactsShared", Assembly = "SoftwareManagementCore", Processor = processor4.Object }
+      };
+
+      sut.AddCommandConfigs(configs);
+      sut.AddProcessorConfigs(processorConfigs);
+
+      var sutResult = sut.ProcessCommand(commandDto);
+
+      processor1.Verify(s => s.CreateContact(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
+      processor2.Verify(s => s.CreateContact(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
+      processor3.Verify(s => s.CreateContact(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
+      processor4.Verify(s => s.CreateContact(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
+    }
+
   }
 }

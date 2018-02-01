@@ -26,7 +26,7 @@ namespace SoftwareManagementCoreTests.Commands
         {
             var json = @"{'OriginalName': 'oude naam', 'Name': 'nieuwe naam'}";
             var projectsMoq = new Mock<IProductService>();
-            var commandConfig = new CommandConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Name = "Rename", ProcessorName = "Product", Processor = projectsMoq.Object };
+            var commandConfig = new CommandConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", CommandName = "Rename", Entity = "Product", Processor = projectsMoq.Object };
             RenameProductCommand command = commandConfig.GetCommand(json) as RenameProductCommand;
             Assert.Equal("oude naam", command.OriginalName);
         }
@@ -36,7 +36,7 @@ namespace SoftwareManagementCoreTests.Commands
         {
             var json = @"{'OriginalName': 'oude naam', 'Name': 'nieuwe naam'}";
             var projectsMoq = new Mock<IProductService>();
-            var commandConfig = new CommandConfig { Assembly = "SomethingNotExisting", NameSpace = "ProductsShared", Name = "Rename", ProcessorName = "Product", Processor = projectsMoq.Object };
+            var commandConfig = new CommandConfig { Assembly = "SomethingNotExisting", NameSpace = "ProductsShared", CommandName = "Rename", Entity = "Product", Processor = projectsMoq.Object };
             Assert.Throws<TypeNotFoundException>(()=> commandConfig.GetCommand(json));
         }
     }

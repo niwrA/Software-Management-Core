@@ -264,9 +264,9 @@ namespace SoftwareManagementCoreTests.Products
       var name = "New Project";
 
       var sut = new CommandService(commandRepoMock.Object, new DateTimeProvider());
-      var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, Name = CommandTypes.Create.ToString(), ProcessorName = TestGlobals.Entity, Processor = productsMock.Object };
+      var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, CommandName = CommandTypes.Create.ToString(), Entity = TestGlobals.Entity, Processor = productsMock.Object };
 
-      sut.AddConfig(commandConfig);
+      sut.AddCommandConfigs(new List<ICommandConfig> { commandConfig });
 
       var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Name = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
       var sutResult = sut.ProcessCommand(commandDto);

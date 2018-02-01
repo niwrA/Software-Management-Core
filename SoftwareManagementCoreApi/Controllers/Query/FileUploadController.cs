@@ -51,9 +51,12 @@ namespace SoftwareManagementCoreApi.Controllers
       _commandService = commandService;
       _fileService = fileService;
 
-      var filesConfig = new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = fileService };
+      var processorConfigs = new List<IProcessorConfig>
+      {
+        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = fileService }
+      };
 
-      _commandService.AddConfig(filesConfig);
+      _commandService.AddProcessorConfigs(processorConfigs);
     }
     // todo: move to injected class
     private async Task SaveAsync(IFormFile formFile, string folderName, string fileName, CancellationToken cancellationToken = default(CancellationToken))

@@ -156,10 +156,10 @@ namespace CommandsShared
   public interface ICommandConfig
   {
     string Key { get; }
-    string Name { get; set; }
+    string CommandName { get; set; }
     ICommand GetCommand(string parametersJson);
     ICommandProcessor Processor { get; set; }
-    string ProcessorName { get; set; }
+    string Entity { get; set; }
     string NameSpace { get; set; }
     string Assembly { get; set; }
   }
@@ -176,11 +176,11 @@ namespace CommandsShared
 
   public interface ICommandService
   {
-    void AddConfig(ICommandConfig config);
-    void AddConfig(IProcessorConfig config);
-    ICommand ProcessCommand(CommandDto command);
+    void AddProcessorConfigs(IEnumerable<IProcessorConfig> configs);
+    void AddCommandConfigs(IEnumerable<ICommandConfig> configs);
+    IEnumerable<ICommand> ProcessCommand(CommandDto command);
     ICommand ProcessCommand(ICommand command);
-    ICommand ProcessCommand(CommandDto command, ICommandState state);
+    IEnumerable<ICommand> ProcessCommand(CommandDto command, ICommandState state);
     void PersistChanges();
     void MergeCommands(IEnumerable<CommandDto> commands);
     ICommand CreateCommand<T>() where T : ICommand, new();
@@ -197,8 +197,8 @@ namespace CommandsShared
     {
       var commandConfig = new CommandConfig()
       {
-        ProcessorName = entity,
-        Name = name,
+        Entity = entity,
+        CommandName = name,
         NameSpace = this.NameSpace,
         Assembly = this.Assembly,
         Processor = this.Processor
@@ -208,9 +208,9 @@ namespace CommandsShared
   }
   public class CommandConfig : ICommandConfig
   {
-    public string Key { get { return Name + ProcessorName + "Command"; } }
-    public string Name { get; set; }
-    public string ProcessorName { get; set; }
+    public string Key { get { return CommandName + Entity + "Command"; } }
+    public string CommandName { get; set; }
+    public string Entity { get; set; }
     public string NameSpace { get; set; }
     public string Assembly { get; set; }
     public ICommandProcessor Processor { get; set; }
@@ -280,20 +280,36 @@ namespace CommandsShared
     private Dictionary<string, ICommandConfig> _commandConfigs = new Dictionary<string, ICommandConfig>();
     private ICommandStateRepository _repo;
     private IDateTimeProvider _dateTimeProvider;
+    private ILookup<string, ICommandConfig> _commandLookups;
+    private ILookup<string, IProcessorConfig> _processorLookups;
+
     public CommandService(ICommandStateRepository repo, IDateTimeProvider dateTimeProvider)
     {
       _repo = repo;
       _dateTimeProvider = dateTimeProvider;
+      _commandLookups = new List<ICommandConfig>().ToLookup(o => o.Key);
+      _processorLookups = new List<IProcessorConfig>().ToLookup(o => o.Entity);
     }
-    public void AddConfig(ICommandConfig config)
+    public void AddCommandConfigs(IEnumerable<ICommandConfig> configs)
     {
-      _commandConfigs.Add(config.Key, config);
+      _commandLookups = configs.ToLookup(o => o.Key);
     }
-    public void AddConfig(IProcessorConfig config)
+    public IEnumerable<ICommandConfig> GetCommandConfigs(string key)
     {
-      _configs.Add(config.Entity, config);
+      var configs = new List<ICommandConfig>();
+      configs.AddRange(_commandLookups[key]);
+      return configs;
     }
-
+    public void AddProcessorConfigs(IEnumerable<IProcessorConfig> configs)
+    {
+      _processorLookups = configs.ToLookup(o => o.Entity);
+    }
+    public IEnumerable<IProcessorConfig> GetProcessorConfigs(string key)
+    {
+      var configs = new List<IProcessorConfig>();
+      configs.AddRange(_processorLookups[key]);
+      return configs;
+    }
     public void PersistChanges()
     {
       _repo.PersistChanges();
@@ -319,7 +335,7 @@ namespace CommandsShared
         ProcessCommand(command);
       }
     }
-    public ICommand ProcessCommand(CommandDto command)
+    public IEnumerable<ICommand> ProcessCommand(CommandDto command)
     {
       return ProcessCommand(command, null);
     }
@@ -334,35 +350,83 @@ namespace CommandsShared
       }
       return command;
     }
-    public ICommand ProcessCommand(CommandDto command, ICommandState state)
+
+    // todo for refactoring to support multiple configs for one command:
+    // create a new function that gets all the commandConfigs
+    // iterate and execute for all commandconfigs
+    // question: if we make a specific commandconfig, do we then also still execute the configured
+    // processor config?
+    //public ICommand ProcessCommand(CommandDto command, ICommandState state)
+    //{
+    //  ICommand typedCommand = null;
+    //  ICommandProcessor processor = null;
+    //  // either take existing name from state, or construct from dto
+    //  // the replace is a bit hacky, should probably clean the commandstore
+    //  var commandName = state == null ? command.Name : state.CommandTypeId.Replace(command.Entity + "Command", "");
+    //  var parametersJson = state == null ? command.ParametersJson : state.ParametersJson;
+    //  if (_commandConfigs.TryGetValue(commandName + command.Entity + "Command", out ICommandConfig commandConfig))
+    //  {
+    //    typedCommand = commandConfig.GetCommand(parametersJson);
+    //    processor = commandConfig.Processor;
+    //  }
+    //  else if (_configs.TryGetValue(command.Entity, out IProcessorConfig config))
+    //  {
+    //    typedCommand = config.GetCommand(commandName, command.Entity, parametersJson);
+    //    processor = config.Processor;
+    //  }
+    //  if (typedCommand != null)
+    //  {
+    //    CopyCommandDtoIntoCommand(command, _repo, processor, typedCommand, state);
+
+    //    typedCommand.Execute();
+    //    typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
+
+    //    return typedCommand;
+    //  }
+
+    //  throw new CommandNotConfiguredException($"The command named '{command.Name}' for entity '{command.Entity}' does not have a matching configuration.");
+    //}
+
+    public IEnumerable<ICommand> ProcessCommand(CommandDto command, ICommandState state)
     {
-      ICommand typedCommand = null;
+      //      ICommand typedCommand = null;
+      var typedCommands = new List<ICommand>();
       ICommandProcessor processor = null;
       // either take existing name from state, or construct from dto
       // the replace is a bit hacky, should probably clean the commandstore
       var commandName = state == null ? command.Name : state.CommandTypeId.Replace(command.Entity + "Command", "");
       var parametersJson = state == null ? command.ParametersJson : state.ParametersJson;
-      if (_commandConfigs.TryGetValue(commandName + command.Entity + "Command", out ICommandConfig commandConfig))
+      var commandConfigs = GetCommandConfigs(commandName + command.Entity + "Command");
+      foreach (var config in commandConfigs)
       {
-        typedCommand = commandConfig.GetCommand(parametersJson);
-        processor = commandConfig.Processor;
-      }
-      else if (_configs.TryGetValue(command.Entity, out IProcessorConfig config))
-      {
-        typedCommand = config.GetCommand(commandName, command.Entity, parametersJson);
+        var typedCommand = config.GetCommand(parametersJson);
         processor = config.Processor;
+
+        ExecuteCommand(command, state, typedCommands, processor, typedCommand);
       }
-      if (typedCommand != null)
+      var processorConfigs = GetProcessorConfigs(command.Entity);
+      foreach (var config in processorConfigs)
       {
-        CopyCommandDtoIntoCommand(command, _repo, processor, typedCommand, state);
+        var typedCommand = config.GetCommand(commandName, command.Entity, parametersJson);
+        processor = config.Processor;
 
-        typedCommand.Execute();
-        typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
-
-        return typedCommand;
+        ExecuteCommand(command, state, typedCommands, processor, typedCommand);
       }
-
+      if (typedCommands.Any())
+      {
+        return typedCommands;
+      }
       throw new CommandNotConfiguredException($"The command named '{command.Name}' for entity '{command.Entity}' does not have a matching configuration.");
+    }
+
+    private void ExecuteCommand(CommandDto command, ICommandState state, List<ICommand> typedCommands, ICommandProcessor processor, ICommand typedCommand)
+    {
+      CopyCommandDtoIntoCommand(command, _repo, processor, typedCommand, state);
+
+      typedCommand.Execute();
+      typedCommand.ExecutedOn = _dateTimeProvider.GetUtcDateTime();
+
+      typedCommands.Add(typedCommand);
     }
 
     private void CopyCommandDtoIntoCommand(CommandDto command, ICommandStateRepository commandRepository, ICommandProcessor processor, ICommand typedCommand, ICommandState state)
