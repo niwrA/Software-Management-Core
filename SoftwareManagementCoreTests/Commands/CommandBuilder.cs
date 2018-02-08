@@ -24,5 +24,4 @@ namespace SoftwareManagementCoreTests.Commands
             return cmd;
         }
     }
-
 }

@@ -5,7 +5,7 @@ using CommandsShared;
 
 namespace ContactsShared
 {
-    public abstract class ContactCommand : CommandBase
+    public abstract class ContactCommand : CommandBase, ICommand
     {
         public ContactCommand() : base() { }
         public ContactCommand(ICommandStateRepository repo) : base(repo) { }
