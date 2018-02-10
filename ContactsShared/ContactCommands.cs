@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ContactsShared
 {
-    public abstract class ContactCommand : CommandBase
+    public abstract class ContactCommand : CommandBase, ICommand
     {
         public ContactCommand() : base() { }
         public ContactCommand(ICommandStateRepository repo) : base(repo) { }
+        public virtual void Execute() { }
     }
 
     public class DeleteContactCommand : ContactCommand

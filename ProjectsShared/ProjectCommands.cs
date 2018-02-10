@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ProjectsShared
 {
-    public abstract class ProjectCommand : CommandBase
+    public abstract class ProjectCommand : CommandBase, ICommand
     {
         public ProjectCommand() : base() { }
         public ProjectCommand(ICommandStateRepository repo) : base(repo) { }
-    }
+        public virtual void Execute() { }
+  }
 
-    public class DeleteProjectCommand: ProjectCommand
+  public class DeleteProjectCommand: ProjectCommand
     {
         public override void Execute()
         {

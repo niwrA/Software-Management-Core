@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace DesignsShared
 {
-    public abstract class DesignCommand : CommandBase
+    public abstract class DesignCommand : CommandBase, ICommand
     {
         public DesignCommand() : base() { }
         public DesignCommand(ICommandStateRepository repo) : base(repo) { }
-    }
+        public virtual void Execute() { }
+  }
 
-    public class CreateDesignCommand : DesignCommand
+  public class CreateDesignCommand : DesignCommand
     {
         public CreateDesignCommand() : base() { }
         public CreateDesignCommand(ICommandStateRepository repo) : base(repo) { }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using CommandsShared;
+using niwrA.CommandManager;
 using ProductsShared;
 using Microsoft.AspNetCore.Cors;
 using ProjectsShared;
@@ -28,10 +28,13 @@ namespace SoftwareManagementCoreWeb.Controllers
       _state = state;
     }
     public Guid Guid { get { return _state.Guid; } }
-    public string Name { get { return _state.CommandTypeId.Replace(_state.Entity + "Command", ""); } }
+    public string Name { get { return _state.Command; } }
+    public string Version { get { return _state.CommandVersion; } }
     public string Entity { get { return _state.Entity; } }
-    public string ParametersJson { get { return _state.ParametersJson; } }
     public Guid EntityGuid { get { return _state.EntityGuid; } }
+    public string EntityRoot { get { return _state.EntityRoot; } }
+    public Guid EntityRootGuid { get { return _state.EntityRootGuid; } }
+    public string ParametersJson { get { return _state.ParametersJson; } }
     public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
     public string ReceivedOn { get { return _state.ReceivedOn.HasValue ? _state.ReceivedOn.Value.ToString("yyyy-MM-dd") : ""; } }
     public string ExecutedOn { get { return _state.ExecutedOn.HasValue ? _state.ExecutedOn.Value.ToString("yyyy-MM-dd") : ""; } }
@@ -41,8 +44,8 @@ namespace SoftwareManagementCoreWeb.Controllers
   public class CommandBatchResultsDto
   {
     public bool Success { get; set; }
-    public IEnumerable<CommandDto> ExecutedCommands { get; set; }
     public string Message { get; set; }
+    public int Count { get; set; }
   }
 
   [EnableCors("SiteCorsPolicy")]
@@ -61,10 +64,10 @@ namespace SoftwareManagementCoreWeb.Controllers
     private IProjectRoleAssignmentService _projectRoleAssignmentService;
     private IProductInstallationService _productInstallationService;
     private ICommandStateRepository _commandStateRepository;
-    private ICommandService _commandManager;
+    private ICommandManager _commandManager;
     private ICodeGenService _codeGenService;
 
-    public CommandsController(ICommandService commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, IProductInstallationService productInstallationService, ILinkService linkService, IFileService fileService, IDesignService designService, ICodeGenService codeGenService, ICommandStateRepository commandStateRepository)
+    public CommandsController(ICommandManager commandManager, IProductService productService, IProjectService projectService, IContactService contactService, IEmploymentService employmentService, ICompanyService companyService, IProjectRoleAssignmentService projectRoleAssignmentService, IProductInstallationService productInstallationService, ILinkService linkService, IFileService fileService, IDesignService designService, ICodeGenService codeGenService, ICommandStateRepository commandStateRepository)
     {
       _commandManager = commandManager;
 
@@ -90,27 +93,27 @@ namespace SoftwareManagementCoreWeb.Controllers
     {
       var processorConfigs = new List<IProcessorConfig>
       {
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductFeature", Processor = _productService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductIssue", Processor = _productService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductVersion", Processor = _productService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "ProductConfigOption", Processor = _productService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "Design", Processor = _designService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EpicElement", Processor = _designService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "EntityElement", Processor = _designService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "CommandElement", Processor = _designService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "DesignsShared", Entity = "PropertyElement", Processor = _designService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironment", Processor = _companyService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "CompanyEnvironmentHardware", Processor = _companyService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "LinksShared", Entity = "Link", Processor = _linkService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = _fileService },
-        new ProcessorConfig { Assembly = "CodeGenCSharpUpdaterCore", NameSpace = "CodeGenShared", Entity = "CodeGen", Processor = _codeGenService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "EmploymentsShared", Entity = "Employment", Processor = _employmentService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectRoleAssignmentsShared", Entity = "ProjectRoleAssignment", Processor = _projectRoleAssignmentService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductInstallationsShared", Entity = "ProductInstallation", Processor = _productInstallationService }
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProjectsShared", entityRoot : "Project", processor : _projectService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductsShared", entityRoot : "Product", processor : _productService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductsShared", entityRoot : "ProductFeature", processor : _productService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductsShared", entityRoot : "ProductIssue", processor : _productService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductsShared", entityRoot : "ProductVersion", processor : _productService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductsShared", entityRoot : "ProductConfigOption", processor : _productService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "DesignsShared", entityRoot : "Design", processor : _designService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "DesignsShared", entityRoot : "EpicElement", processor : _designService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "DesignsShared", entityRoot : "EntityRootElement", processor : _designService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "DesignsShared", entityRoot : "CommandElement", processor : _designService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "DesignsShared", entityRoot : "PropertyElement", processor : _designService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ContactsShared", entityRoot : "Contact", processor : _contactService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "Company", processor : _companyService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "CompanyEnvironment", processor : _companyService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "CompanyEnvironmentHardware", processor : _companyService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "LinksShared", entityRoot : "Link", processor : _linkService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "FilesShared", entityRoot : "File", processor : _fileService ),
+        new ProcessorConfig ( assembly : "CodeGenCSharpUpdaterCore", nameSpace : "CodeGenShared", entityRoot : "CodeGen", processor : _codeGenService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "EmploymentsShared", entityRoot : "Employment", processor : _employmentService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProjectRoleAssignmentsShared", entityRoot : "ProjectRoleAssignment", processor : _projectRoleAssignmentService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductInstallationsShared", entityRoot : "ProductInstallation", processor : _productInstallationService )
       };
 
       _commandManager.AddProcessorConfigs(processorConfigs);
@@ -137,9 +140,20 @@ namespace SoftwareManagementCoreWeb.Controllers
     public CommandBatchResultsDto ExecuteNew()
     {
       var result = new CommandBatchResultsDto();
-      var commands = _commandManager.GetUnprocessedCommands();
+      try
+      {
+        var count = _commandManager.ProcessImportedCommands();
+        PersistRepositories();
 
-      ExecuteCommands(result, commands);
+        result.Success = true;
+        result.Message = $"{count} commands processed.";
+        result.Count = count;
+      }
+      catch (Exception ex)
+      {
+        result.Message = ex.Message;
+        result.Success = false;
+      }
 
       return result;
     }
@@ -162,39 +176,10 @@ namespace SoftwareManagementCoreWeb.Controllers
     {
       try
       {
+        _commandManager.ProcessCommands(commands);
 
-        foreach (var command in commands)
-        {
-          // if we are in an authorized context, always record the authenticated user
-          if (User != null && User.Identity != null)
-          {
-            if (User.Identity.Name != null)
-            {
-              command.UserName = User.Identity.Name;
-            }
-          }
-          var typedCommands = _commandManager.ProcessCommand(command, command.State);
-          // todo: return info per processor
-          foreach (var typedCommand in typedCommands)
-          {
-            command.ExecutedOn = typedCommand.ExecutedOn;
-          }
-        }
+        PersistRepositories();
 
-        // these can be all the same contexts, but may also be different
-        _productService.PersistChanges();
-        _designService.PersistChanges();
-        _projectService.PersistChanges();
-        _contactService.PersistChanges();
-        _companyService.PersistChanges();
-        _employmentService.PersistChanges();
-        _projectRoleAssignmentService.PersistChanges();
-        _linkService.PersistChanges();
-        _fileService.PersistChanges();
-        _commandManager.PersistChanges();
-        // todo: add persistchanges to codegen if possible
-
-        result.ExecutedCommands = commands;
         result.Success = true;
       }
       catch (Exception ex)
@@ -202,6 +187,20 @@ namespace SoftwareManagementCoreWeb.Controllers
         result.Success = false;
         result.Message = ex.Message;
       }
+    }
+
+    private void PersistRepositories()
+    {
+      _productService.PersistChanges();
+      _designService.PersistChanges();
+      _projectService.PersistChanges();
+      _contactService.PersistChanges();
+      _companyService.PersistChanges();
+      _employmentService.PersistChanges();
+      _projectRoleAssignmentService.PersistChanges();
+      _linkService.PersistChanges();
+      _fileService.PersistChanges();
+      _commandManager.PersistChanges();
     }
   }
 }

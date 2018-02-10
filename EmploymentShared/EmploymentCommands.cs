@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace EmploymentsShared
 {
-    public abstract class EmploymentCommand : CommandBase
+    public abstract class EmploymentCommand : CommandBase, ICommand
     {
         public EmploymentCommand() : base() { }
         public EmploymentCommand(ICommandStateRepository repo) : base(repo) { }
-    }
+        public virtual void Execute() { }
+  }
 
-    public class CreateEmploymentCommand : EmploymentCommand
+  public class CreateEmploymentCommand : EmploymentCommand
     {
         public Guid ContactGuid { get; set; }
         public Guid CompanyRoleGuid { get; set; }
@@ -24,7 +25,7 @@ namespace EmploymentsShared
             base.Execute();
         }
     }
-    
+
     public class DeleteEmploymentCommand : EmploymentCommand
     {
         public override void Execute()
@@ -56,5 +57,5 @@ namespace EmploymentsShared
             employment.ChangeEndDate(this.EndDate, this.OriginalEndDate);
             base.Execute();
         }
-    }    
+    }
 }

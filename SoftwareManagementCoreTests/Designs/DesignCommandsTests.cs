@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using Moq;
 using DesignsShared;
@@ -82,21 +82,20 @@ namespace SoftwareManagementCoreTests.Designs
       var commandRepoMock = new Mock<ICommandStateRepository>();
       var designsMock = new Mock<IDesignService>();
       var commandState = new Fakes.CommandState();
-      commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);
+      commandRepoMock.Setup(t => t.CreateCommandState(Guid.NewGuid())).Returns(commandState);
 
       var guid = Guid.NewGuid();
       var name = "New Project";
 
-      var sut = new CommandService(commandRepoMock.Object, new DateTimeProvider());
-      var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, CommandName = CommandTypes.Create.ToString(), Entity = TestGlobals.Entity, Processor = designsMock.Object };
+      var sut = new CommandManager(commandRepoMock.Object, new DateTimeProvider());
+      var commandConfig = new CommandConfig(assembly: TestGlobals.Assembly, nameSpace: TestGlobals.Namespace, commandName: CommandTypes.Create.ToString(), entity: TestGlobals.Entity, processor: designsMock.Object);
 
       sut.AddCommandConfigs(new List<ICommandConfig>() { commandConfig });
 
-      var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Name = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
-      var sutResult = sut.ProcessCommand(commandDto);
+      var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Command = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
+      sut.ProcessCommands(new List<CommandDto> { commandDto });
 
       designsMock.Verify(v => v.CreateDesign(guid, name), Times.Once);
-      Assert.Equal(commandDto.Entity, sutResult.First().Entity);
     }
 
   }

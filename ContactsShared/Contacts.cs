@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -111,9 +111,9 @@ namespace ContactsShared
   }
   public class ContactService : IContactService
   {
-    private IDateTimeProvider _dateTimeProvider;
+    private DateTimeShared.IDateTimeProvider _dateTimeProvider;
     private IContactStateRepository _repo;
-    public ContactService(IContactStateRepository repo, IDateTimeProvider dateTimeProvider)
+    public ContactService(IContactStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider)
     {
       _repo = repo;
       _dateTimeProvider = dateTimeProvider;

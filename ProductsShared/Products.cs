@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -400,9 +400,9 @@ namespace ProductsShared
   }
   public class ProductService : IProductService
   {
-    private IDateTimeProvider _dateTimeProvider;
+    private DateTimeShared.IDateTimeProvider _dateTimeProvider;
     private IProductStateRepository _repo;
-    public ProductService(IProductStateRepository repo, IDateTimeProvider dateTimeProvider)
+    public ProductService(IProductStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider)
     {
       _repo = repo;
       _dateTimeProvider = dateTimeProvider;

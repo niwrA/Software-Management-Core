@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using System;
 using ProductInstallationsShared;
 using System.Collections.Generic;
@@ -6,10 +6,11 @@ using System.Text;
 
 namespace ProductInstallationsShared
 {
-  public abstract class ProductInstallationCommand : CommandBase
+  public abstract class ProductInstallationCommand : CommandBase, ICommand
   {
     public ProductInstallationCommand() : base() { }
     public ProductInstallationCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute() { }
   }
 
   public class CreateProductInstallationCommand : ProductInstallationCommand
@@ -17,7 +18,7 @@ namespace ProductInstallationsShared
     public Guid CompanyGuid { get; set; }
     public Guid ProductGuid { get; set; }
     public Guid? CompanyEnvironmentGuid { get; set; }
-    public Guid? ProductVersionGuid{ get; set; }
+    public Guid? ProductVersionGuid { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public override void Execute()

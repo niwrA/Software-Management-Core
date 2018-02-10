@@ -9,10 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{88
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Products", "Products", "{8980C1CA-C7D2-46A9-B200-6D17809AB0A4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{DC8831D8-C56F-4677-8E6D-53896CD2A38D}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommandsShared", "CommandsShared\CommandsShared.shproj", "{E836653D-F62D-4262-89CD-622BF092F8E3}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ProjectsShared", "ProjectsShared\ProjectsShared.shproj", "{F36337F9-5492-4327-8301-B0BE8708E8E0}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ProductsShared", "ProductsShared\ProductsShared.shproj", "{51DADD10-16BC-435E-A8FF-79D03F757BB7}"
@@ -106,7 +102,6 @@ Global
 		ProjectRoleAssignmentsShared\ProjectRoleAssignmentsShared.projitems*{996ce0c6-45ca-4803-a601-6012d601c2e2}*SharedItemsImports = 13
 		TextFragmentsShared\TextFragmentsShared.projitems*{c70ef468-fbe9-4e66-8a24-3785140dd09b}*SharedItemsImports = 13
 		LinksShared\LinksShared.projitems*{e497d6c4-60ef-4768-b0c7-41c11820bfd7}*SharedItemsImports = 13
-		CommandsShared\CommandsShared.projitems*{e836653d-f62d-4262-89cd-622bf092f8e3}*SharedItemsImports = 13
 		FilesShared\FilesShared.projitems*{edc83ed4-6dc7-4cb0-890f-8756fbcb40ab}*SharedItemsImports = 13
 		ProjectsShared\ProjectsShared.projitems*{f36337f9-5492-4327-8301-b0be8708e8e0}*SharedItemsImports = 13
 	EndGlobalSection
@@ -259,8 +254,6 @@ Global
 		{201FF2B7-DF85-414E-8CCB-A76FFC261D6B} = {221A9CE4-63E7-4222-8776-3F4E7226A92F}
 		{88D02AA3-703C-4F37-835B-03F1965A7D88} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
 		{8980C1CA-C7D2-46A9-B200-6D17809AB0A4} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
-		{DC8831D8-C56F-4677-8E6D-53896CD2A38D} = {C56AEDEC-14BE-4554-BCA8-DA8B88330C8D}
-		{E836653D-F62D-4262-89CD-622BF092F8E3} = {DC8831D8-C56F-4677-8E6D-53896CD2A38D}
 		{F36337F9-5492-4327-8301-B0BE8708E8E0} = {88D02AA3-703C-4F37-835B-03F1965A7D88}
 		{51DADD10-16BC-435E-A8FF-79D03F757BB7} = {8980C1CA-C7D2-46A9-B200-6D17809AB0A4}
 		{CE367EA4-EFA2-448F-B424-AE09B07ED33D} = {221A9CE4-63E7-4222-8776-3F4E7226A92F}

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace CompaniesShared
 {
-  public abstract class CompanyCommand : CommandBase
+  public abstract class CompanyCommand : CommandBase, ICommand
   {
     public CompanyCommand() : base() { }
     public CompanyCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute() { }
   }
 
   public class DeleteCompanyCommand : CompanyCommand

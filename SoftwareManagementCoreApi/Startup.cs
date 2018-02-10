@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using ProductsShared;
-using CommandsShared;
+using niwrA.CommandManager;
 using Microsoft.EntityFrameworkCore;
 using DateTimeShared;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -130,32 +130,28 @@ namespace SoftwareManagementCoreApi
       //SetupMongoDbDI(services); // uncommnent to use MongoDb
       SetupSQLServerDbDI(services); // comment to use MongoDb
       // helpers
-      services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+      services.AddTransient<DateTimeShared.IDateTimeProvider, DateTimeProvider>();
+      services.AddTransient<niwrA.CommandManager.IDateTimeProvider, DateTimeProvider>();
 
-      // modules (always repo first, then service etc.)
+      // entity services
       services.AddTransient<IProductService, ProductService>();
-
       services.AddTransient<IDesignService, DesignService>();
-
       services.AddTransient<IProjectService, ProjectService>();
-
       services.AddTransient<IContactService, ContactService>();
-
       services.AddTransient<ICompanyService, CompanyService>();
-
       services.AddTransient<ILinkDetailsProcessor, LinkDetailsProcessor>();
       services.AddTransient<ILinkService, LinkService>();
-
       services.AddTransient<IFileService, FileService>();
 
+      // entity relation services
       services.AddTransient<IEmploymentService, EmploymentService>();
-
+      services.AddTransient<IProductInstallationService, ProductInstallationService>();
       services.AddTransient<IProjectRoleAssignmentService, ProjectRoleAssignmentService>();
 
+      // helpers
       services.AddTransient<ICodeGenService, CSharpUpdater>();
-
       services.AddTransient<ICommandService, CommandService>();
-      services.AddTransient<IProductInstallationService, ProductInstallationService>();
+      services.AddTransient<ICommandManager, CommandManager>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

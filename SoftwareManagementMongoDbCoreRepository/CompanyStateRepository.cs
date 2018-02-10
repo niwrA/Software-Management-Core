@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using CompaniesShared;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;

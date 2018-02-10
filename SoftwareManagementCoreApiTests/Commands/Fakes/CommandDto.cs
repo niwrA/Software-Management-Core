@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +14,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
             this.Entity = "Project";
             this.EntityGuid = Guid.NewGuid();
             this.Guid = Guid.NewGuid();
-            this.Name = "Rename";
+            this.Command = "Rename";
             this.ParametersJson = @"{OriginalName:'Old',Name:'New'}";
         }
     }
@@ -26,7 +26,7 @@ namespace SoftwareManagementCoreApiTests.Fakes
             this.Entity = "Product";
             this.EntityGuid = Guid.NewGuid();
             this.Guid = Guid.NewGuid();
-            this.Name = "Rename";
+            this.Command = "Rename";
             this.ParametersJson = @"{OriginalName:'Old',Name:'New'}";
         }
     }

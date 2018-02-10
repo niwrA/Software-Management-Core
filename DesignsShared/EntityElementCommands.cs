@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace DesignsShared
 {
-  public abstract class EntityElementCommand : CommandBase
+  public abstract class EntityElementCommand : CommandBase, ICommand
   {
     public EntityElementCommand() : base() { }
     public EntityElementCommand(ICommandStateRepository repo) : base(repo) { }
     public Guid DesignGuid { get; set; }
     public Guid EpicElementGuid { get; set; }
+    public virtual void Execute() { }
   }
 
   public class CreateEntityElementCommand : EntityElementCommand
@@ -69,7 +70,7 @@ namespace DesignsShared
 
   public class ChangeIsCollectionForEntityElementCommand : EntityElementCommand
   {
-    public bool IsCollection{ get; set; }
+    public bool IsCollection { get; set; }
     public override void Execute()
     {
       var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);

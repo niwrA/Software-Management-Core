@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using CommandsShared;
+using niwrA.CommandManager;
 using ProductsShared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -26,13 +26,13 @@ namespace SoftwareManagementCoreWeb.Controllers
     private IProjectService _projectService;
     private IContactService _contactService;
     private ICompanyService _companyService;
-    private ICommandService _commandManager;
+    private ICommandManager _commandManager;
     private IContactStateRepository _contactStateRepository;
     private ICompanyStateRepository _companyStateRepository;
     private IProjectStateRepository _projectStateRepository;
     private IProductStateRepository _productStateRepository;
 
-    public EventSourceController(ICommandService commandManager)
+    public EventSourceController(ICommandManager commandManager)
     {
       _commandManager = commandManager;
 
@@ -55,10 +55,10 @@ namespace SoftwareManagementCoreWeb.Controllers
     {
       var processorConfigs = new List<IProcessorConfig>
       {
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProjectsShared", Entity = "Project", Processor = _projectService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ProductsShared", Entity = "Product", Processor = _productService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "ContactsShared", Entity = "Contact", Processor = _contactService },
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "CompaniesShared", Entity = "Company", Processor = _companyService }
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProjectsShared", entityRoot : "Project", processor : _projectService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ProductsShared", entityRoot : "Product", processor : _productService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ContactsShared", entityRoot : "Contact", processor : _contactService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "Company", processor : _companyService )
       };
 
       _commandManager.AddProcessorConfigs(processorConfigs);

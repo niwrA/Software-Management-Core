@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace DesignsShared
 {
-    public abstract class CommandElementCommand : CommandBase
+    public abstract class CommandElementCommand : CommandBase, ICommand
     {
         public CommandElementCommand() : base() { }
         public CommandElementCommand(ICommandStateRepository repo) : base(repo) { }
         public Guid DesignGuid { get; set; }
         public Guid EpicElementGuid { get; set; }
         public Guid EntityElementGuid { get; set; }
-    }
+        public virtual void Execute() { }
+  }
 
-    public class CreateCommandElementCommand : CommandElementCommand
+  public class CreateCommandElementCommand : CommandElementCommand
     {
         public CreateCommandElementCommand() : base() { }
         public CreateCommandElementCommand(ICommandStateRepository repo) : base(repo) { }

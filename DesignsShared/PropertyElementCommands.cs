@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace DesignsShared
 {
-  public abstract class PropertyElementCommand : CommandBase
+  public abstract class PropertyElementCommand : CommandBase, ICommand
   {
     public PropertyElementCommand() : base() { }
     public PropertyElementCommand(ICommandStateRepository repo) : base(repo) { }
     public Guid DesignGuid { get; set; }
     public Guid EpicElementGuid { get; set; }
     public Guid EntityElementGuid { get; set; }
+    public virtual void Execute() { }
   }
 
   public class CreatePropertyElementCommand : PropertyElementCommand

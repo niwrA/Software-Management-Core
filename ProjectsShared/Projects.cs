@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -107,9 +107,9 @@ namespace ProjectsShared
     }
     public class ProjectService : IProjectService
     {
-        private IDateTimeProvider _dateTimeProvider;
+        private DateTimeShared.IDateTimeProvider _dateTimeProvider;
         private IProjectStateRepository _repo;
-        public ProjectService(IProjectStateRepository repo, IDateTimeProvider dateTimeProvider)
+        public ProjectService(IProjectStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider)
         {
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;

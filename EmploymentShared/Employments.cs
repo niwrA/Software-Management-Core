@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using ContactsShared;
 using System;
 using System.Collections.Generic;

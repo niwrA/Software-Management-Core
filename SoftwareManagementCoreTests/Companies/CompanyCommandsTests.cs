@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using Moq;
 using CompaniesShared;
 using SoftwareManagementCoreTests.Commands;

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ProductsShared
 {
-  public abstract class ProductCommand : CommandBase
+  public abstract class ProductCommand : CommandBase, ICommand
   {
     public ProductCommand() : base() { }
     public ProductCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute() { }
   }
 
   public class CreateProductCommand : ProductCommand
@@ -81,18 +82,17 @@ namespace ProductsShared
 
   }
 
-  public class AddVersionToProductCommand : ProductCommand
+  public class AddProductVersionCommand : ProductCommand
   {
     public string Name { get; set; }
     public int Major { get; set; }
     public int Minor { get; set; }
     public int Revision { get; set; }
     public int Build { get; set; }
-    public Guid ProductVersionGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.AddVersion(ProductVersionGuid, Name, Major, Minor, Revision, Build);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      product.AddVersion(this.EntityGuid, Name, Major, Minor, Revision, Build);
       base.Execute();
     }
   }

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace DesignsShared
 {
-    public abstract class EpicElementCommand : CommandBase
+    public abstract class EpicElementCommand : CommandBase, ICommand
     {
         public EpicElementCommand() : base() { }
         public EpicElementCommand(ICommandStateRepository repo) : base(repo) { }
         public Guid DesignGuid { get; set; }
-    }
+        public virtual void Execute() { }
+  }
 
-    public class CreateEpicElementCommand : EpicElementCommand
+  public class CreateEpicElementCommand : EpicElementCommand
     {
         public CreateEpicElementCommand() : base() { }
         public CreateEpicElementCommand(ICommandStateRepository repo) : base(repo) { }

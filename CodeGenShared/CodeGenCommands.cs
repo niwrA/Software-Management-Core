@@ -1,15 +1,16 @@
 ﻿using CodeGen;
-using CommandsShared;
+using niwrA.CommandManager;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CodeGenShared
 {
-  public abstract class PropertyCodeGenCommand : CommandBase
+  public abstract class PropertyCodeGenCommand : CommandBase, ICommand
   {
     public PropertyCodeGenCommand() : base() { }
     //        public PropertyCodeGenCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute () { }
   }
 
   public class CreatePropertyCodeGenCommand : PropertyCodeGenCommand
