@@ -68,7 +68,7 @@ namespace ProductsShared
     }
   }
 
-  public class AddIssueToProductCommand : ProductCommand
+  public class AddProductIssueCommand : ProductCommand
   {
     public string Name { get; set; }
     public Guid FirstVersionGuid { get; set; }
@@ -96,7 +96,7 @@ namespace ProductsShared
     }
   }
 
-  public class AddFeatureToProductCommand : ProductCommand
+  public class AddProductFeatureCommand : ProductCommand
   {
     public string Name { get; set; }
     public Guid ProductFeatureGuid { get; set; }
@@ -108,7 +108,7 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class RequestFeatureForProductCommand : ProductCommand
+  public class RequestProductFeatureCommand : ProductCommand
   {
     public string Name { get; set; }
     public Guid ProductFeatureGuid { get; set; }
@@ -145,7 +145,7 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class RemoveFeatureFromProductCommand : ProductCommand
+  public class RemoveProductFeatureCommand : ProductCommand
   {
     public Guid ProductFeatureGuid { get; set; }
     public override void Execute()
@@ -155,7 +155,7 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class RemoveVersionFromProductCommand : ProductCommand
+  public class RemoveProductVersionCommand : ProductCommand
   {
     public Guid ProductVersionGuid { get; set; }
     public override void Execute()
@@ -165,7 +165,7 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class RemoveIssueFromProductCommand : ProductCommand
+  public class RemoveProductIssueCommand : ProductCommand
   {
     public override void Execute()
     {
@@ -174,7 +174,7 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class AddConfigOptionToProductCommand : ProductCommand
+  public class AddProductConfigOptionCommand : ProductCommand
   {
     public string Name { get; set; }
     public Guid? FeatureGuid { get; set; }
@@ -185,7 +185,7 @@ namespace ProductsShared
       base.Execute();
     }
   }
-  public class RemoveConfigOptionFromProductCommand : ProductCommand
+  public class RemoveProductConfigOptionCommand : ProductCommand
   {
     public override void Execute()
     {

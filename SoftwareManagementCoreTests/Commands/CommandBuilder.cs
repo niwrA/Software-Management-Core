@@ -16,8 +16,7 @@ namespace SoftwareManagementCoreTests.Commands
       var commandService = new CommandService(commandRepoMock.Object, dateTimeProviderMock.Object);
 
       dateTimeProviderMock.Setup(s => s.GetServerDateTime()).Returns(new DateTime(2017, 1, 1));
-      CommandState commandState = new CommandState { Guid = Guid.NewGuid() };
-      commandRepoMock.Setup(s => s.CreateCommandState(It.IsAny<Guid>())).Returns(commandState);
+      commandRepoMock.Setup(s => s.CreateCommandState(It.IsAny<Guid>())).Returns(new Fakes.CommandState());
 
       var cmd = commandService.CreateCommand<T>();
 

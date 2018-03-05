@@ -27,8 +27,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddDatabaseToCompanyEnvironmentCommand")]
     public void AddDatabaseToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new DatabaseCommandBuilder<AddDatabaseToCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as AddDatabaseToCompanyEnvironmentCommand;
+      var sutBuilder = new DatabaseCommandBuilder<AddCompanyEnvironmentDatabaseCommand>();
+      var sut = sutBuilder.Build() as AddCompanyEnvironmentDatabaseCommand;
 
       sut.DatabaseName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
@@ -39,8 +39,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddDatabaseToCompanyEnvironmentCommand")]
     public void RemoveDatabaseFromCompanyEnvironmentCommand()
     {
-      var sutBuilder = new DatabaseCommandBuilder<RemoveDatabaseFromCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as RemoveDatabaseFromCompanyEnvironmentCommand;
+      var sutBuilder = new DatabaseCommandBuilder<RemoveCompanyEnvironmentDatabaseCommand>();
+      var sut = sutBuilder.Build() as RemoveCompanyEnvironmentDatabaseCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
       sut.Execute();

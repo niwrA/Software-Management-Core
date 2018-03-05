@@ -106,6 +106,7 @@ namespace SoftwareManagementCoreWeb.Controllers
         new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "DesignsShared", entityRoot : "PropertyElement", processor : _designService ),
         new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "ContactsShared", entityRoot : "Contact", processor : _contactService ),
         new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "Company", processor : _companyService ),
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "CompanyRole", processor : _companyService ),
         new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "CompanyEnvironment", processor : _companyService ),
         new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "CompaniesShared", entityRoot : "CompanyEnvironmentHardware", processor : _companyService ),
         new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace : "LinksShared", entityRoot : "Link", processor : _linkService ),

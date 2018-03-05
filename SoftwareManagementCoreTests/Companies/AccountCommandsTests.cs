@@ -27,8 +27,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddAccountToCompanyEnvironmentCommand")]
     public void AddAccountToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new AccountCommandBuilder<AddAccountToCompanyEnvironmentAccountCommand>();
-      var sut = sutBuilder.Build() as AddAccountToCompanyEnvironmentAccountCommand;
+      var sutBuilder = new AccountCommandBuilder<AddCompanyEnvironmentAccountCommand>();
+      var sut = sutBuilder.Build() as AddCompanyEnvironmentAccountCommand;
 
       sut.AccountName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
@@ -39,8 +39,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddAccountToCompanyEnvironmentCommand")]
     public void RemoveAccountFromCompanyEnvironmentCommand()
     {
-      var sutBuilder = new AccountCommandBuilder<RemoveAccountFromCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as RemoveAccountFromCompanyEnvironmentCommand;
+      var sutBuilder = new AccountCommandBuilder<RemoveCompanyEnvironmentAccountCommand>();
+      var sut = sutBuilder.Build() as RemoveCompanyEnvironmentAccountCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
       sut.Execute();

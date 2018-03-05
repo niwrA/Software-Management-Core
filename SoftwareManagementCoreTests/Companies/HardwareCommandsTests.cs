@@ -39,8 +39,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddHardwareToCompanyEnvironmentCommand")]
     public void AddHardwareToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new HardwareCommandBuilder<AddHardwareToCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as AddHardwareToCompanyEnvironmentCommand;
+      var sutBuilder = new HardwareCommandBuilder<AddCompanyEnvironmentHardwareCommand>();
+      var sut = sutBuilder.Build() as AddCompanyEnvironmentHardwareCommand;
 
       sut.HardwareName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
@@ -52,8 +52,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddHardwareToCompanyEnvironmentCommand")]
     public void RemoveHardwareFromCompanyEnvironmentCommand()
     {
-      var sutBuilder = new HardwareCommandBuilder<RemoveHardwareFromCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as RemoveHardwareFromCompanyEnvironmentCommand;
+      var sutBuilder = new HardwareCommandBuilder<RemoveCompanyEnvironmentHardwareCommand>();
+      var sut = sutBuilder.Build() as RemoveCompanyEnvironmentHardwareCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
       sut.EntityGuid = Guid.NewGuid();

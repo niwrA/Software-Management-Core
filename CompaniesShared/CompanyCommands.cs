@@ -65,46 +65,42 @@ namespace CompaniesShared
       base.Execute();
     }
   }
-  public class AddRoleToCompanyCommand : CompanyCommand
+  public class AddCompanyRoleCommand : CompanyCommand
   {
     public string RoleName { get; set; }
-    public Guid RoleGuid { get; set; }
     public override void Execute()
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
-      company.AddRoleToCompany(this.RoleGuid, this.RoleName);
+      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+      company.AddRoleToCompany(this.EntityGuid, this.RoleName);
       base.Execute();
     }
   }
-  public class RemoveRoleFromCompanyCommand : CompanyCommand
+  public class RemoveCompanyRoleCommand : CompanyCommand
   {
-    public Guid RoleGuid { get; set; }
     public override void Execute()
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
-      company.RemoveRoleFromCompany(this.RoleGuid);
+      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+      company.RemoveRoleFromCompany(this.EntityGuid);
       base.Execute();
     }
   }
 
-  public class AddEnvironmentToCompanyCommand : CompanyCommand
+  public class AddCompanyEnvironmentCommand : CompanyCommand
   {
     public string EnvironmentName { get; set; }
-    public Guid EnvironmentGuid { get; set; }
     public override void Execute()
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
-      company.AddEnvironmentToCompany(this.EnvironmentGuid, this.EnvironmentName);
+      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+      company.AddEnvironmentToCompany(this.EntityGuid, this.EnvironmentName);
       base.Execute();
     }
   }
-  public class RemoveEnvironmentFromCompanyCommand : CompanyCommand
+  public class RemoveCompanyEnvironmentCommand : CompanyCommand
   {
-    public Guid EnvironmentGuid { get; set; }
     public override void Execute()
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
-      company.RemoveEnvironmentFromCompany(this.EnvironmentGuid);
+      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+      company.RemoveEnvironmentFromCompany(this.EntityGuid);
       base.Execute();
     }
   }

@@ -11,7 +11,7 @@ namespace CompaniesShared
     public DatabaseCommand(ICommandStateRepository repo) : base(repo) { }
     public Guid EnvironmentGuid { get; set; }
   }
-  public class AddDatabaseToCompanyEnvironmentCommand : DatabaseCommand
+  public class AddCompanyEnvironmentDatabaseCommand : DatabaseCommand
   {
     public string DatabaseName { get; set; }
     public override void Execute()
@@ -36,7 +36,7 @@ namespace CompaniesShared
       base.Execute();
     }
   }
-  public class RemoveDatabaseFromCompanyEnvironmentCommand : DatabaseCommand
+  public class RemoveCompanyEnvironmentDatabaseCommand : DatabaseCommand
   {
     public override void Execute()
     {

@@ -52,8 +52,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveFeatureFromProductCommand")]
     public void RemoveFeatureFromProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveFeatureFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveFeatureFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductFeatureCommand>();
+      var sut = sutBuilder.Build();
 
       var guid = Guid.NewGuid();
       var issueGuid = Guid.NewGuid();
@@ -67,8 +67,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveVersionFromProductCommand")]
     public void RemoveVersionFromProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveVersionFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveVersionFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductVersionCommand>();
+      var sut = sutBuilder.Build();
 
       var guid = Guid.NewGuid();
       var versionGuid = Guid.NewGuid();
@@ -82,7 +82,7 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveIssueFromProductCommand")]
     public void RemoveIssueFromProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveIssueFromProductCommand>();
+      var sutBuilder = new ProductCommandBuilder<RemoveProductIssueCommand>();
       var sut = sutBuilder.Build();
 
       sut.Execute();
@@ -133,8 +133,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "AddFeatureToProductCommand")]
     public void AddFeatureToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddFeatureToProductCommand>();
-      var sut = sutBuilder.Build() as AddFeatureToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductFeatureCommand>();
+      var sut = sutBuilder.Build();
 
       sut.ProductFeatureGuid = Guid.NewGuid();
       sut.FirstVersionGuid = Guid.NewGuid();
@@ -146,8 +146,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "AddIssueToProductCommand")]
     public void AddIssueToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddIssueToProductCommand>();
-      var sut = sutBuilder.Build() as AddIssueToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductIssueCommand>();
+      var sut = sutBuilder.Build();
 
       sut.FirstVersionGuid = Guid.NewGuid();
       sut.Name = "New name";
@@ -158,8 +158,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "AddConfigToProductCommand")]
     public void AddConfigToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddConfigOptionToProductCommand>();
-      var sut = sutBuilder.Build() as AddConfigOptionToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductConfigOptionCommand>();
+      var sut = sutBuilder.Build();
 
       sut.FeatureGuid = Guid.NewGuid();
       sut.Name = "New name";
@@ -170,8 +170,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveConfigFromFeatureCommand")]
     public void RemoveConfigFromFeatureCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveConfigOptionFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveConfigOptionFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductConfigOptionCommand>();
+      var sut = sutBuilder.Build();
 
       sut.Execute();
 
@@ -180,8 +180,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact]
     public void RequestFeatureForProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RequestFeatureForProductCommand>();
-      var sut = sutBuilder.Build() as RequestFeatureForProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RequestProductFeatureCommand>();
+      var sut = sutBuilder.Build();
 
       sut.ProductFeatureGuid = Guid.NewGuid();
       sut.RequestedForVersionGuid = Guid.NewGuid();

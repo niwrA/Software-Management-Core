@@ -11,7 +11,7 @@ namespace CompaniesShared
         public HardwareCommand(ICommandStateRepository repo) : base(repo) { }
         public Guid EnvironmentGuid { get; set; }
     }
-    public class AddHardwareToCompanyEnvironmentCommand : HardwareCommand
+    public class AddCompanyEnvironmentHardwareCommand : HardwareCommand
     {
         public string HardwareName { get; set; }
         public override void Execute()
@@ -23,11 +23,11 @@ namespace CompaniesShared
             base.Execute();
         }
     }
-    public class RemoveHardwareFromCompanyEnvironmentCommand : HardwareCommand
+    public class RemoveCompanyEnvironmentHardwareCommand : HardwareCommand
     {
         public override void Execute()
         {
-            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
             var environment = company.GetEnvironment(this.EnvironmentGuid);
             environment.RemoveHardware(this.EntityGuid);
             base.Execute();

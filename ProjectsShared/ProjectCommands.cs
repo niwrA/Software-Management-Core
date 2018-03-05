@@ -38,7 +38,7 @@ namespace ProjectsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var product = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            var product = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
             product.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
@@ -50,7 +50,7 @@ namespace ProjectsShared
         public DateTime? StartDate { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
             project.ChangeStartDate(this.StartDate, this.OriginalStartDate);
             base.Execute();
         }
@@ -62,7 +62,7 @@ namespace ProjectsShared
         public DateTime? EndDate { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
             project.ChangeEndDate(this.EndDate, this.OriginalEndDate);
             base.Execute();
         }

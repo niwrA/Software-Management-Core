@@ -11,7 +11,7 @@ namespace CompaniesShared
         public AccountCommand(ICommandStateRepository repo) : base(repo) { }
         public Guid EnvironmentGuid { get; set; }
     }
-    public class AddAccountToCompanyEnvironmentAccountCommand : AccountCommand
+    public class AddCompanyEnvironmentAccountCommand : AccountCommand
     {
         public string AccountName { get; set; }
         public override void Execute()
@@ -36,7 +36,7 @@ namespace CompaniesShared
             base.Execute();
         }
     }
-    public class RemoveAccountFromCompanyEnvironmentCommand : AccountCommand
+    public class RemoveCompanyEnvironmentAccountCommand : AccountCommand
     {
         public override void Execute()
         {

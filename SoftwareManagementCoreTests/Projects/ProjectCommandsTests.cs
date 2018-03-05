@@ -39,7 +39,7 @@ namespace SoftwareManagementCoreTests.Projects
         public void RenameCommand()
         {
             var sutBuilder = new ProjectCommandBuilder<RenameProjectCommand>();
-            var sut = sutBuilder.Build() as RenameProjectCommand;
+            var sut = sutBuilder.Build();
 
             sut.Name = "New Name";
             sut.OriginalName = "Original Name";
@@ -52,7 +52,7 @@ namespace SoftwareManagementCoreTests.Projects
         public void ChangeProjectOfStartDateCommand()
         {
             var sutBuilder = new ProjectCommandBuilder<ChangeStartDateOfProjectCommand>();
-            var sut = sutBuilder.Build() as ChangeStartDateOfProjectCommand;
+            var sut = sutBuilder.Build();
 
             sut.OriginalStartDate = DateTime.Now;
             sut.StartDate = DateTime.Now;
@@ -65,7 +65,7 @@ namespace SoftwareManagementCoreTests.Projects
         public void ChangeEndDateOfProjectCommand()
         {
             var sutBuilder = new ProjectCommandBuilder<ChangeEndDateOfProjectCommand>();
-            var sut = sutBuilder.Build() as ChangeEndDateOfProjectCommand;
+            var sut = sutBuilder.Build();
 
             sut.OriginalEndDate = DateTime.Now;
             sut.EndDate = DateTime.Now;
@@ -78,13 +78,12 @@ namespace SoftwareManagementCoreTests.Projects
         public void AddRoleToProjectCommand()
         {
             var sutBuilder = new ProjectCommandBuilder<AddRoleToProjectCommand>();
-            var sut = sutBuilder.Build() as AddRoleToProjectCommand;
+            var sut = sutBuilder.Build();
 
-            sut.RoleGuid = Guid.NewGuid();
             sut.RoleName = "New Name";
             sut.Execute();
 
-            sutBuilder.ProjectMock.Verify(s => s.AddRoleToProject(sut.RoleGuid, sut.RoleName), Times.Once);
+            sutBuilder.ProjectMock.Verify(s => s.AddRoleToProject(sut.EntityGuid, sut.RoleName), Times.Once);
         }
 
 
@@ -92,19 +91,18 @@ namespace SoftwareManagementCoreTests.Projects
         public void RemoveRoleFromProjectCommand()
         {
             var sutBuilder = new ProjectCommandBuilder<RemoveRoleFromProjectCommand>();
-            var sut = sutBuilder.Build() as RemoveRoleFromProjectCommand;
+            var sut = sutBuilder.Build();
 
-            sut.RoleGuid = Guid.NewGuid();
             sut.Execute();
 
-            sutBuilder.ProjectMock.Verify(s => s.RemoveRoleFromProject(sut.RoleGuid), Times.Once);
+            sutBuilder.ProjectMock.Verify(s => s.RemoveRoleFromProject(sut.EntityGuid), Times.Once);
         }
     }
 
     class ProjectCommandBuilder<T> where T: ICommand, new()
     {
         public Mock<IProject> ProjectMock { get; set; }
-        public ICommand Build()
+        public T Build()
         {
             var projectsMock = new Mock<IProjectService>();
             var projectMock = new Mock<IProject>();
@@ -112,7 +110,7 @@ namespace SoftwareManagementCoreTests.Projects
 
             var sut = new CommandBuilder<T>().Build(projectsMock.Object);
 
-            projectsMock.Setup(s => s.GetProject(sut.EntityGuid)).Returns(projectMock.Object);
+            projectsMock.Setup(s => s.GetProject(sut.EntityRootGuid)).Returns(projectMock.Object);
 
             return sut;
         }
