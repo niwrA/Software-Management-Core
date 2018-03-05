@@ -71,21 +71,19 @@ namespace ProjectsShared
     public class AddRoleToProjectCommand : ProjectCommand
     {
         public string RoleName { get; set; }
-        public Guid RoleGuid { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            project.AddRoleToProject(this.RoleGuid, this.RoleName);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
+            project.AddRoleToProject(this.EntityGuid, this.RoleName);
             base.Execute();
         }
     }
     public class RemoveRoleFromProjectCommand : ProjectCommand
     {
-        public Guid RoleGuid { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            project.RemoveRoleFromProject(this.RoleGuid);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
+            project.RemoveRoleFromProject(this.EntityGuid);
             base.Execute();
         }
     }
