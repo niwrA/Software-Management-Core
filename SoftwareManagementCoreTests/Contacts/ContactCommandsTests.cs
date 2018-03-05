@@ -16,7 +16,7 @@ namespace SoftwareManagementCoreTests.Contacts
         public void CreateCommand()
         {
             var contactsMock = new Mock<IContactService>();
-            var sut = new CommandBuilder<CreateContactCommand>().Build(contactsMock.Object) as CreateContactCommand;
+            var sut = new CommandBuilder<CreateContactCommand>().Build(contactsMock.Object);
 
             sut.Name = "New Contact";
             sut.Execute();

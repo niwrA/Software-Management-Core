@@ -240,6 +240,7 @@ namespace SoftwareManagementEFCoreRepository
     public Guid EnvironmentGuid { get; set; }
     public Guid CompanyGuid { get; set; }
     public string IpAddress { get; set; }
+    public string InternalIpAddress { get; set; }
   }
   public class CompanyEnvironmentAccountState : NamedEntityState, ICompanyEnvironmentAccountState
   {

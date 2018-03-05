@@ -48,16 +48,15 @@ namespace CompaniesShared
     }
     public class ChangeIpAddressForCompanyEnvironmentHardwareCommand : HardwareCommand
     {
-        public string OriginalIpAddress { get; set; }
-        public string IpAddress { get; set; }
-        public override void Execute()
-        {
-            var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
-            var environment = root.GetEnvironment(EnvironmentGuid);
-            var hardware = environment.GetHardware(this.EntityGuid);
-            hardware.ChangeIpAddress(IpAddress, this.OriginalIpAddress);
-            base.Execute();
-        }
+      public string OriginalIpAddress { get; set; }
+      public string IpAddress { get; set; }
+      public override void Execute()
+      {
+        var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+        var environment = root.GetEnvironment(EnvironmentGuid);
+        var hardware = environment.GetHardware(this.HardwareGuid);
+        hardware.ChangeInternalIpAddress(IpAddress, this.OriginalIpAddress);
+        base.Execute();
+      }
     }
-
 }

@@ -27,5 +27,4 @@ namespace SoftwareManagementCoreTests.Commands
       return (T)cmd;
     }
   }
-
 }

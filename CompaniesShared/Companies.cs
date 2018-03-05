@@ -37,6 +37,7 @@ namespace CompaniesShared
     Guid EnvironmentGuid { get; set; }
     Guid CompanyGuid { get; set; }
     string IpAddress { get; set; }
+    string InternalIpAddress { get; set; }
   }
   public interface ICompanyEnvironmentDatabaseState : INamedEntityState
   {
@@ -112,6 +113,8 @@ namespace CompaniesShared
   {
     Guid EnvironmentGuid { get; }
     Guid CompanyGuid { get; }
+
+    void ChangeInternalIpAddress(string ipAddress, string originalpAddress);
     void ChangeIpAddress(string ipAddress, string originalIpAddress);
   }
   public interface ICompanyEnvironmentAccount : IEntity
@@ -350,6 +353,17 @@ namespace CompaniesShared
       if (_state.IpAddress == originalIpAddress)
       {
         _state.IpAddress = ipAddress;
+      }
+      else
+      {
+        // todo: implement concurrency policy
+      }
+    }
+    public void ChangeInternalIpAddress(string ipAddress, string originalIpAddress)
+    {
+      if (_state.InternalIpAddress == originalIpAddress)
+      {
+        _state.InternalIpAddress = ipAddress;
       }
       else
       {
