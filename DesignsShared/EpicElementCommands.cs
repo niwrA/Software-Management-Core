@@ -9,7 +9,6 @@ namespace DesignsShared
     {
         public EpicElementCommand() : base() { }
         public EpicElementCommand(ICommandStateRepository repo) : base(repo) { }
-        public Guid DesignGuid { get; set; }
         public virtual void Execute() { }
   }
 
@@ -20,7 +19,7 @@ namespace DesignsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
             design.AddEpicElement(this.EntityGuid, this.Name);
             base.Execute();
         }
@@ -32,7 +31,7 @@ namespace DesignsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
             var epic = design.GetEpicElement(this.EntityGuid);
             epic.Rename(this.Name, this.OriginalName);
             base.Execute();
@@ -44,7 +43,7 @@ namespace DesignsShared
         public string Description { get; set; }
         public override void Execute()
         {
-            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
             var epic = design.GetEpicElement(this.EntityGuid);
             epic.ChangeDescription(this.Description);
             base.Execute();
@@ -55,7 +54,7 @@ namespace DesignsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+            var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
             design.DeleteEpicElement(this.EntityGuid);
             base.Execute();
         }

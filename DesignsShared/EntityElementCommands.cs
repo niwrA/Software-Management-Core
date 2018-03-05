@@ -9,7 +9,6 @@ namespace DesignsShared
   {
     public EntityElementCommand() : base() { }
     public EntityElementCommand(ICommandStateRepository repo) : base(repo) { }
-    public Guid DesignGuid { get; set; }
     public Guid EpicElementGuid { get; set; }
     public virtual void Execute() { }
   }
@@ -21,7 +20,7 @@ namespace DesignsShared
     public string Name { get; set; }
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       epic.AddEntityElement(this.EntityGuid, this.Name, null);
       base.Execute();
@@ -34,7 +33,7 @@ namespace DesignsShared
     public string Name { get; set; }
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       var entity = epic.GetEntityElement(this.EntityGuid);
       entity.Rename(this.Name, this.OriginalName);
@@ -47,7 +46,7 @@ namespace DesignsShared
     public string Description { get; set; }
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       var entity = epic.GetEntityElement(this.EntityGuid);
       entity.ChangeDescription(this.Description);
@@ -60,7 +59,7 @@ namespace DesignsShared
     public string PluralName { get; set; }
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       var entity = epic.GetEntityElement(this.EntityGuid);
       entity.ChangePluralName(this.PluralName, this.OriginalPluralName);
@@ -73,7 +72,7 @@ namespace DesignsShared
     public bool IsCollection { get; set; }
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       var entity = epic.GetEntityElement(this.EntityGuid);
       entity.ChangeIsCollection(this.IsCollection);
@@ -85,7 +84,7 @@ namespace DesignsShared
   {
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       epic.DeleteEntityElement(this.EntityGuid);
       base.Execute();
@@ -95,7 +94,7 @@ namespace DesignsShared
   {
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       epic.DeleteEntityElement(this.EntityGuid);
       base.Execute();
@@ -109,7 +108,7 @@ namespace DesignsShared
     public Guid ParentGuid { get; set; }
     public override void Execute()
     {
-      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.DesignGuid);
+      var design = ((IDesignService)base.CommandProcessor).GetDesign(this.EntityRootGuid);
       var epic = design.GetEpicElement(this.EpicElementGuid);
       epic.AddEntityElement(this.EntityGuid, this.Name, this.ParentGuid);
       base.Execute();

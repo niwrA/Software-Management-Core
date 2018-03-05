@@ -29,11 +29,11 @@ namespace SoftwareManagementCoreTests.Products
     public void DeleteCommand()
     {
       var productsMock = new Mock<IProductService>();
-      var sut = new CommandBuilder<DeleteProductCommand>().Build(productsMock.Object) as DeleteProductCommand;
+      var sut = new CommandBuilder<DeleteProductCommand>().Build(productsMock.Object);
 
       sut.Execute();
 
-      productsMock.Verify(s => s.DeleteProduct(sut.EntityGuid), Times.Once);
+      productsMock.Verify(s => s.DeleteProduct(sut.EntityRootGuid), Times.Once);
     }
 
     [Fact(DisplayName = "RenameCommand")]
@@ -202,12 +202,12 @@ namespace SoftwareManagementCoreTests.Products
       var sut = sutBuilder
           .WithProduct(guid)
           .WithProductIssue(issueMock.Object)
-          .Build() as RenameProductIssueCommand;
+          .Build();
 
+      sut.EntityRootGuid = guid;
       sut.EntityGuid = issueGuid;
       sut.OriginalName = "Old name";
       sut.Name = "New name";
-      sut.ProductGuid = guid;
       sut.Execute();
 
       sutBuilder.ProductsMock.Verify(s => s.GetProduct(guid));
@@ -289,7 +289,7 @@ namespace SoftwareManagementCoreTests.Products
     public Mock<IProductFeature> ProductFeatureMock { get; set; }
     public Mock<IProductService> ProductsMock = new Mock<IProductService>();
 
-    public ICommand Build()
+    public T Build()
     {
       var sut = new CommandBuilder<T>().Build(ProductsMock.Object);
 

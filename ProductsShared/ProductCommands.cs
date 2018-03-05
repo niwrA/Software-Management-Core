@@ -126,7 +126,6 @@ namespace ProductsShared
   {
     public string OriginalName { get; set; }
     public string Name { get; set; }
-    public Guid ProductGuid { get; set; }
     public override void Execute()
     {
       var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
@@ -138,7 +137,6 @@ namespace ProductsShared
   public class ChangeDescriptionOfProductIssueCommand : ProductCommand
   {
     public string Description { get; set; }
-    public Guid ProductGuid { get; set; }
     public override void Execute()
     {
       var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);

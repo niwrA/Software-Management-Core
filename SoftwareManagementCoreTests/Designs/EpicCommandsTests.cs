@@ -20,12 +20,12 @@ namespace SoftwareManagementCoreTests.EpicElements
             var sut = new CommandBuilder<CreateEpicElementCommand>().Build(designServiceMock.Object) as CreateEpicElementCommand;
             var designMock = new Mock<IDesign>();
 
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
             sut.Name = "New EpicElement";
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             designMock.Verify(v => v.AddEpicElement(sut.EntityGuid, sut.Name), Times.Once);
         }
 
@@ -36,11 +36,11 @@ namespace SoftwareManagementCoreTests.EpicElements
             var sut = new CommandBuilder<DeleteEpicElementCommand>().Build(designServiceMock.Object) as DeleteEpicElementCommand;
             var designMock = new Mock<IDesign>();
 
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             designMock.Verify(v => v.DeleteEpicElement(sut.EntityGuid), Times.Once);
         }
 
@@ -52,15 +52,14 @@ namespace SoftwareManagementCoreTests.EpicElements
             var designMock = new Mock<IDesign>();
             var epicMock = new Mock<IEpicElement>();
 
-            sut.DesignGuid = Guid.NewGuid();
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
             designMock.Setup(v => v.GetEpicElement(sut.EntityGuid)).Returns(epicMock.Object);
 
             sut.Name = "New name";
             sut.OriginalName = "";
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             epicMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
         }
 
@@ -72,14 +71,13 @@ namespace SoftwareManagementCoreTests.EpicElements
             var designMock = new Mock<IDesign>();
             var epicMock = new Mock<IEpicElement>();
 
-            sut.DesignGuid = Guid.NewGuid();
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
             designMock.Setup(v => v.GetEpicElement(sut.EntityGuid)).Returns(epicMock.Object);
 
             sut.Description = "New description";
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             epicMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
         }
 
