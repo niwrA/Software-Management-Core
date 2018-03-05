@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using Microsoft.EntityFrameworkCore;
 using ProductsShared;
 using System;
@@ -420,8 +420,11 @@ namespace SoftwareManagementEFCoreRepository
     [Key]
     public Guid Guid { get; set; }
     public Guid EntityGuid { get; set; }
+    public Guid EntityRootGuid { get; set; }
     public string Entity { get; set; }
-    public string CommandTypeId { get; set; }
+    public string EntityRoot { get; set; }
+    public string Command { get; set; }
+    public string CommandVersion { get; set; }
     public DateTime? ExecutedOn { get; set; }
     public string ParametersJson { get; set; }
     public DateTime? ReceivedOn { get; set; }
@@ -447,11 +450,11 @@ namespace SoftwareManagementEFCoreRepository
     }
 
 
-    public ICommandState CreateCommandState()
+    public ICommandState CreateCommandState(Guid guid)
     {
       var state = new CommandState()
       {
-        Guid = Guid.NewGuid()
+        Guid = guid
       };
       _context.CommandStates.Add(state);
       return state;

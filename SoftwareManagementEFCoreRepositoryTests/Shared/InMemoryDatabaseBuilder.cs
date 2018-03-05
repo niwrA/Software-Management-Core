@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SoftwareManagementEFCoreRepository;

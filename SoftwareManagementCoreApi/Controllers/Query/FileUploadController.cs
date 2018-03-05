@@ -10,7 +10,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using FilesShared;
-using CommandsShared;
+using niwrA.CommandManager;
 
 // added for research as I came across it, not yet in use
 namespace SoftwareManagementCoreApi.Controllers
@@ -42,21 +42,21 @@ namespace SoftwareManagementCoreApi.Controllers
   public class FileUploadController : Controller
   {
     private int DefaultBufferSize = 80 * 1024;
-    private ICommandService _commandService;
+    private ICommandManager _commandManager;
     private IFileService _fileService;
 
     // todo: inject fileio service
-    public FileUploadController(ICommandService commandService, IFileService fileService)
+    public FileUploadController(ICommandManager commandManager, IFileService fileService)
     {
-      _commandService = commandService;
+      _commandManager = commandManager;
       _fileService = fileService;
 
       var processorConfigs = new List<IProcessorConfig>
       {
-        new ProcessorConfig { Assembly = "SoftwareManagementCore", NameSpace = "FilesShared", Entity = "File", Processor = fileService }
+        new ProcessorConfig ( assembly : "SoftwareManagementCore", nameSpace: "FilesShared", entityRoot: "File", processor: fileService )
       };
 
-      _commandService.AddProcessorConfigs(processorConfigs);
+      _commandManager.AddProcessorConfigs(processorConfigs);
     }
     // todo: move to injected class
     private async Task SaveAsync(IFormFile formFile, string folderName, string fileName, CancellationToken cancellationToken = default(CancellationToken))
@@ -105,11 +105,11 @@ namespace SoftwareManagementCoreApi.Controllers
     {
       var type = System.IO.Path.GetExtension(fileName).ToLower();
       // todo: make a typed path (adjust commands to contain Entity name and auto-serialize the additional properties into ParametersJson)
-      var commandDto = new CommandDto { Entity = "File", EntityGuid = Guid.NewGuid(), Guid = Guid.NewGuid(), CreatedOn = DateTime.Now, Name = "Create" };
+      var commandDto = new CommandDto { Entity = "File", EntityGuid = Guid.NewGuid(), Guid = Guid.NewGuid(), CreatedOn = DateTime.Now, Command = "Create" };
       commandDto.ParametersJson = $@"{{'ForGuid':'{forEntityGuid}', 'Name': '{fileName}', 'FileName': '{fileName}', 'FolderName':'{folderName}', 'Type':'{type}'}}";
-      _commandService.ProcessCommand(commandDto);
+      _commandManager.ProcessCommands( new List<CommandDto> { commandDto });
       _fileService.PersistChanges();
-      _commandService.PersistChanges();
+      _commandManager.PersistChanges();
     }
 
     //[Route("download/{id}")]

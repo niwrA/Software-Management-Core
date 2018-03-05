@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace FilesShared
 {
-  public abstract class FileCommand : CommandBase
+  public abstract class FileCommand : CommandBase, ICommand
   {
     public FileCommand() : base() { }
     public FileCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute() { }
   }
 
   public class DeleteFileCommand : FileCommand

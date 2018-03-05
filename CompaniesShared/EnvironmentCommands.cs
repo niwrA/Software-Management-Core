@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +9,6 @@ namespace CompaniesShared
     {
         public EnvironmentCommand() : base() { }
         public EnvironmentCommand(ICommandStateRepository repo) : base(repo) { }
-        public Guid EnvironmentGuid { get; set; }
     }
 
     public class RenameCompanyEnvironmentCommand : EnvironmentCommand
@@ -18,8 +17,8 @@ namespace CompaniesShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
-            var environment = root.GetEnvironment(EnvironmentGuid);
+            var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+            var environment = root.GetEnvironment(this.EntityGuid);
             environment.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
@@ -31,8 +30,8 @@ namespace CompaniesShared
         public string Url { get; set; }
         public override void Execute()
         {
-            var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
-            var environment = root.GetEnvironment(EnvironmentGuid);
+            var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+            var environment = root.GetEnvironment(this.EntityGuid);
             environment.ChangeUrl(this.Url, this.OriginalUrl);
             base.Execute();
         }

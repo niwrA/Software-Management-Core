@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using ProductsShared;
 using System;
 using System.Collections.Generic;

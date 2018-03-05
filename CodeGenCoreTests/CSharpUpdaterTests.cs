@@ -20,7 +20,7 @@ namespace CodeGenCoreTests
       var settingsBuilder = new SettingsBuilder();
       var settings = settingsBuilder.WithInterface().Build();
 
-      sut.loadSettings(settings);
+      sut.LoadSettings(settings);
 
       sut.AddProperty("testName", "string", "test", "tests");
 
@@ -37,7 +37,7 @@ namespace CodeGenCoreTests
       var settingsBuilder = new SettingsBuilder();
       var settings = settingsBuilder.WithClass().Build();
 
-      sut.loadSettings(settings);
+      sut.LoadSettings(settings);
 
       sut.AddProperty("testName", "string", "test", "tests");
 
@@ -54,7 +54,7 @@ namespace CodeGenCoreTests
       var settingsBuilder = new SettingsBuilder();
       var settings = settingsBuilder.WithInterface().Build();
 
-      sut.loadSettings(settings);
+      sut.LoadSettings(settings);
 
       var parameter = new CustomParameter { Name = "param1", ValueType = "string" };
       var parameters = new List<ICustomParameter> { parameter };
@@ -73,7 +73,7 @@ namespace CodeGenCoreTests
       var settingsBuilder = new SettingsBuilder();
       var settings = settingsBuilder.WithClass().Build();
 
-      sut.loadSettings(settings);
+      sut.LoadSettings(settings);
 
       var parameter = new CustomParameter { Name = "param1", ValueType = "string" };
       var parameters = new List<ICustomParameter> { parameter };

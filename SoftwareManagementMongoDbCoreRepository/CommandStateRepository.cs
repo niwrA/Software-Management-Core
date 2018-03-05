@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using CompaniesShared;
 using ContactsShared;
 using DesignsShared;
@@ -42,7 +42,10 @@ namespace SoftwareManagementMongoDbCoreRepository
   {
     public Guid EntityGuid { get; set; }
     public string Entity { get; set; }
-    public string CommandTypeId { get; set; }
+    public Guid EntityRootGuid { get; set; }
+    public string EntityRoot { get; set; }
+    public string Command { get; set; }
+    public string CommandVersion { get; set; }
     public string ParametersJson { get; set; }
     public DateTime? ExecutedOn { get; set; }
     public DateTime? ReceivedOn { get; set; }
@@ -66,11 +69,11 @@ namespace SoftwareManagementMongoDbCoreRepository
     }
 
 
-    public ICommandState CreateCommandState()
+    public ICommandState CreateCommandState(Guid guid)
     {
       var state = new CommandState()
       {
-        Guid = Guid.NewGuid()
+        Guid = guid
       };
       _commandStates.Add(state.Guid, state);
       return state;

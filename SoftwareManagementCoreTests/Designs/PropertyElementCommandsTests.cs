@@ -15,7 +15,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
             var designServiceMock = new Mock<IDesignService>();
             var sut = new CommandBuilder<CreatePropertyElementCommand>().Build(designServiceMock.Object) as CreatePropertyElementCommand;
             var designMock = new Mock<IDesign>();
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
             var epicMock = new Mock<IEpicElement>();
             designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
@@ -26,7 +26,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
             sut.Name = "New PropertyElement";
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             entityMock.Verify(v => v.AddPropertyElement(sut.EntityGuid, sut.Name), Times.Once);
         }
 
@@ -37,7 +37,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
             var sut = new CommandBuilder<DeletePropertyElementCommand>().Build(designServiceMock.Object) as DeletePropertyElementCommand;
 
             var designMock = new Mock<IDesign>();
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
             var epicMock = new Mock<IEpicElement>();
             designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
@@ -47,7 +47,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
 
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             entityMock.Verify(v => v.DeletePropertyElement(sut.EntityGuid), Times.Once);
         }
 
@@ -55,13 +55,12 @@ namespace SoftwareManagementCoreTests.PropertyElements
         public void RenameCommand()
         {
             var designServiceMock = new Mock<IDesignService>();
-            var sut = new CommandBuilder<RenamePropertyElementCommand>().Build(designServiceMock.Object) as RenamePropertyElementCommand;
+            var sut = new CommandBuilder<RenamePropertyElementCommand>().Build(designServiceMock.Object);
 
-            sut.DesignGuid = Guid.NewGuid();
             sut.EpicElementGuid = Guid.NewGuid();
 
             var designMock = new Mock<IDesign>();
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
             var epicMock = new Mock<IEpicElement>();
             designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
@@ -76,7 +75,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
             //            sut.OriginalName = "";
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             propertyMock.Verify(s => s.Rename(sut.Name, sut.OriginalName), Times.Once);
         }
 
@@ -86,11 +85,10 @@ namespace SoftwareManagementCoreTests.PropertyElements
             var designServiceMock = new Mock<IDesignService>();
             var sut = new CommandBuilder<ChangeDescriptionOfPropertyElementCommand>().Build(designServiceMock.Object) as ChangeDescriptionOfPropertyElementCommand;
 
-            sut.DesignGuid = Guid.NewGuid();
             sut.EpicElementGuid = Guid.NewGuid();
 
             var designMock = new Mock<IDesign>();
-            designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
             var epicMock = new Mock<IEpicElement>();
             designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
@@ -104,7 +102,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
             sut.Description = "New description";
             sut.Execute();
 
-            designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
             propertyMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
         }
 
@@ -114,11 +112,10 @@ namespace SoftwareManagementCoreTests.PropertyElements
       var designServiceMock = new Mock<IDesignService>();
       var sut = new CommandBuilder<ChangeDataTypeOfPropertyElementCommand>().Build(designServiceMock.Object);
 
-      sut.DesignGuid = Guid.NewGuid();
       sut.EpicElementGuid = Guid.NewGuid();
 
       var designMock = new Mock<IDesign>();
-      designServiceMock.Setup(v => v.GetDesign(sut.DesignGuid)).Returns(designMock.Object);
+      designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
 
       var epicMock = new Mock<IEpicElement>();
       designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
@@ -133,7 +130,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
       sut.OriginalDataType = "Old type";
       sut.Execute();
 
-      designServiceMock.Verify(v => v.GetDesign(sut.DesignGuid), Times.Once);
+      designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
       propertyMock.Verify(s => s.ChangeDataType(sut.DataType, sut.OriginalDataType), Times.Once);
     }
 

@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using Moq;
 using CompaniesShared;
 using SoftwareManagementCoreTests.Commands;
@@ -75,51 +75,47 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddRoleToCompanyCommand")]
     public void AddRoleToCompanyCommand()
     {
-      var sutBuilder = new CompanyCommandBuilder<AddRoleToCompanyCommand>();
+      var sutBuilder = new CompanyCommandBuilder<AddCompanyRoleCommand>();
       var sut = sutBuilder.Build();
 
       sut.RoleName = "New Name";
-      sut.RoleGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyMock.Verify(s => s.AddRoleToCompany(sut.RoleGuid, sut.RoleName), Times.Once);
+      sutBuilder.CompanyMock.Verify(s => s.AddRoleToCompany(sut.EntityGuid, sut.RoleName), Times.Once);
     }
 
     [Fact(DisplayName = "RemoveRoleFromCompanyCommand")]
     public void RemoveRoleFromCompanyCommand()
     {
-      var sutBuilder = new CompanyCommandBuilder<RemoveRoleFromCompanyCommand>();
+      var sutBuilder = new CompanyCommandBuilder<RemoveCompanyRoleCommand>();
       var sut = sutBuilder.Build();
 
-      sut.RoleGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyMock.Verify(s => s.RemoveRoleFromCompany(sut.RoleGuid), Times.Once);
+      sutBuilder.CompanyMock.Verify(s => s.RemoveRoleFromCompany(sut.EntityGuid), Times.Once);
     }
 
     [Fact(DisplayName = "AddEnvironmentToCompanyCommand")]
     public void AddEnvironmentToCompanyCommand()
     {
-      var sutBuilder = new CompanyCommandBuilder<AddEnvironmentToCompanyCommand>();
+      var sutBuilder = new CompanyCommandBuilder<AddCompanyEnvironmentCommand>();
       var sut = sutBuilder.Build();
 
       sut.EnvironmentName = "New Name";
-      sut.EnvironmentGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyMock.Verify(s => s.AddEnvironmentToCompany(sut.EnvironmentGuid, sut.EnvironmentName), Times.Once);
+      sutBuilder.CompanyMock.Verify(s => s.AddEnvironmentToCompany(sut.EntityGuid, sut.EnvironmentName), Times.Once);
     }
 
     [Fact(DisplayName = "RemoveEnvironmentFromCompanyCommand")]
     public void RemoveEnvironmentFromCompanyCommand()
     {
-      var sutBuilder = new CompanyCommandBuilder<RemoveEnvironmentFromCompanyCommand>();
+      var sutBuilder = new CompanyCommandBuilder<RemoveCompanyEnvironmentCommand>();
       var sut = sutBuilder.Build();
 
-      sut.EnvironmentGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyMock.Verify(s => s.RemoveEnvironmentFromCompany(sut.EnvironmentGuid), Times.Once);
+      sutBuilder.CompanyMock.Verify(s => s.RemoveEnvironmentFromCompany(sut.EntityGuid), Times.Once);
     }
   }
 
@@ -134,7 +130,7 @@ namespace SoftwareManagementCoreTests.Companies
 
       var sut = new CommandBuilder<T>().Build(companiesMock.Object);
 
-      companiesMock.Setup(s => s.GetCompany(sut.EntityGuid)).Returns(companyMock.Object);
+      companiesMock.Setup(s => s.GetCompany(sut.EntityRootGuid)).Returns(companyMock.Object);
 
       return sut;
     }

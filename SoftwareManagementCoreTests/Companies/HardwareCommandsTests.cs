@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using CompaniesShared;
 using Moq;
 using SoftwareManagementCoreTests.Commands;
@@ -51,27 +51,27 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddHardwareToCompanyEnvironmentCommand")]
     public void AddHardwareToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new HardwareCommandBuilder<AddHardwareToCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as AddHardwareToCompanyEnvironmentCommand;
+      var sutBuilder = new HardwareCommandBuilder<AddCompanyEnvironmentHardwareCommand>();
+      var sut = sutBuilder.Build() as AddCompanyEnvironmentHardwareCommand;
 
       sut.HardwareName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.HardwareGuid = Guid.NewGuid();
+      sut.EntityGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddHardware(sut.HardwareGuid, sut.HardwareName), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddHardware(sut.EntityGuid, sut.HardwareName), Times.Once);
     }
     [Fact(DisplayName = "AddHardwareToCompanyEnvironmentCommand")]
     public void RemoveHardwareFromCompanyEnvironmentCommand()
     {
-      var sutBuilder = new HardwareCommandBuilder<RemoveHardwareFromCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as RemoveHardwareFromCompanyEnvironmentCommand;
+      var sutBuilder = new HardwareCommandBuilder<RemoveCompanyEnvironmentHardwareCommand>();
+      var sut = sutBuilder.Build() as RemoveCompanyEnvironmentHardwareCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.HardwareGuid = Guid.NewGuid();
+      sut.EntityGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveHardware(sut.HardwareGuid), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveHardware(sut.EntityGuid), Times.Once);
     }
 
   }

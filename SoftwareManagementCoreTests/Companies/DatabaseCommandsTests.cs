@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using CompaniesShared;
 using Moq;
 using SoftwareManagementCoreTests.Commands;
@@ -27,27 +27,25 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddDatabaseToCompanyEnvironmentCommand")]
     public void AddDatabaseToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new DatabaseCommandBuilder<AddDatabaseToCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as AddDatabaseToCompanyEnvironmentCommand;
+      var sutBuilder = new DatabaseCommandBuilder<AddCompanyEnvironmentDatabaseCommand>();
+      var sut = sutBuilder.Build() as AddCompanyEnvironmentDatabaseCommand;
 
       sut.DatabaseName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.DatabaseGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddDatabase(sut.DatabaseGuid, sut.DatabaseName), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddDatabase(sut.EntityGuid, sut.DatabaseName), Times.Once);
     }
     [Fact(DisplayName = "AddDatabaseToCompanyEnvironmentCommand")]
     public void RemoveDatabaseFromCompanyEnvironmentCommand()
     {
-      var sutBuilder = new DatabaseCommandBuilder<RemoveDatabaseFromCompanyEnvironmentCommand>();
-      var sut = sutBuilder.Build() as RemoveDatabaseFromCompanyEnvironmentCommand;
+      var sutBuilder = new DatabaseCommandBuilder<RemoveCompanyEnvironmentDatabaseCommand>();
+      var sut = sutBuilder.Build() as RemoveCompanyEnvironmentDatabaseCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.DatabaseGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveDatabase(sut.DatabaseGuid), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveDatabase(sut.EntityGuid), Times.Once);
     }
 
   }

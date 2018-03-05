@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ProjectsShared
 {
-    public abstract class ProjectCommand : CommandBase
+    public abstract class ProjectCommand : CommandBase, ICommand
     {
         public ProjectCommand() : base() { }
         public ProjectCommand(ICommandStateRepository repo) : base(repo) { }
-    }
+        public virtual void Execute() { }
+  }
 
-    public class DeleteProjectCommand: ProjectCommand
+  public class DeleteProjectCommand: ProjectCommand
     {
         public override void Execute()
         {
@@ -37,7 +38,7 @@ namespace ProjectsShared
         public string Name { get; set; }
         public override void Execute()
         {
-            var product = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            var product = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
             product.Rename(this.Name, this.OriginalName);
             base.Execute();
         }
@@ -49,7 +50,7 @@ namespace ProjectsShared
         public DateTime? StartDate { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
             project.ChangeStartDate(this.StartDate, this.OriginalStartDate);
             base.Execute();
         }
@@ -61,7 +62,7 @@ namespace ProjectsShared
         public DateTime? EndDate { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
             project.ChangeEndDate(this.EndDate, this.OriginalEndDate);
             base.Execute();
         }
@@ -70,21 +71,19 @@ namespace ProjectsShared
     public class AddRoleToProjectCommand : ProjectCommand
     {
         public string RoleName { get; set; }
-        public Guid RoleGuid { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            project.AddRoleToProject(this.RoleGuid, this.RoleName);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
+            project.AddRoleToProject(this.EntityGuid, this.RoleName);
             base.Execute();
         }
     }
     public class RemoveRoleFromProjectCommand : ProjectCommand
     {
-        public Guid RoleGuid { get; set; }
         public override void Execute()
         {
-            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityGuid);
-            project.RemoveRoleFromProject(this.RoleGuid);
+            var project = ((IProjectService)base.CommandProcessor).GetProject(this.EntityRootGuid);
+            project.RemoveRoleFromProject(this.EntityGuid);
             base.Execute();
         }
     }

@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -335,9 +335,9 @@ namespace DesignsShared
   }
   public class DesignService : IDesignService
   {
-    private IDateTimeProvider _dateTimeProvider;
+    private DateTimeShared.IDateTimeProvider _dateTimeProvider;
     private IDesignStateRepository _repo;
-    public DesignService(IDesignStateRepository repo, IDateTimeProvider dateTimeProvider)
+    public DesignService(IDesignStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider)
     {
       _repo = repo;
       _dateTimeProvider = dateTimeProvider;

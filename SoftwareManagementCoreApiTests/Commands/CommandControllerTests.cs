@@ -1,4 +1,4 @@
-using CommandsShared;
+using niwrA.CommandManager;
 using SoftwareManagementCoreApi;
 using System;
 using System.Net.Http;
@@ -31,7 +31,8 @@ namespace SoftwareManagementCoreApiTests
     [Fact(DisplayName = "PostCommands")]
     public void CanPostCommands()
     {
-      var commandManager = new Mock<ICommandService>();
+      var commandService = new Mock<ICommandService>();
+      var commandManager = new Mock<ICommandManager>();
       var commandRepo = new Mock<ICommandStateRepository>();
 
       var projectsService = new Mock<IProjectService>();
@@ -49,20 +50,20 @@ namespace SoftwareManagementCoreApiTests
       var projectCommandDto = new Fakes.RenameProjectCommandDto();
       var productCommandDto = new Fakes.RenameProductCommandDto();
 
-      commandRepo.Setup(s => s.CreateCommandState()).Returns(new Fakes.CommandState());
+      commandRepo.Setup(s => s.CreateCommandState(It.IsAny<Guid>())).Returns(new Fakes.CommandState());
 
       var projectCommand = new Fakes.RenameProjectCommand(projectCommandDto, commandRepo.Object);
       var productCommand = new Fakes.RenameProductCommand(productCommandDto, commandRepo.Object);
 
       var commands = new List<ICommand> { projectCommand, productCommand };
 
-      commandManager.Setup(s => s.ProcessCommand(projectCommandDto, null)).Returns(commands);
+      commandManager.Setup(s => s.ProcessCommands(new List<CommandDto> { projectCommandDto }));
 
       var sut = new CommandsController(commandManager.Object, productsService.Object, projectsService.Object, contactsService.Object, employmentsService.Object, companiesService.Object, projectRoleAssignmentsService.Object, productInstallationService.Object, linksService.Object, filesService.Object, designsService.Object, codeGenService.Object, commandRepo.Object);
       var sutResult = sut.Post(new List<CommandDto> { projectCommandDto, productCommandDto });
 
       Assert.True(sutResult.Success);
-      Assert.Equal(2, sutResult.ExecutedCommands.Count());
+      Assert.Equal(2, sutResult.Count);
     }
   }
   [Trait("Controller", "ProductController")]
@@ -79,7 +80,7 @@ namespace SoftwareManagementCoreApiTests
     {
       // Arrange
       var testGuid = Guid.Parse("DB90B521-D9C2-4F6B-89D7-E89EC36021D2");
-      var command = new CommandDto { Guid = Guid.NewGuid(), Entity = "Product", Name = "Rename", EntityGuid = testGuid, ParametersJson = @"{ Name: 'Test Product renamed from test'}", CreatedOn = DateTime.UtcNow };
+      var command = new CommandDto { Guid = Guid.NewGuid(), Entity = "Product", Command = "Rename", EntityGuid = testGuid, ParametersJson = @"{ Name: 'Test Product renamed from test'}", CreatedOn = DateTime.UtcNow };
       var commands = new List<CommandDto> { command };
       // Act
       var response = _client.PostAsJsonAsync("/api/commands/batch", commands).Result;

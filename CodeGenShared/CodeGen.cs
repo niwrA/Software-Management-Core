@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -86,7 +86,7 @@ namespace CodeGenShared
   }
   public interface ICodeGenService : ICommandProcessor
   {
-    void loadSettings(CodeGenSettings settings);
+    void LoadSettings(CodeGenSettings settings);
     void ProcessActions(IEnumerable<IUpdateAction> updateActions);
     void AddProperty(string name, string typeName, string entityName, string entitiesName);
   }

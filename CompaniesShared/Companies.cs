@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -433,9 +433,9 @@ namespace CompaniesShared
 
   public class CompanyService : ICompanyService
   {
-    private IDateTimeProvider _dateTimeProvider;
+    private DateTimeShared.IDateTimeProvider _dateTimeProvider;
     private ICompanyStateRepository _repo;
-    public CompanyService(ICompanyStateRepository repo, IDateTimeProvider dateTimeProvider)
+    public CompanyService(ICompanyStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider)
     {
       _repo = repo;
       _dateTimeProvider = dateTimeProvider;

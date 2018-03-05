@@ -3,7 +3,7 @@ using Xunit;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using SoftwareManagementEFCoreRepository;
-using CommandsShared;
+using niwrA.CommandManager;
 using System.Collections.Generic;
 using ProductsShared;
 using Microsoft.Data.Sqlite;

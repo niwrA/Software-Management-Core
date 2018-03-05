@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ContactsShared
 {
@@ -9,6 +9,7 @@ namespace ContactsShared
     {
         public ContactCommand() : base() { }
         public ContactCommand(ICommandStateRepository repo) : base(repo) { }
+        public virtual void Execute() { }
     }
 
     public class DeleteContactCommand : ContactCommand

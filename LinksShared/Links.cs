@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -110,11 +110,11 @@ namespace LinksShared
     }
     public class LinkService : ILinkService
     {
-        private IDateTimeProvider _dateTimeProvider;
+        private DateTimeShared.IDateTimeProvider _dateTimeProvider;
         private ILinkStateRepository _repo;
         private ILinkDetailsProcessor _linkDetailsProcessor;
 
-        public LinkService(ILinkStateRepository repo, IDateTimeProvider dateTimeProvider, ILinkDetailsProcessor linkDetailsProcessor)
+        public LinkService(ILinkStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider, ILinkDetailsProcessor linkDetailsProcessor)
         {
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;

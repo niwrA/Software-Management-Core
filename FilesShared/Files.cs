@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;
@@ -99,10 +99,10 @@ namespace FilesShared
     }
     public class FileService : IFileService
     {
-        private IDateTimeProvider _dateTimeProvider;
+        private DateTimeShared.IDateTimeProvider _dateTimeProvider;
         private IFileStateRepository _repo;
 
-        public FileService(IFileStateRepository repo, IDateTimeProvider dateTimeProvider)
+        public FileService(IFileStateRepository repo, DateTimeShared.IDateTimeProvider dateTimeProvider)
         {
             _repo = repo;
             _dateTimeProvider = dateTimeProvider;

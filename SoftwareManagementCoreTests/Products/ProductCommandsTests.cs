@@ -1,4 +1,4 @@
-﻿using CommandsShared;
+﻿using niwrA.CommandManager;
 using DateTimeShared;
 using Moq;
 using ProductsShared;
@@ -29,11 +29,11 @@ namespace SoftwareManagementCoreTests.Products
     public void DeleteCommand()
     {
       var productsMock = new Mock<IProductService>();
-      var sut = new CommandBuilder<DeleteProductCommand>().Build(productsMock.Object) as DeleteProductCommand;
+      var sut = new CommandBuilder<DeleteProductCommand>().Build(productsMock.Object);
 
       sut.Execute();
 
-      productsMock.Verify(s => s.DeleteProduct(sut.EntityGuid), Times.Once);
+      productsMock.Verify(s => s.DeleteProduct(sut.EntityRootGuid), Times.Once);
     }
 
     [Fact(DisplayName = "RenameCommand")]
@@ -52,8 +52,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveFeatureFromProductCommand")]
     public void RemoveFeatureFromProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveFeatureFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveFeatureFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductFeatureCommand>();
+      var sut = sutBuilder.Build();
 
       var guid = Guid.NewGuid();
       var issueGuid = Guid.NewGuid();
@@ -67,8 +67,8 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveVersionFromProductCommand")]
     public void RemoveVersionFromProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveVersionFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveVersionFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductVersionCommand>();
+      var sut = sutBuilder.Build();
 
       var guid = Guid.NewGuid();
       var versionGuid = Guid.NewGuid();
@@ -82,24 +82,19 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "RemoveIssueFromProductCommand")]
     public void RemoveIssueFromProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveIssueFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveIssueFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductIssueCommand>();
+      var sut = sutBuilder.Build();
 
-      var guid = Guid.NewGuid();
-      var issueGuid = Guid.NewGuid();
-
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ProductIssueGuid = issueGuid;
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.DeleteIssue(issueGuid));
+      sutBuilder.ProductMock.Verify(s => s.DeleteIssue(sut.EntityGuid));
     }
 
     [Fact(DisplayName = "ChangeDescriptionCommand")]
     public void ChangeDescriptionCommand()
     {
       var sutBuilder = new ProductCommandBuilder<ChangeDescriptionOfProductCommand>();
-      var sut = sutBuilder.Build() as ChangeDescriptionOfProductCommand;
+      var sut = sutBuilder.Build();
 
       sut.Description = "New description";
       sut.Execute();
@@ -111,7 +106,7 @@ namespace SoftwareManagementCoreTests.Products
     public void ChangeBusinessCaseCommand()
     {
       var sutBuilder = new ProductCommandBuilder<ChangeBusinessCaseOfProductCommand>();
-      var sut = sutBuilder.Build() as ChangeBusinessCaseOfProductCommand;
+      var sut = sutBuilder.Build();
 
       sut.BusinessCase = "New business case";
       sut.Execute();
@@ -122,10 +117,9 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "AddVersionToProductCommand")]
     public void AddVersionToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddVersionToProductCommand>();
-      var sut = sutBuilder.Build() as AddVersionToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductVersionCommand>();
+      var sut = sutBuilder.Build();
 
-      sut.ProductVersionGuid = Guid.NewGuid();
       sut.Name = "New name";
       sut.Major = 1;
       sut.Minor = 2;
@@ -133,14 +127,14 @@ namespace SoftwareManagementCoreTests.Products
       sut.Build = 4;
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.AddVersion(sut.ProductVersionGuid, sut.Name, sut.Major, sut.Minor, sut.Revision, sut.Build), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.AddVersion(sut.EntityGuid, sut.Name, sut.Major, sut.Minor, sut.Revision, sut.Build), Times.Once);
     }
 
     [Fact(DisplayName = "AddFeatureToProductCommand")]
     public void AddFeatureToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddFeatureToProductCommand>();
-      var sut = sutBuilder.Build() as AddFeatureToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductFeatureCommand>();
+      var sut = sutBuilder.Build();
 
       sut.ProductFeatureGuid = Guid.NewGuid();
       sut.FirstVersionGuid = Guid.NewGuid();
@@ -152,47 +146,42 @@ namespace SoftwareManagementCoreTests.Products
     [Fact(DisplayName = "AddIssueToProductCommand")]
     public void AddIssueToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddIssueToProductCommand>();
-      var sut = sutBuilder.Build() as AddIssueToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductIssueCommand>();
+      var sut = sutBuilder.Build();
 
-      sut.ProductIssueGuid = Guid.NewGuid();
       sut.FirstVersionGuid = Guid.NewGuid();
       sut.Name = "New name";
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.AddIssue(sut.ProductIssueGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.AddIssue(sut.EntityGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
     }
     [Fact(DisplayName = "AddConfigToProductCommand")]
     public void AddConfigToProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<AddConfigOptionToProductCommand>();
-      var sut = sutBuilder.Build() as AddConfigOptionToProductCommand;
+      var sutBuilder = new ProductCommandBuilder<AddProductConfigOptionCommand>();
+      var sut = sutBuilder.Build();
 
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ConfigGuid = Guid.NewGuid();
       sut.FeatureGuid = Guid.NewGuid();
       sut.Name = "New name";
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.ConfigGuid, sut.Name, null), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.EntityGuid, sut.Name, null), Times.Once);
     }
     [Fact(DisplayName = "RemoveConfigFromFeatureCommand")]
     public void RemoveConfigFromFeatureCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RemoveConfigOptionFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveConfigOptionFromProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RemoveProductConfigOptionCommand>();
+      var sut = sutBuilder.Build();
 
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ConfigGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.ConfigGuid), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.EntityGuid), Times.Once);
     }
     [Fact]
     public void RequestFeatureForProductCommand()
     {
-      var sutBuilder = new ProductCommandBuilder<RequestFeatureForProductCommand>();
-      var sut = sutBuilder.Build() as RequestFeatureForProductCommand;
+      var sutBuilder = new ProductCommandBuilder<RequestProductFeatureCommand>();
+      var sut = sutBuilder.Build();
 
       sut.ProductFeatureGuid = Guid.NewGuid();
       sut.RequestedForVersionGuid = Guid.NewGuid();
@@ -213,12 +202,12 @@ namespace SoftwareManagementCoreTests.Products
       var sut = sutBuilder
           .WithProduct(guid)
           .WithProductIssue(issueMock.Object)
-          .Build() as RenameProductIssueCommand;
+          .Build();
 
+      sut.EntityRootGuid = guid;
       sut.EntityGuid = issueGuid;
       sut.OriginalName = "Old name";
       sut.Name = "New name";
-      sut.ProductGuid = guid;
       sut.Execute();
 
       sutBuilder.ProductsMock.Verify(s => s.GetProduct(guid));
@@ -258,18 +247,19 @@ namespace SoftwareManagementCoreTests.Products
       var commandRepoMock = new Mock<ICommandStateRepository>();
       var productsMock = new Mock<IProductService>();
       var commandState = new Fakes.CommandState();
-      commandRepoMock.Setup(t => t.CreateCommandState()).Returns(commandState);
-
       var guid = Guid.NewGuid();
+
+      commandRepoMock.Setup(t => t.CreateCommandState(It.IsAny<Guid>())).Returns(commandState);
+
       var name = "New Project";
 
-      var sut = new CommandService(commandRepoMock.Object, new DateTimeProvider());
-      var commandConfig = new CommandConfig { Assembly = TestGlobals.Assembly, NameSpace = TestGlobals.Namespace, CommandName = CommandTypes.Create.ToString(), Entity = TestGlobals.Entity, Processor = productsMock.Object };
+      var sut = new CommandManager(commandRepoMock.Object, new DateTimeProvider());
+      var commandConfig = new CommandConfig ( assembly : TestGlobals.Assembly, nameSpace : TestGlobals.Namespace, commandName : CommandTypes.Create.ToString(), entity : TestGlobals.Entity, processor : productsMock.Object );
 
       sut.AddCommandConfigs(new List<ICommandConfig> { commandConfig });
 
-      var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Name = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
-      var sutResult = sut.ProcessCommand(commandDto);
+      var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Command = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
+      sut.ProcessCommands( new List<CommandDto> { commandDto });
 
       productsMock.Verify(v => v.CreateProduct(guid, name), Times.Once);
     }
@@ -284,9 +274,9 @@ namespace SoftwareManagementCoreTests.Products
     {
       T sut = new CommandBuilder<T>().Build(ProductsMock.Object);
 
-      this.ProductMock.Setup(s => s.Guid).Returns(sut.EntityGuid);
+      this.ProductMock.Setup(s => s.Guid).Returns(sut.EntityRootGuid);
 
-      ProductsMock.Setup(s => s.GetProduct(sut.EntityGuid)).Returns(ProductMock.Object);
+      ProductsMock.Setup(s => s.GetProduct(sut.EntityRootGuid)).Returns(ProductMock.Object);
 
       return sut;
     }
@@ -299,7 +289,7 @@ namespace SoftwareManagementCoreTests.Products
     public Mock<IProductFeature> ProductFeatureMock { get; set; }
     public Mock<IProductService> ProductsMock = new Mock<IProductService>();
 
-    public ICommand Build()
+    public T Build()
     {
       var sut = new CommandBuilder<T>().Build(ProductsMock.Object);
 

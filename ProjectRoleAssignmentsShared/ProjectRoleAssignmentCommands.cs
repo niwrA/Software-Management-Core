@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ProjectRoleAssignmentsShared
 {
-  public abstract class ProjectRoleAssignmentCommand : CommandBase
+  public abstract class ProjectRoleAssignmentCommand : CommandBase, ICommand
   {
     public ProjectRoleAssignmentCommand() : base() { }
     public ProjectRoleAssignmentCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute() { }
   }
 
   public class CreateProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand

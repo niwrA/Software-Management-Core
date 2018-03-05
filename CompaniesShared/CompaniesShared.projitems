@@ -15,6 +15,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)EnvironmentCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AccountCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HardwareCommands.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProductInstallationCommands.cs" />
   </ItemGroup>
 </Project>

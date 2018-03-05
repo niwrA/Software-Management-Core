@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommandsShared;
+using niwrA.CommandManager;
 
 namespace ProductsShared
 {
-  public abstract class ProductCommand : CommandBase
+  public abstract class ProductCommand : CommandBase, ICommand
   {
     public ProductCommand() : base() { }
     public ProductCommand(ICommandStateRepository repo) : base(repo) { }
+    public virtual void Execute() { }
   }
 
   public class CreateProductCommand : ProductCommand
@@ -29,7 +30,7 @@ namespace ProductsShared
     public string Name { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.Rename(this.Name, this.OriginalName);
       base.Execute();
     }
@@ -40,7 +41,7 @@ namespace ProductsShared
     public string Description { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.ChangeDescription(this.Description);
       base.Execute();
     }
@@ -51,7 +52,7 @@ namespace ProductsShared
     public string BusinessCase { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.ChangeBusinessCase(this.BusinessCase);
       base.Execute();
     }
@@ -62,61 +63,59 @@ namespace ProductsShared
     public string Name { get; set; }
     public override void Execute()
     {
-      ((IProductService)base.CommandProcessor).DeleteProduct(this.EntityGuid);
+      ((IProductService)base.CommandProcessor).DeleteProduct(this.EntityRootGuid);
       base.Execute();
     }
   }
 
-  public class AddIssueToProductCommand : ProductCommand
+  public class AddProductIssueCommand : ProductCommand
   {
     public string Name { get; set; }
-    public Guid ProductIssueGuid { get; set; }
     public Guid FirstVersionGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.AddIssue(ProductIssueGuid, Name, FirstVersionGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      product.AddIssue(EntityGuid, Name, FirstVersionGuid);
       base.Execute();
     }
 
   }
 
-  public class AddVersionToProductCommand : ProductCommand
+  public class AddProductVersionCommand : ProductCommand
   {
     public string Name { get; set; }
     public int Major { get; set; }
     public int Minor { get; set; }
     public int Revision { get; set; }
     public int Build { get; set; }
-    public Guid ProductVersionGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.AddVersion(ProductVersionGuid, Name, Major, Minor, Revision, Build);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      product.AddVersion(this.EntityGuid, Name, Major, Minor, Revision, Build);
       base.Execute();
     }
   }
 
-  public class AddFeatureToProductCommand : ProductCommand
+  public class AddProductFeatureCommand : ProductCommand
   {
     public string Name { get; set; }
     public Guid ProductFeatureGuid { get; set; }
     public Guid FirstVersionGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.AddFeature(ProductFeatureGuid, Name, FirstVersionGuid);
       base.Execute();
     }
   }
-  public class RequestFeatureForProductCommand : ProductCommand
+  public class RequestProductFeatureCommand : ProductCommand
   {
     public string Name { get; set; }
     public Guid ProductFeatureGuid { get; set; }
     public Guid RequestedForVersionGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.RequestFeature(ProductFeatureGuid, Name, RequestedForVersionGuid);
       base.Execute();
     }
@@ -127,10 +126,9 @@ namespace ProductsShared
   {
     public string OriginalName { get; set; }
     public string Name { get; set; }
-    public Guid ProductGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       IProductIssue issue = product.GetIssue(this.EntityGuid);
       issue.Rename(this.Name, this.OriginalName);
       base.Execute();
@@ -139,64 +137,60 @@ namespace ProductsShared
   public class ChangeDescriptionOfProductIssueCommand : ProductCommand
   {
     public string Description { get; set; }
-    public Guid ProductGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       IProductIssue issue = product.GetIssue(this.EntityGuid);
       issue.ChangeDescription(this.Description);
       base.Execute();
     }
   }
-  public class RemoveFeatureFromProductCommand : ProductCommand
+  public class RemoveProductFeatureCommand : ProductCommand
   {
     public Guid ProductFeatureGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.DeleteFeature(ProductFeatureGuid);
       base.Execute();
     }
   }
-  public class RemoveVersionFromProductCommand : ProductCommand
+  public class RemoveProductVersionCommand : ProductCommand
   {
     public Guid ProductVersionGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.DeleteVersion(ProductVersionGuid);
       base.Execute();
     }
   }
-  public class RemoveIssueFromProductCommand : ProductCommand
+  public class RemoveProductIssueCommand : ProductCommand
   {
-    public Guid ProductIssueGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.DeleteIssue(ProductIssueGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      product.DeleteIssue(EntityGuid);
       base.Execute();
     }
   }
-  public class AddConfigOptionToProductCommand : ProductCommand
+  public class AddProductConfigOptionCommand : ProductCommand
   {
     public string Name { get; set; }
-    public Guid ConfigGuid { get; set; }
     public Guid? FeatureGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.AddConfigOption(this.FeatureGuid, ConfigGuid, Name, null);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      product.AddConfigOption(this.FeatureGuid, EntityGuid, Name, null);
       base.Execute();
     }
   }
-  public class RemoveConfigOptionFromProductCommand : ProductCommand
+  public class RemoveProductConfigOptionCommand : ProductCommand
   {
-    public Guid ConfigGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityGuid);
-      product.DeleteConfigOption(ConfigGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      product.DeleteConfigOption(EntityGuid);
       base.Execute();
     }
   }
