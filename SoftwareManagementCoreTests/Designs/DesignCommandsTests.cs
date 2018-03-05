@@ -82,10 +82,10 @@ namespace SoftwareManagementCoreTests.Designs
       var commandRepoMock = new Mock<ICommandStateRepository>();
       var designsMock = new Mock<IDesignService>();
       var commandState = new Fakes.CommandState();
-      commandRepoMock.Setup(t => t.CreateCommandState(Guid.NewGuid())).Returns(commandState);
+      commandRepoMock.Setup(t => t.CreateCommandState(It.IsAny<Guid>())).Returns(commandState);
 
       var guid = Guid.NewGuid();
-      var name = "New Project";
+      var name = "New Design";
 
       var sut = new CommandManager(commandRepoMock.Object, new DateTimeProvider());
       var commandConfig = new CommandConfig(assembly: TestGlobals.Assembly, nameSpace: TestGlobals.Namespace, commandName: CommandTypes.Create.ToString(), entity: TestGlobals.Entity, processor: designsMock.Object);

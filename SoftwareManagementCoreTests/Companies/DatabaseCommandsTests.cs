@@ -32,10 +32,9 @@ namespace SoftwareManagementCoreTests.Companies
 
       sut.DatabaseName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.DatabaseGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddDatabase(sut.DatabaseGuid, sut.DatabaseName), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddDatabase(sut.EntityGuid, sut.DatabaseName), Times.Once);
     }
     [Fact(DisplayName = "AddDatabaseToCompanyEnvironmentCommand")]
     public void RemoveDatabaseFromCompanyEnvironmentCommand()
@@ -44,10 +43,9 @@ namespace SoftwareManagementCoreTests.Companies
       var sut = sutBuilder.Build() as RemoveDatabaseFromCompanyEnvironmentCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.DatabaseGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveDatabase(sut.DatabaseGuid), Times.Once);
+      sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveDatabase(sut.EntityGuid), Times.Once);
     }
 
   }

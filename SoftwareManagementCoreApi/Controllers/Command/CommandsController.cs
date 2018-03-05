@@ -179,7 +179,7 @@ namespace SoftwareManagementCoreWeb.Controllers
         _commandManager.ProcessCommands(commands);
 
         PersistRepositories();
-
+        result.Count = commands.Count();
         result.Success = true;
       }
       catch (Exception ex)

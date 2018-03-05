@@ -83,16 +83,11 @@ namespace SoftwareManagementCoreTests.Products
     public void RemoveIssueFromProductCommand()
     {
       var sutBuilder = new ProductCommandBuilder<RemoveIssueFromProductCommand>();
-      var sut = sutBuilder.Build() as RemoveIssueFromProductCommand;
+      var sut = sutBuilder.Build();
 
-      var guid = Guid.NewGuid();
-      var issueGuid = Guid.NewGuid();
-
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ProductIssueGuid = issueGuid;
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.DeleteIssue(issueGuid));
+      sutBuilder.ProductMock.Verify(s => s.DeleteIssue(sut.EntityGuid));
     }
 
     [Fact(DisplayName = "ChangeDescriptionCommand")]
@@ -154,12 +149,11 @@ namespace SoftwareManagementCoreTests.Products
       var sutBuilder = new ProductCommandBuilder<AddIssueToProductCommand>();
       var sut = sutBuilder.Build() as AddIssueToProductCommand;
 
-      sut.ProductIssueGuid = Guid.NewGuid();
       sut.FirstVersionGuid = Guid.NewGuid();
       sut.Name = "New name";
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.AddIssue(sut.ProductIssueGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.AddIssue(sut.EntityGuid, sut.Name, sut.FirstVersionGuid), Times.Once);
     }
     [Fact(DisplayName = "AddConfigToProductCommand")]
     public void AddConfigToProductCommand()
@@ -167,13 +161,11 @@ namespace SoftwareManagementCoreTests.Products
       var sutBuilder = new ProductCommandBuilder<AddConfigOptionToProductCommand>();
       var sut = sutBuilder.Build() as AddConfigOptionToProductCommand;
 
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ConfigGuid = Guid.NewGuid();
       sut.FeatureGuid = Guid.NewGuid();
       sut.Name = "New name";
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.ConfigGuid, sut.Name, null), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.AddConfigOption(sut.FeatureGuid, sut.EntityGuid, sut.Name, null), Times.Once);
     }
     [Fact(DisplayName = "RemoveConfigFromFeatureCommand")]
     public void RemoveConfigFromFeatureCommand()
@@ -181,11 +173,9 @@ namespace SoftwareManagementCoreTests.Products
       var sutBuilder = new ProductCommandBuilder<RemoveConfigOptionFromProductCommand>();
       var sut = sutBuilder.Build() as RemoveConfigOptionFromProductCommand;
 
-      sut.EntityGuid = sutBuilder.ProductMock.Object.Guid;
-      sut.ConfigGuid = Guid.NewGuid();
       sut.Execute();
 
-      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.ConfigGuid), Times.Once);
+      sutBuilder.ProductMock.Verify(s => s.DeleteConfigOption(sut.EntityGuid), Times.Once);
     }
     [Fact]
     public void RequestFeatureForProductCommand()
@@ -256,10 +246,10 @@ namespace SoftwareManagementCoreTests.Products
     {
       var commandRepoMock = new Mock<ICommandStateRepository>();
       var productsMock = new Mock<IProductService>();
-      var commandState = new Mock<ICommandState>();
+      var commandState = new Fakes.CommandState();
       var guid = Guid.NewGuid();
 
-      commandRepoMock.Setup(t => t.CreateCommandState(It.IsAny<Guid>())).Returns(commandState.Object);
+      commandRepoMock.Setup(t => t.CreateCommandState(It.IsAny<Guid>())).Returns(commandState);
 
       var name = "New Project";
 

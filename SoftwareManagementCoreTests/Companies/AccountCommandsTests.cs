@@ -32,7 +32,6 @@ namespace SoftwareManagementCoreTests.Companies
 
       sut.AccountName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.CompanyGuid = Guid.NewGuid();
       sut.Execute();
 
       sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddAccount(sut.EntityGuid, sut.AccountName), Times.Once);
@@ -44,7 +43,6 @@ namespace SoftwareManagementCoreTests.Companies
       var sut = sutBuilder.Build() as RemoveAccountFromCompanyEnvironmentCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.CompanyGuid = Guid.NewGuid();
       sut.Execute();
 
       sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveAccount(sut.EntityGuid), Times.Once);

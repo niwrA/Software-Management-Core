@@ -50,7 +50,7 @@ namespace SoftwareManagementCoreApiTests
       var projectCommandDto = new Fakes.RenameProjectCommandDto();
       var productCommandDto = new Fakes.RenameProductCommandDto();
 
-      commandRepo.Setup(s => s.CreateCommandState(Guid.NewGuid())).Returns(new Fakes.CommandState());
+      commandRepo.Setup(s => s.CreateCommandState(It.IsAny<Guid>())).Returns(new Fakes.CommandState());
 
       var projectCommand = new Fakes.RenameProjectCommand(projectCommandDto, commandRepo.Object);
       var productCommand = new Fakes.RenameProductCommand(productCommandDto, commandRepo.Object);
