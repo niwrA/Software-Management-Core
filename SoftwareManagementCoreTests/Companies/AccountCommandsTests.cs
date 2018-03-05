@@ -27,8 +27,8 @@ namespace SoftwareManagementCoreTests.Companies
     [Fact(DisplayName = "AddAccountToCompanyEnvironmentCommand")]
     public void AddAccountToCompanyEnvironmentCommand()
     {
-      var sutBuilder = new AccountCommandBuilder<CreateCompanyEnvironmentAccountCommand>();
-      var sut = sutBuilder.Build() as CreateCompanyEnvironmentAccountCommand;
+      var sutBuilder = new AccountCommandBuilder<AddAccountToCompanyEnvironmentAccountCommand>();
+      var sut = sutBuilder.Build() as AddAccountToCompanyEnvironmentAccountCommand;
 
       sut.AccountName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();

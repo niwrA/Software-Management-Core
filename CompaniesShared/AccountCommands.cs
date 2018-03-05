@@ -5,45 +5,45 @@ using System.Text;
 
 namespace CompaniesShared
 {
-  public abstract class AccountCommand : EnvironmentCommand
-  {
-    public AccountCommand() : base() { }
-    public AccountCommand(ICommandStateRepository repo) : base(repo) { }
-    public Guid CompanyGuid { get; set; }
-  }
-  public class CreateCompanyEnvironmentAccountCommand : AccountCommand
-  {
-    public string AccountName { get; set; }
-    public override void Execute()
+    public abstract class AccountCommand : EnvironmentCommand
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.CompanyGuid);
-      var environment = company.GetEnvironment(this.EnvironmentGuid);
-      environment.AddAccount(this.EntityGuid, AccountName);
+        public AccountCommand() : base() { }
+        public AccountCommand(ICommandStateRepository repo) : base(repo) { }
+        public Guid EnvironmentGuid { get; set; }
+    }
+    public class AddAccountToCompanyEnvironmentAccountCommand : AccountCommand
+    {
+        public string AccountName { get; set; }
+        public override void Execute()
+        {
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+            var environment = company.GetEnvironment(this.EnvironmentGuid);
+            environment.AddAccount(this.EntityGuid, AccountName);
 
-      base.Execute();
+            base.Execute();
+        }
     }
-  }
-  public class RenameCompanyEnvironmentAccountCommand : AccountCommand
-  {
-    public string OriginalName { get; set; }
-    public string Name { get; set; }
-    public override void Execute()
+    public class RenameCompanyEnvironmentAccountCommand : AccountCommand
     {
-      var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.CompanyGuid);
-      var environment = root.GetEnvironment(EnvironmentGuid);
-      var account = environment.GetAccount(this.EntityGuid);
-      account.Rename(Name, this.OriginalName);
-      base.Execute();
+        public string OriginalName { get; set; }
+        public string Name { get; set; }
+        public override void Execute()
+        {
+            var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+            var environment = root.GetEnvironment(EnvironmentGuid);
+            var account = environment.GetAccount(this.EntityGuid);
+            account.Rename(Name, this.OriginalName);
+            base.Execute();
+        }
     }
-  }
-  public class RemoveAccountFromCompanyEnvironmentCommand : AccountCommand
-  {
-    public override void Execute()
+    public class RemoveAccountFromCompanyEnvironmentCommand : AccountCommand
     {
-      var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.CompanyGuid);
-      var environment = company.GetEnvironment(this.EnvironmentGuid);
-      environment.RemoveAccount(this.EntityGuid);
-      base.Execute();
+        public override void Execute()
+        {
+            var company = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
+            var environment = company.GetEnvironment(this.EnvironmentGuid);
+            environment.RemoveAccount(this.EntityGuid);
+            base.Execute();
+        }
     }
-  }
 }

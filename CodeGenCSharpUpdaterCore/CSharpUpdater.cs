@@ -16,7 +16,7 @@ namespace CodeGen
     {
         private CodeGenSettings _settings;
         // todo: load settings
-        public void loadSettings(CodeGenSettings settings)
+        public void LoadSettings(CodeGenSettings settings)
         {
             _settings = settings;
         }
@@ -305,9 +305,8 @@ namespace CodeGen
                     {
                         // Open the solution within the workspace.
                         var isStateClass = className.EndsWith("State") || className.EndsWith("Dto");
-                        if (updateAction is UpdateProperty)
+                        if (updateAction is UpdateProperty updateProperty)
                         {
-                            var updateProperty = (UpdateProperty)updateAction;
                             updatedClass = AddPropertyToClass(updatedClass, updateProperty.CustomProperty.Name, updateProperty.CustomProperty.TypeName, isStateClass);
                         }
                         else if (updateAction is UpdateMethod && !isStateClass)
