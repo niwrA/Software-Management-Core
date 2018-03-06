@@ -54,8 +54,8 @@ namespace CompaniesShared
       {
         var root = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
         var environment = root.GetEnvironment(EnvironmentGuid);
-        var hardware = environment.GetHardware(this.HardwareGuid);
-        hardware.ChangeInternalIpAddress(IpAddress, this.OriginalIpAddress);
+        var hardware = environment.GetHardware(this.EntityGuid);
+        hardware.ChangeIpAddress(IpAddress, this.OriginalIpAddress);
         base.Execute();
       }
     }

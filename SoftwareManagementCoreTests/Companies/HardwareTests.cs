@@ -34,17 +34,17 @@ namespace SoftwareManagementCoreTests.Companies
 
       stateMock.VerifySet(t => t.IpAddress= "new");
     }
-    [Fact(DisplayName = "ChangeInternalIpAddress")]
-    public void CanChangeInternalIpAddressForHardware()
-    {
-      var stateMock = new Mock<ICompanyEnvironmentHardwareState>();
-      var sut = new CompanyEnvironmentHardware(stateMock.Object);
+    //[Fact(DisplayName = "ChangeInternalIpAddress")]
+    //public void CanChangeInternalIpAddressForHardware()
+    //{
+    //  var stateMock = new Mock<ICompanyEnvironmentHardwareState>();
+    //  var sut = new CompanyEnvironmentHardware(stateMock.Object);
 
-      stateMock.Setup(s => s.InternalIpAddress).Returns("old");
+    //  stateMock.Setup(s => s.InternalIpAddress).Returns("old");
 
-      sut.ChangeInternalIpAddress("new", "old");
+    //  sut.ChangeInternalIpAddress("new", "old");
 
-      stateMock.VerifySet(t => t.InternalIpAddress = "new");
-    }
+    //  stateMock.VerifySet(t => t.InternalIpAddress = "new");
+    //}
   }
 }
