@@ -19,7 +19,6 @@ namespace CompaniesShared
       ((ICompanyService)base.CommandProcessor).DeleteCompany(this.EntityGuid);
       base.Execute();
     }
-
   }
 
   public class CreateCompanyCommand : CompanyCommand
@@ -38,7 +37,7 @@ namespace CompaniesShared
     public string Name { get; set; }
     public override void Execute()
     {
-      var product = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var product = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
       product.Rename(this.Name, this.OriginalName);
       base.Execute();
     }
@@ -49,7 +48,7 @@ namespace CompaniesShared
     public string Code { get; set; }
     public override void Execute()
     {
-      var product = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var product = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
       product.ChangeCode(this.Code, this.OriginalCode);
       base.Execute();
     }
@@ -60,7 +59,7 @@ namespace CompaniesShared
     public string ExternalId { get; set; }
     public override void Execute()
     {
-      var product = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityGuid);
+      var product = ((ICompanyService)base.CommandProcessor).GetCompany(this.EntityRootGuid);
       product.ChangeExternalId(this.ExternalId, this.OriginalExternalId);
       base.Execute();
     }
