@@ -36,6 +36,7 @@ namespace ProductsShared
   {
     string Description { get; set; }
     Guid FirstVersionGuid { get; set; }
+    Guid? ResolvedVersionGuid { get; set; }
     Guid ProductGuid { get; set; }
   }
   public interface IProductConfigOptionState : INamedEntityState
@@ -324,6 +325,11 @@ namespace ProductsShared
     {
       _state.Description = description;
     }
+    public void Resolve(Guid resolvedVersionGuid)
+    {
+      _state.ResolvedVersionGuid = resolvedVersionGuid;
+    }
+
   }
   public class ProductConfigOption : NamedEntity, IProductConfigOption
   {
