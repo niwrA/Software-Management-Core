@@ -48,5 +48,16 @@ namespace ProductsShared
       base.Execute();
     }
   }
+  public class ResolveProductIssueCommand : ProductCommand
+  {
+    public Guid ResolvedVersionGuid { get; set; }
+    public override void Execute()
+    {
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
+      IProductIssue issue = product.GetIssue(this.EntityGuid);
+      issue.Resolve(this.ResolvedVersionGuid);
+      base.Execute();
+    }
+  }
 
 }

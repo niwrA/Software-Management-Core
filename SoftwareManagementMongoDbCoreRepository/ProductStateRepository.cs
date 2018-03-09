@@ -32,6 +32,7 @@ namespace SoftwareManagementMongoDbCoreRepository
     public Guid ProductGuid { get; set; }
     public string Description { get; set; }
     public Guid FirstVersionGuid { get; set; }
+    public Guid? ResolvedVersionGuid { get; set; }
   }
 
   [BsonIgnoreExtraElements]

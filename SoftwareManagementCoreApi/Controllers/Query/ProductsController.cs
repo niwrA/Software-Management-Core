@@ -71,6 +71,7 @@ namespace SoftwareManagementCoreApi.Controllers
     public string Description { get { return _state.Description; } }
     public Guid ProductGuid { get { return _state.ProductGuid; } }
     public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+    public Guid? ResolvedVersionGuid { get { return _state.ResolvedVersionGuid; } }
   }
 
 

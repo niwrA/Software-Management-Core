@@ -207,6 +207,17 @@ namespace SoftwareManagementCoreTests
 
       repoMock.Verify(s => s.DeleteProductIssueState(productGuid, guid), Times.Once);
     }
+    [Fact(DisplayName = "Resolve_ImplementsState")]
+    public void ResolveProductIssueImplementsState()
+    {
+      var productIssueState = new Mock<IProductIssueState>();
+      var sut = new ProductIssue(productIssueState.Object);
+      var guid = Guid.NewGuid();
+
+      sut.Resolve(guid);
+
+      productIssueState.VerifySet(v => v.ResolvedVersionGuid = guid);
+    }
 
   }
 }

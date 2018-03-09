@@ -103,7 +103,9 @@ namespace ProductsShared
   {
     void Rename(string name, string originalName);
     void ChangeDescription(string description);
+    void Resolve(Guid resolvedVersionGuid);
     Guid FirstVersionGuid { get; }
+    Guid? ResolvedVersionGuid { get; }
   }
   public interface IProduct
   {
@@ -312,6 +314,7 @@ namespace ProductsShared
       _state = state;
     }
     public Guid FirstVersionGuid { get { return _state.FirstVersionGuid; } }
+    public Guid? ResolvedVersionGuid { get { return _state.ResolvedVersionGuid; } }
 
     public void Rename(string name, string originalName)
     {
