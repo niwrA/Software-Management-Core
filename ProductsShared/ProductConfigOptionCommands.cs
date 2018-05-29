@@ -6,7 +6,6 @@ namespace ProductsShared
 {
   public abstract class ProductConfigOptionCommand : ProductCommand
   {
-    public Guid ProductGuid { get; set; }
   }
   public class RenameProductConfigOptionCommand : ProductConfigOptionCommand
   {
@@ -14,7 +13,7 @@ namespace ProductsShared
     public string Name { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       IProductConfigOption configOption = product.GetConfigOption(this.EntityGuid);
       configOption.Rename(this.Name, this.OriginalName);
       base.Execute();
@@ -26,7 +25,7 @@ namespace ProductsShared
     public string DefaultValue { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       IProductConfigOption configOption = product.GetConfigOption(this.EntityGuid);
       configOption.ChangeDefaultValue(this.DefaultValue, this.OriginalDefaultValue);
       base.Execute();
@@ -38,7 +37,7 @@ namespace ProductsShared
     public string Description { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       IProductConfigOption configOption = product.GetConfigOption(this.EntityGuid);
       configOption.ChangeDescription(this.Description);
       base.Execute();
@@ -51,7 +50,7 @@ namespace ProductsShared
     public Guid? FeatureGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.AddConfigOption(this.FeatureGuid, this.EntityGuid, Name, this.ParentGuid);
       base.Execute();
     }
@@ -61,7 +60,7 @@ namespace ProductsShared
     public Guid ChildGuid { get; set; }
     public override void Execute()
     {
-      var product = ((IProductService)base.CommandProcessor).GetProduct(this.ProductGuid);
+      var product = ((IProductService)base.CommandProcessor).GetProduct(this.EntityRootGuid);
       product.DeleteConfigOption(ChildGuid);
       base.Execute();
     }
