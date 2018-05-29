@@ -84,7 +84,7 @@ namespace SoftwareManagementCoreTests.Products
       var sut = sutBuilder.Build();
 
       sut.EntityGuid = Guid.NewGuid();
-      sut.ProductGuid = sutBuilder.ProductMock.Object.Guid;
+      sut.EntityRootGuid = sutBuilder.ProductMock.Object.Guid;
       sut.ParentGuid = Guid.NewGuid();
       sut.FeatureGuid = Guid.NewGuid();
       sut.Name = "New name";
@@ -99,7 +99,7 @@ namespace SoftwareManagementCoreTests.Products
       var sut = sutBuilder.Build();
 
       sut.EntityGuid = Guid.NewGuid();
-      sut.ProductGuid = sutBuilder.ProductMock.Object.Guid;
+      sut.EntityRootGuid = sutBuilder.ProductMock.Object.Guid;
       sut.ChildGuid = Guid.NewGuid();
       sut.Execute();
 
