@@ -23,13 +23,13 @@ namespace SoftwareManagementCoreApi
         WebHost.CreateDefaultBuilder(args)
             .UseStartup<Startup>()
             .UseUrls("http://0.0.0.0:50274")
-            .UseIISIntegration()
-            .ConfigureAppConfiguration((hostContext, config) =>
-            {
-              // delete all default configuration providers
-              config.Sources.Clear();
-              config.AddJsonFile("myconfig.json", optional: true);
-            })
+            //.UseIISIntegration()
+            //.ConfigureAppConfiguration((hostContext, config) =>
+            //{
+            //  // delete all default configuration providers
+            //  config.Sources.Clear();
+            //  config.AddJsonFile("myconfig.json", optional: true);
+            //})
             .Build();
   }
 }

@@ -61,10 +61,10 @@ namespace SoftwareManagementCoreApi
             corsBuilder.AllowAnyOrigin(); // For anyone access.
                                           //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
             corsBuilder.AllowCredentials();
-            services.Configure<IISOptions>(options =>
-            {
-                options.AutomaticAuthentication = true;
-            });
+            //services.Configure<IISOptions>(options =>
+            //{
+            //    options.AutomaticAuthentication = true;
+            //});
 
             services.AddCors(options =>
             {
@@ -161,7 +161,10 @@ namespace SoftwareManagementCoreApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             app.UseCors("SiteCorsPolicy");
             app.UseStaticFiles();
             app.UseMvc();

@@ -3,6 +3,7 @@ using DesignsShared;
 using SoftwareManagementCoreTests.Commands;
 using System;
 using Xunit;
+using niwrA.CommandManager;
 
 namespace SoftwareManagementCoreTests.PropertyElements
 {
@@ -57,20 +58,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
             var designServiceMock = new Mock<IDesignService>();
             var sut = new CommandBuilder<RenamePropertyElementCommand>().Build(designServiceMock.Object);
 
-            sut.EpicElementGuid = Guid.NewGuid();
-
-            var designMock = new Mock<IDesign>();
-            designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
-
-            var epicMock = new Mock<IEpicElement>();
-            designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
-
-            var entityMock = new Mock<IEntityElement>();
-            epicMock.Setup(s => s.GetEntityElement(sut.EntityElementGuid)).Returns(entityMock.Object);
-
-            var propertyMock = new Mock<IPropertyElement>();
-            entityMock.Setup(s => s.GetPropertyElement(sut.EntityGuid)).Returns(propertyMock.Object);
-
+            Mock<IPropertyElement> propertyMock = SetupPropertyMock(designServiceMock, sut);
             sut.Name = "New name";
             //            sut.OriginalName = "";
             sut.Execute();
@@ -85,6 +73,47 @@ namespace SoftwareManagementCoreTests.PropertyElements
             var designServiceMock = new Mock<IDesignService>();
             var sut = new CommandBuilder<ChangeDescriptionOfPropertyElementCommand>().Build(designServiceMock.Object) as ChangeDescriptionOfPropertyElementCommand;
 
+            Mock<IPropertyElement> propertyMock = SetupPropertyMock(designServiceMock, sut);
+
+            sut.Description = "New description";
+            sut.Execute();
+
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
+            propertyMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
+        }
+
+        [Fact(DisplayName = "ChangeDataTypeCommand")]
+        public void ChangeDataTypeCommand()
+        {
+            var designServiceMock = new Mock<IDesignService>();
+            var sut = new CommandBuilder<ChangeDataTypeOfPropertyElementCommand>().Build(designServiceMock.Object);
+
+            Mock<IPropertyElement> propertyMock = SetupPropertyMock(designServiceMock, sut);
+
+            sut.DataType = "New type";
+            sut.OriginalDataType = "Old type";
+            sut.Execute();
+
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
+            propertyMock.Verify(s => s.ChangeDataType(sut.DataType, sut.OriginalDataType), Times.Once);
+        }
+        [Fact(DisplayName = "ChangeDataTypeCommand")]
+        public void ChangeIsStateCommand()
+        {
+            var designServiceMock = new Mock<IDesignService>();
+            var sut = new CommandBuilder<ChangeIsStatePropertyElementCommand>().Build(designServiceMock.Object);
+
+            Mock<IPropertyElement> propertyMock = SetupPropertyMock(designServiceMock, sut);
+
+            sut.IsState = true;
+            sut.Execute();
+
+            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
+            propertyMock.Verify(s => s.ChangeIsState(sut.IsState), Times.Once);
+        }
+
+        private static Mock<IPropertyElement> SetupPropertyMock(Mock<IDesignService> designServiceMock, PropertyElementCommand sut)
+        {
             sut.EpicElementGuid = Guid.NewGuid();
 
             var designMock = new Mock<IDesign>();
@@ -98,42 +127,7 @@ namespace SoftwareManagementCoreTests.PropertyElements
 
             var propertyMock = new Mock<IPropertyElement>();
             entityMock.Setup(s => s.GetPropertyElement(sut.EntityGuid)).Returns(propertyMock.Object);
-
-            sut.Description = "New description";
-            sut.Execute();
-
-            designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
-            propertyMock.Verify(s => s.ChangeDescription(sut.Description), Times.Once);
+            return propertyMock;
         }
-
-    [Fact(DisplayName = "ChangeDataTypeCommand")]
-    public void ChangeDataTypeCommand()
-    {
-      var designServiceMock = new Mock<IDesignService>();
-      var sut = new CommandBuilder<ChangeDataTypeOfPropertyElementCommand>().Build(designServiceMock.Object);
-
-      sut.EpicElementGuid = Guid.NewGuid();
-
-      var designMock = new Mock<IDesign>();
-      designServiceMock.Setup(v => v.GetDesign(sut.EntityRootGuid)).Returns(designMock.Object);
-
-      var epicMock = new Mock<IEpicElement>();
-      designMock.Setup(s => s.GetEpicElement(sut.EpicElementGuid)).Returns(epicMock.Object);
-
-      var entityMock = new Mock<IEntityElement>();
-      epicMock.Setup(s => s.GetEntityElement(sut.EntityElementGuid)).Returns(entityMock.Object);
-
-      var propertyMock = new Mock<IPropertyElement>();
-      entityMock.Setup(s => s.GetPropertyElement(sut.EntityGuid)).Returns(propertyMock.Object);
-
-      sut.DataType = "New type";
-      sut.OriginalDataType = "Old type";
-      sut.Execute();
-
-      designServiceMock.Verify(v => v.GetDesign(sut.EntityRootGuid), Times.Once);
-      propertyMock.Verify(s => s.ChangeDataType(sut.DataType, sut.OriginalDataType), Times.Once);
     }
-
-
-  }
 }
