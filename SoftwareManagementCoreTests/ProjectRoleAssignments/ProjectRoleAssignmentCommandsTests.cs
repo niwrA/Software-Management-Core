@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.ProjectRoleAssignments
 {
@@ -79,7 +80,7 @@ namespace SoftwareManagementCoreTests.ProjectRoleAssignments
 
             var sut = new CommandBuilder<T>().Build(projectroleassignmentsMock.Object);
 
-            projectroleassignmentsMock.Setup(s => s.GetProjectRoleAssignment(sut.EntityGuid)).Returns(projectroleassignmentMock.Object);
+            projectroleassignmentsMock.Setup(s => s.GetProjectRoleAssignment(Guid.Parse(sut.EntityGuid))).Returns(projectroleassignmentMock.Object);
 
             return sut;
         }

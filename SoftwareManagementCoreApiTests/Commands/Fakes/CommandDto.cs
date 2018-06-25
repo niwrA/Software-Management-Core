@@ -12,8 +12,8 @@ namespace SoftwareManagementCoreApiTests.Fakes
         {
             this.CreatedOn = DateTime.Now;
             this.Entity = "Project";
-            this.EntityGuid = Guid.NewGuid();
-            this.Guid = Guid.NewGuid();
+            this.EntityGuid = System.Guid.NewGuid().ToString();
+            this.Guid = System.Guid.NewGuid();
             this.Command = "Rename";
             this.ParametersJson = @"{OriginalName:'Old',Name:'New'}";
         }
@@ -24,8 +24,8 @@ namespace SoftwareManagementCoreApiTests.Fakes
         {
             this.CreatedOn = DateTime.Now;
             this.Entity = "Product";
-            this.EntityGuid = Guid.NewGuid();
-            this.Guid = Guid.NewGuid();
+            this.EntityGuid = System.Guid.NewGuid().ToString();
+            this.Guid = System.Guid.NewGuid();
             this.Command = "Rename";
             this.ParametersJson = @"{OriginalName:'Old',Name:'New'}";
         }

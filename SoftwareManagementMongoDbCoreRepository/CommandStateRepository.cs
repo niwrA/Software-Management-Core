@@ -17,129 +17,129 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementMongoDbCoreRepository
 {
 
 
-  [BsonIgnoreExtraElements]
-  public class TimeStampedEntityState : ITimeStampedEntityState
-  {
-    [BsonId(IdGenerator = typeof(GuidGenerator))]
-    public Guid Guid { get; set; }
-    public DateTime CreatedOn { get; set; }
-    public DateTime UpdatedOn { get; set; }
-  }
-
-  [BsonIgnoreExtraElements]
-  public class NamedEntityState : TimeStampedEntityState, ITimeStampedEntityState
-  {
-    public string Name { get; set; }
-  }
-
-  [BsonIgnoreExtraElements]
-  public class CommandState : TimeStampedEntityState, ICommandState
-  {
-    public Guid EntityGuid { get; set; }
-    public string Entity { get; set; }
-    public Guid EntityRootGuid { get; set; }
-    public string EntityRoot { get; set; }
-    public string Command { get; set; }
-    public string CommandVersion { get; set; }
-    public string ParametersJson { get; set; }
-    public DateTime? ExecutedOn { get; set; }
-    public DateTime? ReceivedOn { get; set; }
-    public string UserName { get; set; }
-  }
-  public class CommandStateRepository : ICommandStateRepository
-  {
-    private const string CommandStatesCollection = "CommandStates";
-
-    private IMongoClient _client;
-    private IMongoDatabase _database;
-
-    private Dictionary<Guid, ICommandState> _commandStates { get; set; }
-
-    public CommandStateRepository(IMongoClient client)
+    [BsonIgnoreExtraElements]
+    public class TimeStampedEntityState : ITimeStampedEntityState
     {
-      _client = client;
-      _database = _client.GetDatabase("SoftwareManagement");
-
-      _commandStates = new Dictionary<Guid, ICommandState>();
+        [BsonId(IdGenerator = typeof(GuidGenerator))]
+        public Guid Guid { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
     }
 
-
-    public ICommandState CreateCommandState(Guid guid)
+    [BsonIgnoreExtraElements]
+    public class NamedEntityState : TimeStampedEntityState, ITimeStampedEntityState
     {
-      var state = new CommandState()
-      {
-        Guid = guid
-      };
-      _commandStates.Add(state.Guid, state);
-      return state;
+        public string Name { get; set; }
     }
 
-    // for consideration - include some part of this in both the link and company entity read projections?
-    public IEnumerable<ICommandState> GetCommandStates(Guid entityGuid)
+    [BsonIgnoreExtraElements]
+    public class CommandState : TimeStampedEntityState, ICommandState
     {
-      var states = new List<ICommandState>();
-      var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
-      var filter = Builders<CommandState>.Filter.Eq("EntityGuid", entityGuid);
-      var results = collection.Find(filter);
-      if (results?.Count() > 0)
-      {
-        foreach (var result in results.ToList())
+        public string EntityGuid { get; set; }
+        public string Entity { get; set; }
+        public string EntityRootGuid { get; set; }
+        public string EntityRoot { get; set; }
+        public string Command { get; set; }
+        public string CommandVersion { get; set; }
+        public string ParametersJson { get; set; }
+        public DateTime? ExecutedOn { get; set; }
+        public DateTime? ReceivedOn { get; set; }
+        public string UserName { get; set; }
+        public string TenantId { get; set; }
+    }
+    public class CommandStateRepository : ICommandStateRepository
+    {
+        private const string CommandStatesCollection = "CommandStates";
+
+        private IMongoClient _client;
+        private IMongoDatabase _database;
+
+        private Dictionary<Guid, ICommandState> _commandStates { get; set; }
+
+        public CommandStateRepository(IMongoClient client)
         {
-          states.Add(result);
+            _client = client;
+            _database = _client.GetDatabase("SoftwareManagement");
+
+            _commandStates = new Dictionary<Guid, ICommandState>();
         }
-      }
-
-      return states;
-    }
 
 
-    // todo: do we maybe want to store all link data so that we can get all that by companyGuid at once?
-    // if so we would need to update both here and in links for linkupates
-
-    public void PersistChanges()
-    {
-      PersistCommands();
-    }
-
-    private void PersistCommands()
-    {
-      if (_commandStates.Any())
-      {
-        var commandCollection = _database.GetCollection<CommandState>(CommandStatesCollection);
-        var commands = _commandStates.Values.Select(s => s as CommandState).ToList();
-        commandCollection.InsertMany(commands);
-      }
-    }
-
-    public IEnumerable<ICommandState> GetUnprocessedCommandStates()
-    {
-      var states = new List<ICommandState>();
-      var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
-      var filter = Builders<CommandState>.Filter.Where(w => w.ExecutedOn == null);
-      var results = collection.Find(filter);
-      if (results?.Count() > 0)
-      {
-        foreach (var result in results.ToList())
+        public ICommandState CreateCommandState(Guid guid)
         {
-          states.Add(result);
+            var state = new CommandState()
+            {
+                Guid = guid
+            };
+            _commandStates.Add(state.Guid, state);
+            return state;
         }
-      }
 
-      return states;
+        // todo: do we maybe want to store all link data so that we can get all that by companyGuid at once?
+        // if so we would need to update both here and in links for linkupates
+
+        public void PersistChanges()
+        {
+            PersistCommands();
+        }
+
+        private void PersistCommands()
+        {
+            if (_commandStates.Any())
+            {
+                var commandCollection = _database.GetCollection<CommandState>(CommandStatesCollection);
+                var commands = _commandStates.Values.Select(s => s as CommandState).ToList();
+                commandCollection.InsertMany(commands);
+            }
+        }
+
+        public IEnumerable<ICommandState> GetUnprocessedCommandStates()
+        {
+            var states = new List<ICommandState>();
+            var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
+            var filter = Builders<CommandState>.Filter.Where(w => w.ExecutedOn == null);
+            var results = collection.Find(filter);
+            if (results?.Count() > 0)
+            {
+                foreach (var result in results.ToList())
+                {
+                    states.Add(result);
+                }
+            }
+
+            return states;
+        }
+
+        public IEnumerable<ICommandState> GetCommandStates()
+        {
+            var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
+            var filter = new BsonDocument();
+            var states = collection.Find(filter);
+
+            return states?.ToList();
+        }
+
+        public IEnumerable<ICommandState> GetCommandStates(string entityGuid)
+        {
+            var states = new List<ICommandState>();
+            var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
+            var filter = Builders<CommandState>.Filter.Eq("EntityGuid", entityGuid);
+            var results = collection.Find(filter);
+            if (results?.Count() > 0)
+            {
+                foreach (var result in results.ToList())
+                {
+                    states.Add(result);
+                }
+            }
+
+            return states;
+        }
     }
-
-    public IEnumerable<ICommandState> GetCommandStates()
-    {
-      var collection = _database.GetCollection<CommandState>(CommandStatesCollection);
-      var filter = new BsonDocument();
-      var states = collection.Find(filter);
-
-      return states?.ToList();
-    }
-  }
 }

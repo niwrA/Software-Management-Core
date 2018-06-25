@@ -21,6 +21,7 @@ using DesignsShared;
 using CodeGenShared;
 using FilesShared;
 using ProductInstallationsShared;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreApiTests
 {
@@ -79,7 +80,7 @@ namespace SoftwareManagementCoreApiTests
     public void CreatePostReturnsCreatedCommandAsync()
     {
       // Arrange
-      var testGuid = Guid.Parse("DB90B521-D9C2-4F6B-89D7-E89EC36021D2");
+      var testGuid = "DB90B521-D9C2-4F6B-89D7-E89EC36021D2";
       var command = new CommandDto { Guid = Guid.NewGuid(), Entity = "Product", Command = "Rename", EntityGuid = testGuid, ParametersJson = @"{ Name: 'Test Product renamed from test'}", CreatedOn = DateTime.UtcNow };
       var commands = new List<CommandDto> { command };
       // Act

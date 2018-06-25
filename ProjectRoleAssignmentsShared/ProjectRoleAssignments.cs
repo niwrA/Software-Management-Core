@@ -3,6 +3,7 @@ using ContactsShared;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using niwrA.CommandManager.Contracts;
 
 namespace ProjectRoleAssignmentsShared
 {

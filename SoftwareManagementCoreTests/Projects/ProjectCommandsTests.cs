@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Projects
 {
@@ -110,7 +111,7 @@ namespace SoftwareManagementCoreTests.Projects
 
             var sut = new CommandBuilder<T>().Build(projectsMock.Object);
 
-            projectsMock.Setup(s => s.GetProject(sut.EntityRootGuid)).Returns(projectMock.Object);
+            projectsMock.Setup(s => s.GetProject(Guid.Parse(sut.EntityRootGuid))).Returns(projectMock.Object);
 
             return sut;
         }

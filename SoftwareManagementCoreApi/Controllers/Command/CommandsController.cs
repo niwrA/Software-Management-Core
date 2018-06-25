@@ -15,6 +15,7 @@ using DesignsShared;
 using CodeGenShared;
 using FilesShared;
 using ProductInstallationsShared;
+using niwrA.CommandManager.Contracts;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,9 +32,9 @@ namespace SoftwareManagementCoreWeb.Controllers
     public string Name { get { return _state.Command; } }
     public string Version { get { return _state.CommandVersion; } }
     public string Entity { get { return _state.Entity; } }
-    public Guid EntityGuid { get { return _state.EntityGuid; } }
+    public string EntityGuid { get { return _state.EntityGuid.ToLower(); } }
     public string EntityRoot { get { return _state.EntityRoot; } }
-    public Guid EntityRootGuid { get { return _state.EntityRootGuid; } }
+    public string EntityRootGuid { get { return _state.EntityRootGuid.ToLower(); } }
     public string ParametersJson { get { return _state.ParametersJson; } }
     public string CreatedOn { get { return _state.CreatedOn.ToString("yyyy-MM-dd"); } }
     public string ReceivedOn { get { return _state.ReceivedOn.HasValue ? _state.ReceivedOn.Value.ToString("yyyy-MM-dd") : ""; } }
@@ -130,7 +131,7 @@ namespace SoftwareManagementCoreWeb.Controllers
     }
     // GET api/links/forguid/5
     [HttpGet("forGuid/{forGuid}")]
-    public IEnumerable<CommandReadOnlyDto> GetForGuid(Guid forGuid)
+    public IEnumerable<CommandReadOnlyDto> GetForGuid(string forGuid)
     {
       var states = _commandStateRepository.GetCommandStates(forGuid);
       var dtos = states.Select(s => new CommandReadOnlyDto(s)).ToList();

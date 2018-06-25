@@ -2,61 +2,64 @@
 using System.Collections.Generic;
 using System.Text;
 using niwrA.CommandManager;
+using niwrA.CommandManager.Contracts;
 
 namespace LinksShared
 {
-  public abstract class LinkCommand : CommandBase, ICommand
-  {
-    public LinkCommand() : base() { }
-    public LinkCommand(ICommandStateRepository repo) : base(repo) { }
-    public virtual void Execute() { }
-  }
-
-  public class DeleteLinkCommand : LinkCommand
-  {
-    public override void Execute()
+    public abstract class LinkCommand : CommandBase, ICommand
     {
-      ((ILinkService)base.CommandProcessor).DeleteLink(this.EntityGuid);
-      base.Execute();
+        public LinkCommand() : base() { }
+        public LinkCommand(ICommandStateRepository repo) : base(repo) { }
+        public new Guid EntityGuid { get { return System.Guid.Parse(base.EntityGuid); } }
+        public new Guid EntityRootGuid { get { return System.Guid.Parse(base.EntityRootGuid); } }
+        public virtual void Execute() { }
     }
 
-  }
-
-  public class CreateLinkCommand : LinkCommand
-  {
-    public string Url { get; set; }
-    public string Name { get; set; }
-    public Guid ForGuid { get; set; }
-    public override void Execute()
+    public class DeleteLinkCommand : LinkCommand
     {
-      ((ILinkService)base.CommandProcessor).CreateLink(EntityGuid, ForGuid, Url, Name);
-      base.Execute();
-    }
-  }
+        public override void Execute()
+        {
+            ((ILinkService)base.CommandProcessor).DeleteLink(this.EntityGuid);
+            base.Execute();
+        }
 
-  public class RenameLinkCommand : LinkCommand
-  {
-    public string OriginalName { get; set; }
-    public string Name { get; set; }
-    public override void Execute()
-    {
-      var product = ((ILinkService)base.CommandProcessor).GetLink(this.EntityGuid);
-      product.Rename(this.Name, this.OriginalName);
-      base.Execute();
     }
-  }
 
-  public class ChangeUrlForLinkCommand : LinkCommand
-  {
-    public string OriginalUrl { get; set; }
-    public string Url { get; set; }
-    public override void Execute()
+    public class CreateLinkCommand : LinkCommand
     {
-      var product = ((ILinkService)base.CommandProcessor).GetLink(this.EntityGuid);
-      product.ChangeUrl(this.Url, this.OriginalUrl);
-      base.Execute();
+        public string Url { get; set; }
+        public string Name { get; set; }
+        public Guid ForGuid { get; set; }
+        public override void Execute()
+        {
+            ((ILinkService)base.CommandProcessor).CreateLink(EntityGuid, ForGuid, Url, Name);
+            base.Execute();
+        }
     }
-  }
+
+    public class RenameLinkCommand : LinkCommand
+    {
+        public string OriginalName { get; set; }
+        public string Name { get; set; }
+        public override void Execute()
+        {
+            var product = ((ILinkService)base.CommandProcessor).GetLink(this.EntityGuid);
+            product.Rename(this.Name, this.OriginalName);
+            base.Execute();
+        }
+    }
+
+    public class ChangeUrlForLinkCommand : LinkCommand
+    {
+        public string OriginalUrl { get; set; }
+        public string Url { get; set; }
+        public override void Execute()
+        {
+            var product = ((ILinkService)base.CommandProcessor).GetLink(this.EntityGuid);
+            product.ChangeUrl(this.Url, this.OriginalUrl);
+            base.Execute();
+        }
+    }
 
 
 }

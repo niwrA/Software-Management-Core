@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using niwrA.CommandManager;
+using niwrA.CommandManager.Contracts;
 
 namespace DesignsShared
 {
@@ -9,10 +10,12 @@ namespace DesignsShared
     {
         public DesignCommand() : base() { }
         public DesignCommand(ICommandStateRepository repo) : base(repo) { }
+        public new Guid EntityGuid { get { return System.Guid.Parse(base.EntityGuid); } }
+        public new Guid EntityRootGuid { get { return System.Guid.Parse(base.EntityRootGuid); } }
         public virtual void Execute() { }
-  }
+    }
 
-  public class CreateDesignCommand : DesignCommand
+    public class CreateDesignCommand : DesignCommand
     {
         public CreateDesignCommand() : base() { }
         public CreateDesignCommand(ICommandStateRepository repo) : base(repo) { }

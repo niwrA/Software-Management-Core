@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static SoftwareManagementEFCoreRepositoryTests.Products.ProductTests;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementEFCoreRepositoryTests.Shared
 {

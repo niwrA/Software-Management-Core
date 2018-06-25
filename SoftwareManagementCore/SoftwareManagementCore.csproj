@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" />
@@ -13,7 +13,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="cloudscribe.HtmlAgilityPack" Version="1.0.1" />
-    <PackageReference Include="CommandManagerNetStandard" Version="2.0.5" />
+    <PackageReference Include="CommandManagerCore" Version="3.0.0" />
+    <PackageReference Include="CommandManagerCore.Contracts" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
   <Import Project="..\ProductsShared\ProductsShared.projitems" Label="Shared" />

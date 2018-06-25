@@ -1,13 +1,11 @@
 ﻿using niwrA.CommandManager;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using niwrA.CommandManager.Repositories;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Commands
 {
-  public class CommandBuilder<T> where T : ICommand, new()
+    public class CommandBuilder<T> where T : ICommand, new()
   {
     public T Build(ICommandProcessor processor)
     {
@@ -20,8 +18,8 @@ namespace SoftwareManagementCoreTests.Commands
 
       var cmd = commandService.CreateCommand<T>();
 
-      cmd.EntityGuid = Guid.NewGuid();
-      cmd.EntityRootGuid = Guid.NewGuid();
+      cmd.EntityGuid = Guid.NewGuid().ToString();
+      cmd.EntityRootGuid = Guid.NewGuid().ToString();
       cmd.CommandProcessor = processor;
 
       return (T)cmd;

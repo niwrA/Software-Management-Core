@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Contacts
 {
@@ -98,7 +99,7 @@ namespace SoftwareManagementCoreTests.Contacts
 
             var sut = new CommandBuilder<T>().Build(contactsMock.Object);
 
-            contactsMock.Setup(s => s.GetContact(sut.EntityGuid)).Returns(contactMock.Object);
+            contactsMock.Setup(s => s.GetContact(Guid.Parse(sut.EntityGuid))).Returns(contactMock.Object);
 
             return sut;
         }

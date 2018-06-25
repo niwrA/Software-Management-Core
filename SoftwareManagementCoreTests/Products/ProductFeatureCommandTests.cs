@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Products
 {
@@ -62,8 +63,8 @@ namespace SoftwareManagementCoreTests.Products
       ProductFeatureMock.Setup(s => s.Guid).Returns(featureGuid);
       ProductMock.Setup(s => s.GetFeature(ProductFeatureMock.Object.Guid)).Returns(ProductFeatureMock.Object);
       var sut = new CommandBuilder<T>().Build(ProductsMock.Object);
-      ProductMock.Setup(s => s.Guid).Returns(sut.EntityGuid);
-      ProductsMock.Setup(s => s.GetProduct(sut.EntityGuid)).Returns(ProductMock.Object);
+      ProductMock.Setup(s => s.Guid).Returns(Guid.Parse(sut.EntityGuid));
+      ProductsMock.Setup(s => s.GetProduct(Guid.Parse(sut.EntityGuid))).Returns(ProductMock.Object);
       return sut;
     }
     public ProductFeatureCommandBuilder<T> WithProduct(Guid guid)

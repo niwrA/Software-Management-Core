@@ -1,8 +1,6 @@
-﻿using niwrA.CommandManager;
-using DateTimeShared;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using niwrA.CommandManager.Contracts;
 
 namespace ProjectsShared
 {
@@ -11,7 +9,6 @@ namespace ProjectsShared
         IProject CreateProject(Guid guid, string name);
         IProject GetProject(Guid guid);
         void DeleteProject(Guid guid);
-        void PersistChanges();
     }
 
     public interface IProjectState : INamedEntityState

@@ -1,4 +1,4 @@
-﻿using niwrA.CommandManager;
+﻿using niwrA.CommandManager.Contracts;
 using DateTimeShared;
 using System;
 using System.Collections.Generic;

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.ProductInstallations
 {
@@ -93,7 +94,7 @@ namespace SoftwareManagementCoreTests.ProductInstallations
 
       var sut = new CommandBuilder<T>().Build(ProductInstallationsMock.Object);
 
-      ProductInstallationsMock.Setup(s => s.GetProductInstallation(sut.EntityGuid)).Returns(ProductInstallationMock.Object);
+      ProductInstallationsMock.Setup(s => s.GetProductInstallation(Guid.Parse(sut.EntityGuid))).Returns(ProductInstallationMock.Object);
 
       return sut;
     }

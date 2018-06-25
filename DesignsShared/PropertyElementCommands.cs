@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using niwrA.CommandManager;
+using niwrA.CommandManager.Contracts;
 
 namespace DesignsShared
 {
@@ -11,6 +12,8 @@ namespace DesignsShared
         public PropertyElementCommand(ICommandStateRepository repo) : base(repo) { }
         public Guid EpicElementGuid { get; set; }
         public Guid EntityElementGuid { get; set; }
+        public new Guid EntityGuid { get { return System.Guid.Parse(base.EntityGuid); } }
+        public new Guid EntityRootGuid { get { return System.Guid.Parse(base.EntityRootGuid); } }
         public virtual void Execute() { }
     }
 

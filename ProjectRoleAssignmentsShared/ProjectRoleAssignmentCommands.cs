@@ -2,61 +2,64 @@
 using System.Collections.Generic;
 using System.Text;
 using niwrA.CommandManager;
+using niwrA.CommandManager.Contracts;
 
 namespace ProjectRoleAssignmentsShared
 {
-  public abstract class ProjectRoleAssignmentCommand : CommandBase, ICommand
-  {
-    public ProjectRoleAssignmentCommand() : base() { }
-    public ProjectRoleAssignmentCommand(ICommandStateRepository repo) : base(repo) { }
-    public virtual void Execute() { }
-  }
-
-  public class CreateProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
-  {
-    public Guid ContactGuid { get; set; }
-    public Guid ProjectGuid { get; set; }
-    public Guid ProjectRoleGuid { get; set; }
-    public string ContactName { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public override void Execute()
+    public abstract class ProjectRoleAssignmentCommand : CommandBase, ICommand
     {
-      ((IProjectRoleAssignmentService)base.CommandProcessor).CreateProjectRoleAssignment(this.EntityGuid, this.ContactGuid, this.ProjectGuid, this.ProjectRoleGuid, this.StartDate, this.EndDate, this.ContactName);
-      base.Execute();
+        public ProjectRoleAssignmentCommand() : base() { }
+        public ProjectRoleAssignmentCommand(ICommandStateRepository repo) : base(repo) { }
+        public new Guid EntityGuid { get { return System.Guid.Parse(base.EntityGuid); } }
+        public new Guid EntityRootGuid { get { return System.Guid.Parse(base.EntityRootGuid); } }
+        public virtual void Execute() { }
     }
-  }
 
-  public class DeleteProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
-  {
-    public override void Execute()
+    public class CreateProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
     {
-      ((IProjectRoleAssignmentService)base.CommandProcessor).DeleteProjectRoleAssignment(this.EntityGuid);
-      base.Execute();
+        public Guid ContactGuid { get; set; }
+        public Guid ProjectGuid { get; set; }
+        public Guid ProjectRoleGuid { get; set; }
+        public string ContactName { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public override void Execute()
+        {
+            ((IProjectRoleAssignmentService)base.CommandProcessor).CreateProjectRoleAssignment(this.EntityGuid, this.ContactGuid, this.ProjectGuid, this.ProjectRoleGuid, this.StartDate, this.EndDate, this.ContactName);
+            base.Execute();
+        }
     }
-  }
 
-  public class ChangeStartDateOfProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
-  {
-    public DateTime? OriginalStartDate { get; set; }
-    public DateTime? StartDate { get; set; }
-    public override void Execute()
+    public class DeleteProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
     {
-      var projectroleassignment = ((IProjectRoleAssignmentService)base.CommandProcessor).GetProjectRoleAssignment(this.EntityGuid);
-      projectroleassignment.ChangeStartDate(this.StartDate, this.OriginalStartDate);
-      base.Execute();
+        public override void Execute()
+        {
+            ((IProjectRoleAssignmentService)base.CommandProcessor).DeleteProjectRoleAssignment(this.EntityGuid);
+            base.Execute();
+        }
     }
-  }
 
-  public class ChangeEndDateOfProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
-  {
-    public DateTime? OriginalEndDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public override void Execute()
+    public class ChangeStartDateOfProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
     {
-      var projectroleassignment = ((IProjectRoleAssignmentService)base.CommandProcessor).GetProjectRoleAssignment(this.EntityGuid);
-      projectroleassignment.ChangeEndDate(this.EndDate, this.OriginalEndDate);
-      base.Execute();
+        public DateTime? OriginalStartDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public override void Execute()
+        {
+            var projectroleassignment = ((IProjectRoleAssignmentService)base.CommandProcessor).GetProjectRoleAssignment(this.EntityGuid);
+            projectroleassignment.ChangeStartDate(this.StartDate, this.OriginalStartDate);
+            base.Execute();
+        }
     }
-  }
+
+    public class ChangeEndDateOfProjectRoleAssignmentCommand : ProjectRoleAssignmentCommand
+    {
+        public DateTime? OriginalEndDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public override void Execute()
+        {
+            var projectroleassignment = ((IProjectRoleAssignmentService)base.CommandProcessor).GetProjectRoleAssignment(this.EntityGuid);
+            projectroleassignment.ChangeEndDate(this.EndDate, this.OriginalEndDate);
+            base.Execute();
+        }
+    }
 }
