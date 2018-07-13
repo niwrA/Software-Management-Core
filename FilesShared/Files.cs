@@ -1,8 +1,6 @@
-﻿using niwrA.CommandManager;
-using DateTimeShared;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using niwrA.CommandManager.Contracts;
 
 namespace FilesShared
 {
@@ -11,7 +9,6 @@ namespace FilesShared
         IFile CreateFile(Guid guid, Guid forGuid, string forType, string name, string fileName, string type, string contentType, long size);
         IFile GetFile(Guid guid);
         void DeleteFile(Guid guid);
-        void PersistChanges();
     }
 
     public interface IFileState : INamedEntityState

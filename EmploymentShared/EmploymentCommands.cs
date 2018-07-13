@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using niwrA.CommandManager;
+using niwrA.CommandManager.Contracts;
 
 namespace EmploymentsShared
 {
@@ -9,6 +10,8 @@ namespace EmploymentsShared
     {
         public EmploymentCommand() : base() { }
         public EmploymentCommand(ICommandStateRepository repo) : base(repo) { }
+        public new Guid EntityGuid { get { return System.Guid.Parse(base.EntityGuid); } }
+        public new Guid EntityRootGuid { get { return System.Guid.Parse(base.EntityRootGuid); } }
         public virtual void Execute() { }
   }
 

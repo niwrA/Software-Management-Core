@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.DirectoryServices.AccountManagement;
+//using System.DirectoryServices.AccountManagement;
 
 namespace SoftwareManagementCoreApi.Controllers
 {
@@ -34,21 +34,21 @@ namespace SoftwareManagementCoreApi.Controllers
       {
         string[] output = null;
 
-        using (var ctx = new PrincipalContext(ContextType.Domain))
-        using (var user = UserPrincipal.FindByIdentity(ctx, userInfoDto.UserName))
-        {
-          if (user != null)
-          {
-            // userInfoDto.Name = user.Name;
-            userInfoDto.Name = user.DisplayName;
-            userInfoDto.GivenName = user.GivenName;
-            userInfoDto.AccountName = user.SamAccountName;
-            userInfoDto.Email = user.EmailAddress;
-            output = user.GetGroups() //this returns a collection of principal objects
-                .Select(x => x.SamAccountName) // select the name.  you may change this to choose the display name or whatever you want
-                .ToArray(); // convert to string array
-          }
-        }
+        //using (var ctx = new PrincipalContext(ContextType.Domain))
+        //using (var user = UserPrincipal.FindByIdentity(ctx, userInfoDto.UserName))
+        //{
+        //  if (user != null)
+        //  {
+        //    // userInfoDto.Name = user.Name;
+        //    userInfoDto.Name = user.DisplayName;
+        //    userInfoDto.GivenName = user.GivenName;
+        //    userInfoDto.AccountName = user.SamAccountName;
+        //    userInfoDto.Email = user.EmailAddress;
+        //    output = user.GetGroups() //this returns a collection of principal objects
+        //        .Select(x => x.SamAccountName) // select the name.  you may change this to choose the display name or whatever you want
+        //        .ToArray(); // convert to string array
+        //  }
+        //}
 
         return output;
       }

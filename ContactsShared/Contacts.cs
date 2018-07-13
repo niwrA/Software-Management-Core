@@ -3,6 +3,7 @@ using DateTimeShared;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using niwrA.CommandManager.Contracts;
 
 namespace ContactsShared
 {
@@ -11,7 +12,6 @@ namespace ContactsShared
     IContact CreateContact(Guid guid, string name);
     IContact GetContact(Guid guid);
     void DeleteContact(Guid guid);
-    void PersistChanges();
   }
 
   public interface IContactState : INamedEntityState

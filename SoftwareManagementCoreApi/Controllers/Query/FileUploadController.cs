@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using FilesShared;
 using niwrA.CommandManager;
+using niwrA.CommandManager.Contracts;
 
 // added for research as I came across it, not yet in use
 namespace SoftwareManagementCoreApi.Controllers
@@ -105,7 +106,7 @@ namespace SoftwareManagementCoreApi.Controllers
     {
       var type = System.IO.Path.GetExtension(fileName).ToLower();
       // todo: make a typed path (adjust commands to contain Entity name and auto-serialize the additional properties into ParametersJson)
-      var commandDto = new CommandDto { Entity = "File", EntityGuid = Guid.NewGuid(), Guid = Guid.NewGuid(), CreatedOn = DateTime.Now, Command = "Create" };
+      var commandDto = new CommandDto { Entity = "File", EntityGuid = Guid.NewGuid().ToString(), Guid = Guid.NewGuid(), CreatedOn = DateTime.Now, Command = "Create" };
       commandDto.ParametersJson = $@"{{'ForGuid':'{forEntityGuid}', 'Name': '{fileName}', 'FileName': '{fileName}', 'FolderName':'{folderName}', 'Type':'{type}'}}";
       _commandManager.ProcessCommands( new List<CommandDto> { commandDto });
       _fileService.PersistChanges();

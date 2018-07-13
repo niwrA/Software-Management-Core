@@ -12,6 +12,7 @@ using ContactsShared;
 using CompaniesShared;
 using SoftwareManagementEventSourceRepository;
 using DateTimeShared;
+using niwrA.CommandManager.Contracts;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

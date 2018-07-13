@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Files
 {
@@ -67,7 +68,7 @@ namespace SoftwareManagementCoreTests.Files
 
             var sut = new CommandBuilder<T>().Build(linksMock.Object);
 
-            linksMock.Setup(s => s.GetFile(sut.EntityGuid)).Returns(linkMock.Object);
+            linksMock.Setup(s => s.GetFile(Guid.Parse(sut.EntityGuid))).Returns(linkMock.Object);
 
             return sut;
         }

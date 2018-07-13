@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Employments
 {
@@ -78,7 +79,7 @@ namespace SoftwareManagementCoreTests.Employments
 
             var sut = new CommandBuilder<T>().Build(employmentsMock.Object);
 
-            employmentsMock.Setup(s => s.GetEmployment(sut.EntityGuid)).Returns(employmentMock.Object);
+            employmentsMock.Setup(s => s.GetEmployment(Guid.Parse(sut.EntityGuid))).Returns(employmentMock.Object);
 
             return sut;
         }

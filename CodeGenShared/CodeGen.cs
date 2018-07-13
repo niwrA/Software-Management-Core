@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using niwrA.CommandManager.Contracts;
 
 // todo: warp all CodeAnalysis in an Interface
 namespace CodeGenShared

@@ -1,9 +1,8 @@
-﻿using niwrA.CommandManager;
-using DateTimeShared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using niwrA.CommandManager.Contracts;
 
 namespace DesignsShared
 {
@@ -340,7 +339,6 @@ namespace DesignsShared
         IDesign CreateDesign(Guid guid, string name);
         IDesign GetDesign(Guid guid);
         void DeleteDesign(Guid entityGuid);
-        void PersistChanges();
     }
     public class DesignService : IDesignService
     {

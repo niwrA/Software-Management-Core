@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using System.Linq;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreTests.Designs
 {
@@ -92,7 +93,7 @@ namespace SoftwareManagementCoreTests.Designs
 
       sut.AddCommandConfigs(new List<ICommandConfig>() { commandConfig });
 
-      var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid, Command = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
+      var commandDto = new CommandDto { Entity = TestGlobals.Entity, EntityGuid = guid.ToString(), Command = CommandTypes.Create.ToString(), ParametersJson = @"{name: '" + name + "'}" };
       sut.ProcessCommands(new List<CommandDto> { commandDto });
 
       designsMock.Verify(v => v.CreateDesign(guid, name), Times.Once);
@@ -110,7 +111,7 @@ namespace SoftwareManagementCoreTests.Designs
 
       var sut = new CommandBuilder<T>().Build(designsMock.Object);
 
-      designsMock.Setup(s => s.GetDesign(sut.EntityGuid)).Returns(designMock.Object);
+      designsMock.Setup(s => s.GetDesign(Guid.Parse(sut.EntityGuid))).Returns(designMock.Object);
 
       return sut;
     }

@@ -487,5 +487,10 @@ namespace CodeGen
                                                          @default: null);
             }
         }
+
+        public void PersistChanges()
+        {
+            // throw new NotImplementedException();
+        }
     }
 }

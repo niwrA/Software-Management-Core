@@ -1,5 +1,4 @@
-﻿using niwrA.CommandManager;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProductsShared;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +14,7 @@ using DesignsShared;
 using LinksShared;
 using FilesShared;
 using ProductInstallationsShared;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementEFCoreRepository
 {
@@ -417,8 +417,8 @@ namespace SoftwareManagementEFCoreRepository
     {
         [Key]
         public Guid Guid { get; set; }
-        public Guid EntityGuid { get; set; }
-        public Guid EntityRootGuid { get; set; }
+        public string EntityGuid { get; set; }
+        public string EntityRootGuid { get; set; }
         public string Entity { get; set; }
         public string EntityRoot { get; set; }
         public string Command { get; set; }
@@ -428,6 +428,7 @@ namespace SoftwareManagementEFCoreRepository
         public DateTime? ReceivedOn { get; set; }
         public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
+        public string TenantId { get; set; }
     }
     // just because the repositories can each be separate, doesn't mean we always want to
     public interface IMainRepository : IProductStateRepository, IContactStateRepository,
@@ -693,13 +694,6 @@ namespace SoftwareManagementEFCoreRepository
         {
             // todo: consider which date I want to use. Ideally the created on reflects the time the user created the command correctly. Ideally ...
             var states = _context.CommandStates.AsNoTracking().OrderByDescending(o => o.ExecutedOn).ThenByDescending(o => o.CreatedOn).ToList();
-            return states;
-        }
-
-        public IEnumerable<ICommandState> GetCommandStates(Guid guid)
-        {
-            // todo: consider which date I want to use. Ideally the created on reflects the time the user created the command correctly. Ideally ...
-            var states = _context.CommandStates.Where(w => w.EntityGuid == guid).OrderByDescending(o => o.ExecutedOn).ThenByDescending(o => o.CreatedOn).AsNoTracking().ToList();
             return states;
         }
 
@@ -1143,6 +1137,13 @@ namespace SoftwareManagementEFCoreRepository
             {
                 _context.ProductInstallationStates.Remove((ProductInstallationState)state);
             }
+        }
+
+        public IEnumerable<ICommandState> GetCommandStates(string entityGuid)
+        {
+            // todo: consider which date I want to use. Ideally the created on reflects the time the user created the command correctly. Ideally ...
+            var states = Enumerable.ToList<ICommandState>(_context.CommandStates.Where(w => w.EntityGuid == entityGuid).OrderByDescending(o => o.ExecutedOn).ThenByDescending(o => o.CreatedOn).AsNoTracking());
+            return states;
         }
     }
 }

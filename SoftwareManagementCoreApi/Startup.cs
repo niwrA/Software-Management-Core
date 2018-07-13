@@ -30,6 +30,7 @@ using FilesShared;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using ProductInstallationsShared;
 using Microsoft.AspNetCore.Http;
+using niwrA.CommandManager.Contracts;
 
 namespace SoftwareManagementCoreApi
 {

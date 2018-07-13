@@ -56,19 +56,19 @@ namespace SoftwareManagementCoreTests.Companies
 
       sut.HardwareName = "New Name";
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.EntityGuid = Guid.NewGuid();
+      //sut.EntityGuid = Guid.NewGuid();
       sut.Execute();
 
       sutBuilder.CompanyEnvironmentMock.Verify(s => s.AddHardware(sut.EntityGuid, sut.HardwareName), Times.Once);
     }
-    [Fact(DisplayName = "AddHardwareToCompanyEnvironmentCommand")]
+    [Fact(DisplayName = "RemoveHardwareFromCompanyEnvironmentCommand")]
     public void RemoveHardwareFromCompanyEnvironmentCommand()
     {
       var sutBuilder = new HardwareCommandBuilder<RemoveCompanyEnvironmentHardwareCommand>();
       var sut = sutBuilder.Build() as RemoveCompanyEnvironmentHardwareCommand;
 
       sut.EnvironmentGuid = Guid.NewGuid();
-      sut.EntityGuid = Guid.NewGuid();
+      //sut.EntityGuid = Guid.NewGuid();
       sut.Execute();
 
       sutBuilder.CompanyEnvironmentMock.Verify(s => s.RemoveHardware(sut.EntityGuid), Times.Once);
