@@ -490,7 +490,7 @@ namespace CodeGen
 
         public void PersistChanges()
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
     }
 }
