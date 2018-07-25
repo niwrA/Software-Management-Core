@@ -24,9 +24,14 @@ If you wan to use SQL Server:
 
 - install a SQL Sever Community or Developer edition if you haven't already (or reconfigure the project to use localdb, SQLLite, etc.) and create a database called SoftwareManagement, or use a Docker install of the new SQL Server preview
 
-- Open the project and change the connection string in both the api and entityframeworkcore projects
+- Open the project and change the connection string in appsettings.json as needed
 
-- Open the Package Manager console in Visual Studio, and run Update-Database to create and/or migrate the database to the latest version (make sure the Api\SoftwareManagementCoreApi is the default project here)
+- Make sure your default project is SoftwareManagementCoreApi
+
+- Open the Package Manager console in Visual Studio, and run:
+     Install-Package Microsoft.EntityFrameworkCore.Tools
+     Install-Package Microsoft.EntityFrameworkCore.Design
+     Update-Database    
 
 MongoDb
 If you want to use MongoDb (currently in development): install MongoDB using the default port, or use a Docker install, like this:
